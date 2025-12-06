@@ -1,6 +1,6 @@
-from django.urls import path
-from . import views
+from django.urls import path # pyright: ignore[reportMissingModuleSource]
+from .views import CharacterList
 
 urlpatterns = [
-    path('', views.home, name='home'),
+    path('', CharacterList.as_view(), name='home'),
 ]

@@ -1,0 +1,53 @@
+
+<h1>My Characters</h1>
+
+<style>
+	.characters-table {
+		border-collapse: collapse;
+		width: 100%;
+		box-shadow: 0 0 0 1px #444; /* outer border */
+	}
+	.characters-table th,
+	.characters-table td {
+		border: 1px solid #444;
+		padding: 6px 8px;
+		text-align: left;
+		vertical-align: top;
+	}
+	.characters-table th {
+		background: #f4f4f4;
+		font-weight: 600;
+	}
+	.characters-table tbody tr:nth-child(even) td {
+		background: #fafafa;
+	}
+	@media (max-width: 900px) {
+		.characters-table td,
+		.characters-table th { font-size: 13px; padding: 4px 6px; }
+	}
+</style>
+
+{% if characters %}
+	<table class="characters-table">
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Player</th>
+				<th>Class</th>
+				<th>Level</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for c in characters %}
+				<tr>
+					<td>{{ c.character_name }}</td>
+					<td>{% if c.user.username %}{{ c.user.username }}{% else %}{{ c.user }}{% endif %}</td>
+					<td>{% if c.get_character_class_display %}{{ c.get_character_class_display }}{% else %}{{ c.character_class }}{% endif %}</td>
+					<td>{{ c.level }}</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+{% else %}
+	<p>No characters found.</p>
+{% endif %}

@@ -1,5 +1,12 @@
-from django.shortcuts import render
-from django.http import HttpResponse
+from django.shortcuts import render # type: ignore
+from django.views.generic.list import ListView # type: ignore
+from django.views.generic.detail import DetailView # type: ignore
+from .models import Character
 
-def home(request):
-    return HttpResponse("Welcome to the DnD Character Sheet Creator!")
+class CharacterList(ListView):
+    model = Character
+    context_object_name = 'characters'
+
+class CharacterDetail(DetailView):
+    model = Character
+    context_object_name = 'character'

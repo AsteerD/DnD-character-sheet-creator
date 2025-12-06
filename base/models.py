@@ -1,6 +1,6 @@
-from django.db import models
-from django.contrib.auth.models import User
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db import models # type: ignore
+from django.contrib.auth.models import User # type: ignore
+from django.core.validators import MinValueValidator, MaxValueValidator # type: ignore
 
 # Create your models here.
 
@@ -61,6 +61,7 @@ class BackgroundChoices(models.TextChoices):
 
 
 class RaceChoices(models.TextChoices):
+    AASIMAR = 'Aasimar', 'Aasimar'
     HUMAN = 'Human', 'Human'
     ELF = 'Elf', 'Elf'
     DWARF = 'Dwarf', 'Dwarf'

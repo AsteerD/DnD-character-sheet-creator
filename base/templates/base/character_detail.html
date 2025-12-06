@@ -1,0 +1,53 @@
+<h1>Character detail: {{ character.character_name }}</h1>
+
+<style>
+  .detail-table { border-collapse: collapse; width: 100%; max-width: 900px; box-shadow: 0 0 0 1px #444; }
+  .detail-table th, .detail-table td { border: 1px solid #444; padding: 8px 10px; vertical-align: top; }
+  .detail-table th { background:#f4f4f4; text-align:left; width: 220px; }
+  .detail-table td.backstory { white-space: pre-wrap; }
+  .meta { margin-top: 12px; color: #666; font-size: 0.9em }
+</style>
+
+{% if character %}
+  <table class="detail-table">
+    <tbody>
+      <tr><th>Name</th><td>{{ character.character_name }}</td></tr>
+      <tr><th>Player</th><td>{% if character.user.username %}{{ character.user.username }}{% else %}{{ character.user }}{% endif %}</td></tr>
+      <tr><th>Class</th><td>{% if character.get_character_class_display %}{{ character.get_character_class_display }}{% else %}{{ character.character_class }}{% endif %}</td></tr>
+      <tr><th>Subclass</th><td>{% if character.subclass and character.subclass.name %}{{ character.subclass.name }}{% else %}{% if character.subclass %}{{ character.subclass }}{% else %}-{% endif %}{% endif %}</td></tr>
+      <tr><th>Race</th><td>{% if character.get_race_display %}{{ character.get_race_display }}{% else %}{{ character.race }}{% endif %}</td></tr>
+      <tr><th>Level</th><td>{{ character.level }}</td></tr>
+      <tr><th>Background</th><td>{% if character.get_background_display %}{{ character.get_background_display }}{% else %}{{ character.background }}{% endif %}</td></tr>
+      <tr><th>Alignment</th><td>{% if character.get_alligment_display %}{{ character.get_alligment_display }}{% else %}{{ character.alligment }}{% endif %}</td></tr>
+      <tr><th>Experience points</th><td>{{ character.experience_points|default:'-' }}</td></tr>
+      <tr><th>Strength</th><td>{{ character.strength }}</td></tr>
+      <tr><th>Dexterity</th><td>{{ character.dexterity }}</td></tr>
+      <tr><th>Constitution</th><td>{{ character.constitution }}</td></tr>
+      <tr><th>Intelligence</th><td>{{ character.intelligence }}</td></tr>
+      <tr><th>Wisdom</th><td>{{ character.wisdom }}</td></tr>
+      <tr><th>Charisma</th><td>{{ character.charisma }}</td></tr>
+      <tr><th>Armor Class</th><td>{{ character.armor_class }}</td></tr>
+      <tr><th>Initiative</th><td>{{ character.initiative }}</td></tr>
+      <tr><th>Speed</th><td>{{ character.speed }}</td></tr>
+      <tr><th>Hit Points</th><td>{{ character.hit_points }}</td></tr>
+      <tr><th>Temporary HP</th><td>{{ character.temporary_hit_points }}</td></tr>
+      <tr><th>Hit Dice</th><td>{{ character.hit_dice }}</td></tr>
+      <tr><th>Death Saves (S / F)</th><td>{{ character.death_saves_success|default:'-' }} / {{ character.death_saves_failure|default:'-' }}</td></tr>
+      <tr><th>Inspiration</th><td>{% if character.inspiration %}Yes{% else %}No{% endif %}</td></tr>
+      <tr><th>Languages</th>
+        <td>
+          {% for lang in character.languages.all %}
+            {{ lang.name }}{% if not forloop.last %}, {% endif %}
+          {% empty %}
+            -
+          {% endfor %}
+        </td>
+      </tr>
+      <tr><th>Backstory</th><td class="backstory">{{ character.backstory|linebreaksbr|default:'-' }}</td></tr>
+      <tr><th>Created at</th><td>{{ character.created_at|date:"Y-m-d H:i" }}</td></tr>
+    </tbody>
+  </table>
+  <p class="meta"><a href="{% url 'base:character_list' %}">Back to characters list</a></p>
+{% else %}
+  <p>Character not found.</p>
+{% endif %}

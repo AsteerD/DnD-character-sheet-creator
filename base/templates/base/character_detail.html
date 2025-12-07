@@ -47,7 +47,6 @@
       <tr><th>Created at</th><td>{{ character.created_at|date:"Y-m-d H:i" }}</td></tr>
     </tbody>
   </table>
-  <p class="meta"><a href="{% url 'base:character_list' %}">Back to characters list</a></p>
 {% else %}
   <p>Character not found.</p>
 {% endif %}

@@ -1,6 +1,7 @@
 <h1>My Characters</h1>
+<a href="{% url 'character-create' %}">Create New Character</a>
 
-{% if characters%}
+{% if characters %}
 	<table>
 		<thead>
 			<tr>
@@ -8,6 +9,7 @@
 				<th>Player</th>
 				<th>Class</th>
 				<th>Level</th>
+				<th></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -16,11 +18,14 @@
 					
 					<td><a href="{% url 'character' c.pk %}">{{ c.character_name }}</a></td>
 					<td>{% if c.user.username %}{{ c.user.username }}{% else %}{{ c.user }}{% endif %}</td>
-					<td>{% if c.get_character_class_display %}{{ c.get_character_class_display }}{% else %}{{ c.character_class }}{% endif %}</td>
+					<td>{% if c.get_character_class_display %}{{ c.get_character_class_display }}{% else %}{{ c.character_class }}{% endif %}</td>				
+					<td>{{ c.level }}</td>
+				<td><a href="{% url 'character-update' c.pk %}">Edit</a> | <a href="{% url 'character-delete' c.pk %}">Delete</a></td>
 				</tr>
 			{% endfor %}
 		</tbody>
 	</table>
+	
 {% else %}
 	<p>No characters found.</p>
 {% endif %}

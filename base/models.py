@@ -73,6 +73,44 @@ class RaceChoices(models.TextChoices):
     HALF_ORC = 'Half-Orc', 'Half-Orc'
     ORC = 'Orc', 'Orc'
 
+class SpellCategoryChoices(models.TextChoices):
+    ABJURATION = 'Abj', 'Abjuration'
+    CONJURATION = 'Conj', 'Conjuration'
+    DIVINATION = 'Div', 'Divination'
+    ENCHANTMENT = 'Ench', 'Enchantment'
+    EVOCATION = 'Evo', 'Evocation'
+    ILLUSION = 'Ill', 'Illusion'
+    NECROMANCY = 'Necro', 'Necromancy'
+    TRANSMUTATION = 'Trans', 'Transmutation'
+
+class SpellcastingClass(models.Model):
+    name = models.CharField(max_length=20, unique=True)
+    
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        ordering = ['name']
+
+class Spell(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    level = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(9)])
+    category = models.CharField(max_length=10, choices=SpellCategoryChoices.choices)
+    casting_time = models.CharField(max_length=50)
+    components = models.CharField(max_length=100)
+    requires_concentration = models.BooleanField(default=False)
+    ritual = models.BooleanField(default=False)
+    duration = models.CharField(max_length=50)
+    spell_range = models.CharField(max_length=50)
+    description = models.TextField()
+    available_to_classes = models.ManyToManyField(SpellcastingClass)
+    
+    def __str__(self):
+        return f"{self.name} (Level {self.level})"
+    
+    class Meta:
+        ordering = ['level', 'name']
+
 class Character(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     character_name = models.CharField(max_length=100)
@@ -142,5 +180,16 @@ class Character(models.Model):
             models.CheckConstraint(condition=models.Q(death_saves_success__gte=0) & models.Q(death_saves_success__lte=3), name='death_saves_success_range'),
             models.CheckConstraint(condition=models.Q(death_saves_failure__gte=0) & models.Q(death_saves_failure__lte=3), name='death_saves_failure_range'),
         ]
+
+
+class CharacterSpell(models.Model):
+    character = models.ForeignKey(Character, on_delete=models.CASCADE, related_name='known_spells')
+    spell = models.ForeignKey(Spell, on_delete=models.CASCADE)
+    is_prepared = models.BooleanField(default=False)
+    is_cast_today = models.BooleanField(default=False)
+    
+    class Meta:
+        unique_together = ['character', 'spell']
+        ordering = ['spell__level', 'spell__name']
 
 

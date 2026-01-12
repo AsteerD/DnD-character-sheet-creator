@@ -56,7 +56,7 @@ class CharacterDetail(LoginRequiredMixin, DetailView):
 
 class CharacterCreate(LoginRequiredMixin,CreateView):
     model = Character
-    fields = ['character_name', 'character_class', 'subclass', 'race', 'level', 'background', 'alligment', 'experience_points', 'strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma', 'armor_class', 'initiative', 'speed', 'hit_points', 'temporary_hit_points', 'hit_dice', 'death_saves_success', 'death_saves_failure', 'backstory', 'inspiration', 'languages']
+    fields = ['character_name', 'character_class', 'subclass', 'race', 'level', 'background', 'alignment', 'experience_points', 'strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma', 'armor_class', 'initiative', 'speed', 'hit_points', 'temporary_hit_points', 'hit_dice', 'death_saves_success', 'death_saves_failure', 'backstory', 'inspiration', 'languages', 'spells']
     template_name = 'base/character_form.html'
     success_url = reverse_lazy('characters')
 

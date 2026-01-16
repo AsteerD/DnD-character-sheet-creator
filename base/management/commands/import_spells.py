@@ -24,10 +24,8 @@ class Command(BaseCommand):
             level = int(level_str.split('_')[-1])
             for spell_data in spells:
                 spell_name = spell_data['name']
-                # Skip spells with placeholder names
-                if 'x' in spell_name.lower():
-                    self.stdout.write(self.style.WARNING(f'Skipping spell with placeholder name: {spell_name}'))
-                    continue
+                
+                # Removed skipping spells with 'x' in their names
 
                 spell, created = Spell.objects.get_or_create(
                     name=spell_name,

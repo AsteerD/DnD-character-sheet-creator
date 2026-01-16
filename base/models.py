@@ -73,6 +73,19 @@ class RaceChoices(models.TextChoices):
     HALF_ORC = 'Half-Orc', 'Half-Orc'
     ORC = 'Orc', 'Orc'
 
+class SubclassChoices(models.TextChoices):
+    # Rogue Subclasses
+    THIEF = 'thief', 'Thief'
+    ASSASSIN = 'assassin', 'Assassin'
+    ARCANE_TRICKSTER = 'trickster', 'Arcane Trickster'
+    
+    # Fighter Subclasses (przykład na przyszłość)
+    CHAMPION = 'champion', 'Champion'
+    BATTLE_MASTER = 'battle_master', 'Battle Master'
+    
+    NONE = 'none', 'None'
+
+
 class Character(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     character_name = models.CharField(max_length=100)
@@ -81,7 +94,18 @@ class Character(models.Model):
         choices=ClassChoices.choices,
         default=ClassChoices.FIGHTER,
     )
-    subclass = models.CharField(max_length=100) #class should be conected to subclass
+    character_class = models.CharField(
+        max_length=20,
+        choices=ClassChoices.choices,
+        default=ClassChoices.FIGHTER,
+    )
+
+    # To pole zastępuje Twoje stare 'subclass'
+    subclass = models.CharField(
+        max_length=30,
+        choices=SubclassChoices.choices,
+        default=SubclassChoices.NONE,
+    )
     race = models.CharField(
         max_length=30,
         choices=RaceChoices.choices,
@@ -143,4 +167,57 @@ class Character(models.Model):
             models.CheckConstraint(condition=models.Q(death_saves_failure__gte=0) & models.Q(death_saves_failure__lte=3), name='death_saves_failure_range'),
         ]
 
+class Rogue(models.Model):
+    # Definiujemy dostępne subklasy
+    SUBCLASS_CHOICES = [
+        ('thief', 'Thief'),
+        ('assassin', 'Assassin'),
+        ('trickster', 'Arcane Trickster'),
+    ]
 
+    character = models.OneToOneField(Character, on_delete=models.CASCADE, related_name='rogue_profile')
+    stealth_bonus = models.IntegerField(default=0)
+    
+    # Nowe pole wyboru subklasy
+    subclass_type = models.CharField(
+        max_length=20, 
+        choices=SUBCLASS_CHOICES, 
+        default='thief'
+    )
+
+    def backstab_damage(self):
+        base_dmg = self.character.dexterity * 2 + self.stealth_bonus
+        
+        if self.subclass_type == 'assassin':
+            # Assassin zadaje potrójne obrażenia ze zręczności
+            return self.character.dexterity * 3 + self.stealth_bonus
+        
+        elif self.subclass_type == 'trickster':
+            # Arcane Trickster dodaje bonus od inteligencji (jeśli ją masz w modelu Character)
+            return base_dmg + self.character.intelligence
+            
+        # Thief zostaje przy standardowym wzorze
+        return base_dmg
+
+    def __str__(self):
+        return f"{self.character.character_name} - {self.get_subclass_type_display()}"
+    
+
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+@receiver(post_save, sender=Character)
+def create_character_profile(sender, instance, created, **kwargs):
+    if created:
+        # Wyświetl w konsoli co dokładnie jest w polu klasy (pomoże w debugowaniu)
+        print(f"Tworzę postać: {instance.character_name}, Klasa: {instance.character_class}")
+        
+        # Twoja klasa ClassChoices pewnie przechowuje 'ROGUE' lub 'Rogue'
+        # Sprawdzamy na oba sposoby:
+        if str(instance.character_class).upper() == 'ROGUE':
+            Rogue.objects.create(
+                character=instance, 
+                stealth_bonus=5, 
+                subclass_type=instance.subclass 
+            )
+            print("Profil Rogue został stworzony automatycznie!")

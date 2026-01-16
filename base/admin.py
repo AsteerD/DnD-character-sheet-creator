@@ -1,7 +1,6 @@
-from django.contrib import admin # type: ignore
-from .models import Character, Language
+from django.contrib import admin
+from .models import Character, Rogue, Language # dodaj Rogue tutaj
 
 admin.site.register(Character)
-# Register your models here.
-
 admin.site.register(Language)
+admin.site.register(Rogue) # to sprawi, że Rogue pojawi się w panelu

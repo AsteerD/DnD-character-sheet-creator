@@ -7,4 +7,51 @@
   <button type="submit">{% if form.instance.pk %}Save{% else %}Create{% endif %}</button>
 </form>
 
+<script>
+    const classSelect = document.getElementById('id_character_class');
+    const subclassSelect = document.getElementById('id_subclass');
+    // Znajdujemy akapit lub div, w którym siedzi pole, żeby ukryć je z etykietą
+    const subclassContainer = subclassSelect.closest('p') || subclassSelect.parentElement;
 
+    function updateSubclasses() {
+        const selectedClass = classSelect.value.toUpperCase(); // Pobiera np. 'ROGUE' lub 'FIGHTER'
+        const options = subclassSelect.options;
+        
+        // 1. Decyzja: Czy w ogóle wyświetlić pole Subclass?
+        // Pokazujemy tylko dla klas, które mają u nas zdefiniowane subklasy
+        if (selectedClass === 'ROGUE' || selectedClass === 'FIGHTER') {
+            subclassContainer.style.display = 'block';
+        } else {
+            subclassContainer.style.display = 'none';
+            subclassSelect.value = 'none';
+            return; // Jeśli ukrywamy, nie musimy filtrować środka
+        }
+
+        // 2. Filtrowanie opcji wewnątrz listy rozwijanej
+        for (let i = 0; i < options.length; i++) {
+            const val = options[i].value;
+
+            if (selectedClass === 'ROGUE') {
+                // Dla łotrzyka pokazujemy tylko te 3 i opcję pusta
+                const rogueSubs = ['thief', 'assassin', 'trickster', 'none'];
+                options[i].style.display = rogueSubs.includes(val) ? 'block' : 'none';
+            } 
+            else if (selectedClass === 'FIGHTER') {
+                // Dla wojownika pokazujemy jego subklasy
+                const fighterSubs = ['champion', 'battle_master', 'none'];
+                options[i].style.display = fighterSubs.includes(val) ? 'block' : 'none';
+            }
+        }
+
+        // 3. Bezpieczeństwo: Jeśli obecnie wybrana opcja została ukryta, zresetuj na 'none'
+        if (options[subclassSelect.selectedIndex].style.display === 'none') {
+            subclassSelect.value = 'none';
+        }
+    }
+
+    // Nasłuchiwanie na zmiany w polu klasy
+    classSelect.addEventListener('change', updateSubclasses);
+    
+    // Uruchomienie funkcji od razu po załadowaniu (żeby działało przy edycji postaci)
+    window.addEventListener('load', updateSubclasses);
+</script>

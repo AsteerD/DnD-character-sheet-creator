@@ -42,7 +42,15 @@
 				<strong>Atak specjalny: {{ character.rogue_profile.backstab_damage }} pkt.</strong>
 			</div>
 			{% endif %}
-
+            {% if character.cleric_profile %}
+            <div class="cleric-card">
+                 Domena: {{ character.cleric_profile.get_domain_display }} <br>
+                 Moc leczenia: {{ character.cleric_profile.healing_power }} pkt.
+                {% if character.cleric_profile.armor_bonus > 0 %}
+                     Bonus do pancerza: +{{ character.cleric_profile.armor_bonus }}
+                {% endif %}
+            </div>
+            {% endif %}
             <div style="margin-top: 15px;">
                 <a href="{% url 'character' character.id %}">Szczegóły</a> | 
                 <a href="{% url 'character-update' character.id %}">Edytuj</a> | 

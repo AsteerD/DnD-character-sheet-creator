@@ -14,41 +14,43 @@
     const subclassContainer = subclassSelect.closest('p') || subclassSelect.parentElement;
 
     function updateSubclasses() {
-        const selectedClass = classSelect.value.toUpperCase(); // Pobiera np. 'ROGUE' lub 'FIGHTER'
-        const options = subclassSelect.options;
-        
-        // 1. Decyzja: Czy w ogóle wyświetlić pole Subclass?
-        // Pokazujemy tylko dla klas, które mają u nas zdefiniowane subklasy
-        if (selectedClass === 'ROGUE' || selectedClass === 'FIGHTER') {
-            subclassContainer.style.display = 'block';
-        } else {
-            subclassContainer.style.display = 'none';
-            subclassSelect.value = 'none';
-            return; // Jeśli ukrywamy, nie musimy filtrować środka
+    const selectedClass = classSelect.value.toUpperCase(); // Pobiera np. 'ROGUE' lub 'CLERIC'
+    const options = subclassSelect.options;
+    
+    // 1. Decyzja: Czy w ogóle wyświetlić pole Subclass?
+    // Dodajemy 'CLERIC' do listy klas, które mają subklasy
+    if (selectedClass === 'ROGUE' || selectedClass === 'FIGHTER' || selectedClass === 'CLERIC') {
+        subclassContainer.style.display = 'block';
+    } else {
+        subclassContainer.style.display = 'none';
+        subclassSelect.value = 'none';
+        return;
+    }
+
+    // 2. Filtrowanie opcji wewnątrz listy
+    for (let i = 0; i < options.length; i++) {
+        const val = options[i].value;
+
+        if (selectedClass === 'ROGUE') {
+            const rogueSubs = ['thief', 'assassin', 'trickster', 'none'];
+            options[i].style.display = rogueSubs.includes(val) ? 'block' : 'none';
+        } 
+        else if (selectedClass === 'FIGHTER') {
+            const fighterSubs = ['champion', 'battle_master', 'none'];
+            options[i].style.display = fighterSubs.includes(val) ? 'block' : 'none';
         }
-
-        // 2. Filtrowanie opcji wewnątrz listy rozwijanej
-        for (let i = 0; i < options.length; i++) {
-            const val = options[i].value;
-
-            if (selectedClass === 'ROGUE') {
-                // Dla łotrzyka pokazujemy tylko te 3 i opcję pusta
-                const rogueSubs = ['thief', 'assassin', 'trickster', 'none'];
-                options[i].style.display = rogueSubs.includes(val) ? 'block' : 'none';
-            } 
-            else if (selectedClass === 'FIGHTER') {
-                // Dla wojownika pokazujemy jego subklasy
-                const fighterSubs = ['champion', 'battle_master', 'none'];
-                options[i].style.display = fighterSubs.includes(val) ? 'block' : 'none';
-            }
-        }
-
-        // 3. Bezpieczeństwo: Jeśli obecnie wybrana opcja została ukryta, zresetuj na 'none'
-        if (options[subclassSelect.selectedIndex].style.display === 'none') {
-            subclassSelect.value = 'none';
+        // DODAJ TEN FRAGMENT DLA KLERYKA:
+        else if (selectedClass === 'CLERIC') {
+            const clericSubs = ['life', 'war', 'light', 'none'];
+            options[i].style.display = clericSubs.includes(val) ? 'block' : 'none';
         }
     }
 
+    // 3. Reset wyboru, jeśli stara subklasa nie pasuje do nowej klasy
+    if (options[subclassSelect.selectedIndex].style.display === 'none') {
+        subclassSelect.value = 'none';
+    }
+}
     // Nasłuchiwanie na zmiany w polu klasy
     classSelect.addEventListener('change', updateSubclasses);
     

@@ -1,0 +1,20 @@
+[
+  {"model": "base.item", "pk": 1, "fields": {"name": "Longsword", "item_type": "weapon", "weight": "3.00", "value_gp": 15, "description": "1d8 slashing, versatile (1d10)"}},
+  {"model": "base.item", "pk": 2, "fields": {"name": "Shortsword", "item_type": "weapon", "weight": "2.00", "value_gp": 10, "description": "1d6 piercing, finesse, light"}},
+  {"model": "base.item", "pk": 3, "fields": {"name": "Dagger", "item_type": "weapon", "weight": "1.00", "value_gp": 2, "description": "1d4 piercing, finesse, light, thrown"}},
+  {"model": "base.item", "pk": 4, "fields": {"name": "Leather Armor", "item_type": "armor", "weight": "10.00", "value_gp": 10, "description": "AC 11 + Dex"}},
+  {"model": "base.item", "pk": 5, "fields": {"name": "Shield", "item_type": "armor", "weight": "6.00", "value_gp": 10, "description": "+2 to AC"}},
+  {"model": "base.item", "pk": 6, "fields": {"name": "Chain Mail", "item_type": "armor", "weight": "55.00", "value_gp": 75, "description": "AC 16, Str 13 req, Stealth disadvantage"}},
+  {"model": "base.item", "pk": 7, "fields": {"name": "Backpack", "item_type": "gear", "weight": "5.00", "value_gp": 2, "description": "Holds 30 pounds of gear"}},
+  {"model": "base.item", "pk": 8, "fields": {"name": "Rope, hempen (50ft)", "item_type": "gear", "weight": "10.00", "value_gp": 1, "description": "Standard climbing rope"}},
+  {"model": "base.item", "pk": 9, "fields": {"name": "Torch", "item_type": "gear", "weight": "1.00", "value_gp": 0.01, "description": "Burns for 1 hour"}},
+  {"model": "base.item", "pk": 10, "fields": {"name": "Potion of Healing", "item_type": "consumable", "weight": "0.50", "value_gp": 50, "description": "Heals 2d4+2 HP"}},
+  {"model": "base.item", "pk": 11, "fields": {"name": "Rations (1 day)", "item_type": "consumable", "weight": "2.00", "value_gp": 0.5, "description": "Travel food"}},
+  {"model": "base.item", "pk": 12, "fields": {"name": "Thieves' Tools", "item_type": "gear", "weight": "1.00", "value_gp": 25, "description": "Used to pick locks"}},
+  {"model": "base.item", "pk": 13, "fields": {"name": "Greataxe", "item_type": "weapon", "weight": "7.00", "value_gp": 30, "description": "1d12 slashing, heavy, two-handed"}},
+  {"model": "base.item", "pk": 14, "fields": {"name": "Hand Crossbow", "item_type": "weapon", "weight": "3.00", "value_gp": 75, "description": "1d6 piercing, light, loading, range 30/120"}},
+  {"model": "base.item", "pk": 15, "fields": {"name": "Holy Symbol", "item_type": "gear", "weight": "1.00", "value_gp": 5, "description": "Spellcasting focus for Clerics/Paladins"}},
+  {"model": "base.item", "pk": 16, "fields": {"name": "Bedroll", "item_type": "gear", "weight": "5.00", "value_gp": 1, "description": "Essential for long rests"}},
+  {"model": "base.item", "pk": 17, "fields": {"name": "Tinderbox", "item_type": "gear", "weight": "1.00", "value_gp": 0.5, "description": "Used to light fires"}},
+  {"model": "base.item", "pk": 18, "fields": {"name": "Pike", "item_type": "weapon", "weight": "18.00", "value_gp": 5, "description": "1d10 piercing, heavy, reach, two-handed"}}
+]

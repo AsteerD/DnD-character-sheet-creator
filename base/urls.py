@@ -1,5 +1,5 @@
 from django.urls import path # pyright: ignore[reportMissingModuleSource]
-from .views import CharacterList, CharacterDetail, CharacterCreate, CharacterUpdate, CharacterDelete, CharacterDelete, CustomLoginView, RegisterPage 
+from .views import CharacterList, CharacterDetail, CharacterCreate, CharacterUpdate, CharacterDelete, CharacterDelete, CustomLoginView, RegisterPage
 from django.contrib.auth.views import LogoutView
 
 

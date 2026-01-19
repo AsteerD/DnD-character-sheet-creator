@@ -142,5 +142,30 @@ class Character(models.Model):
             models.CheckConstraint(condition=models.Q(death_saves_success__gte=0) & models.Q(death_saves_success__lte=3), name='death_saves_success_range'),
             models.CheckConstraint(condition=models.Q(death_saves_failure__gte=0) & models.Q(death_saves_failure__lte=3), name='death_saves_failure_range'),
         ]
+from django.db import models
+
+class Item(models.Model):
+    CATEGORY_CHOICES = [
+        ('weapon', 'Weapon'),
+        ('armor', 'Armor'),
+        ('gear', 'Adventuring Gear'),
+        ('consumable', 'Consumable'),
+    ]
+    name = models.CharField(max_length=100)
+    item_type = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='gear')
+    weight = models.DecimalField(max_digits=5, decimal_places=2, default=0.0)
+    value_gp = models.IntegerField(default=0)
+    description = models.TextField(blank=True)
+
+    def __str__(self):
+        return self.name
+
+class InventoryItem(models.Model):
+    character = models.ForeignKey('Character', on_delete=models.CASCADE, related_name='inventory')
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.item.name} x{self.quantity} ({self.character})"
 
 

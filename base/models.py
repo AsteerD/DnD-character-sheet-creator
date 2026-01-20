@@ -28,6 +28,20 @@ class CharacterClass(models.Model):
         verbose_name_plural = "Character Classes"
         ordering = ['name']
 
+class SubClass(models.Model):
+    """
+    Represents a subclass or specialization for a character class.
+    """
+    name = models.CharField(max_length=100)
+    character_class = models.ForeignKey(CharacterClass, on_delete=models.CASCADE, related_name='subclasses')
+
+    def __str__(self):
+        return f"{self.name} ({self.character_class.name})"
+
+    class Meta:
+        verbose_name_plural = "Subclasses"
+        ordering = ['character_class', 'name']
+
 class Spell(models.Model):
     """
     The Spell database. 
@@ -49,6 +63,40 @@ class Spell(models.Model):
 
     class Meta:
         ordering = ['level', 'name']
+
+class Trait(models.Model):
+    """
+    Represents a racial trait.
+    """
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField()
+
+    def __str__(self):
+        return self.name
+
+class Race(models.Model):
+    """
+    Represents a character race, replacing the old RaceChoices.
+    """
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(blank=True)
+    
+    # Racial Traits
+    traits = models.ManyToManyField(Trait, blank=True)
+    languages = models.ManyToManyField('Language', blank=True)
+    
+    # Ability Score Increases
+    strength_increase = models.IntegerField(default=0)
+    dexterity_increase = models.IntegerField(default=0)
+    constitution_increase = models.IntegerField(default=0)
+    intelligence_increase = models.IntegerField(default=0)
+    wisdom_increase = models.IntegerField(default=0)
+    charisma_increase = models.IntegerField(default=0)
+    
+    speed = models.IntegerField(default=30)
+
+    def __str__(self):
+        return self.name
 
 # --- Choices ---
 
@@ -83,19 +131,6 @@ class BackgroundChoices(models.TextChoices):
     FACTION_AGENT = 'Faction Agent', 'Faction Agent'
     MERCENARY_VETERAN = 'Mercenary Veteran', 'Mercenary Veteran'
 
-class RaceChoices(models.TextChoices):
-    AASIMAR = 'Aasimar', 'Aasimar'
-    HUMAN = 'Human', 'Human'
-    ELF = 'Elf', 'Elf'
-    DWARF = 'Dwarf', 'Dwarf'
-    HALFLING = 'Halfling', 'Halfling'
-    GNOME = 'Gnome', 'Gnome'
-    DRAGONBORN = 'Dragonborn', 'Dragonborn'
-    TIEFLING = 'Tiefling', 'Tiefling'
-    HALF_ELF = 'Half-Elf', 'Half-Elf'
-    HALF_ORC = 'Half-Orc', 'Half-Orc'
-    ORC = 'Orc', 'Orc'
-
 # --- Main Character Model ---
 
 class Character(models.Model):
@@ -110,13 +145,9 @@ class Character(models.Model):
         related_name='characters'
     )
     
-    subclass = models.CharField(max_length=100) # class should be connected to subclass
+    subclass = models.ForeignKey(SubClass, on_delete=models.SET_NULL, null=True, blank=True)
     
-    race = models.CharField(
-        max_length=30,
-        choices=RaceChoices.choices,
-        default=RaceChoices.HUMAN,
-    )
+    race = models.ForeignKey(Race, on_delete=models.PROTECT, related_name='characters', null=True)
     
     level = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(20)])
     

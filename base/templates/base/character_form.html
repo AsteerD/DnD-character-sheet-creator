@@ -7,4 +7,50 @@
   <button type="submit">{% if form.instance.pk %}Save{% else %}Create{% endif %}</button>
 </form>
 
+<script>
+    const classSelect = document.getElementById('id_character_class');
+    const subclassSelect = document.getElementById('id_subclass');
 
+    const subclassContainer = subclassSelect.closest('p') || subclassSelect.parentElement;
+
+    function updateSubclasses() {
+    const selectedClass = classSelect.value.toUpperCase(); 
+    const options = subclassSelect.options;
+    
+
+    if (selectedClass === 'ROGUE' || selectedClass === 'FIGHTER' || selectedClass === 'CLERIC') {
+        subclassContainer.style.display = 'block';
+    } else {
+        subclassContainer.style.display = 'none';
+        subclassSelect.value = 'none';
+        return;
+    }
+
+    for (let i = 0; i < options.length; i++) {
+        const val = options[i].value;
+
+        if (selectedClass === 'ROGUE') {
+            const rogueSubs = ['thief', 'assassin', 'trickster', 'none'];
+            options[i].style.display = rogueSubs.includes(val) ? 'block' : 'none';
+        } 
+        else if (selectedClass === 'FIGHTER') {
+            const fighterSubs = ['champion', 'battle_master', 'none'];
+            options[i].style.display = fighterSubs.includes(val) ? 'block' : 'none';
+        }
+
+        else if (selectedClass === 'CLERIC') {
+            const clericSubs = ['life', 'war', 'light', 'none'];
+            options[i].style.display = clericSubs.includes(val) ? 'block' : 'none';
+        }
+    }
+
+
+        if (options[subclassSelect.selectedIndex].style.display === 'none') {
+                subclassSelect.value = 'none';
+        }
+    }
+
+    classSelect.addEventListener('change', updateSubclasses);
+
+    window.addEventListener('load', updateSubclasses);
+</script>

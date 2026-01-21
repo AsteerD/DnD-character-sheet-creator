@@ -1,7 +1,10 @@
-from django.contrib import admin # type: ignore
+from django.contrib import admin
 from .models import Character, Language
+from .classes.rogue import Rogue
+from .classes.cleric import Cleric
+
 
 admin.site.register(Character)
-# Register your models here.
-
 admin.site.register(Language)
+admin.site.register(Rogue)
+admin.site.register(Cleric)

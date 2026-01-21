@@ -2,7 +2,6 @@ from django.db import models # type: ignore
 from django.contrib.auth.models import User # type: ignore
 from django.core.validators import MinValueValidator, MaxValueValidator # type: ignore
 
-# Create your models here.
 
 class Language(models.Model):
     name = models.CharField(max_length=100)
@@ -73,15 +72,40 @@ class RaceChoices(models.TextChoices):
     HALF_ORC = 'Half-Orc', 'Half-Orc'
     ORC = 'Orc', 'Orc'
 
+class SubclassChoices(models.TextChoices):
+    # Rogue Subclasses
+    THIEF = 'thief', 'Thief'
+    ASSASSIN = 'assassin', 'Assassin'
+    ARCANE_TRICKSTER = 'trickster', 'Arcane Trickster'
+    
+    # Fighter Subclasses
+    CHAMPION = 'champion', 'Champion'
+    BATTLE_MASTER = 'battle_master', 'Battle Master'
+    
+    # Cleric Subclasses
+    LIFE = 'life', 'Life Domain'
+    WAR = 'war', 'War Domain'
+    LIGHT = 'light', 'Light Domain'
+    NONE = 'none', 'None'
+
+
 class Character(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     character_name = models.CharField(max_length=100)
+
     character_class = models.CharField(
         max_length=20,
         choices=ClassChoices.choices,
         default=ClassChoices.FIGHTER,
     )
-    subclass = models.CharField(max_length=100) #class should be conected to subclass
+    subclass = models.CharField(
+        max_length=20,
+        choices=SubclassChoices.choices,
+        default=SubclassChoices.NONE,
+        blank=True,
+        null=True
+    )
+
     race = models.CharField(
         max_length=30,
         choices=RaceChoices.choices,
@@ -94,7 +118,7 @@ class Character(models.Model):
         choices=BackgroundChoices.choices,
         default=BackgroundChoices.ACOLYTE,
     )
-    alligment = models.CharField(
+    alignment = models.CharField(
         max_length=2,
         choices=Alignment.choices,
         default=Alignment.TRUE_NEUTRAL,
@@ -142,5 +166,3 @@ class Character(models.Model):
             models.CheckConstraint(condition=models.Q(death_saves_success__gte=0) & models.Q(death_saves_success__lte=3), name='death_saves_success_range'),
             models.CheckConstraint(condition=models.Q(death_saves_failure__gte=0) & models.Q(death_saves_failure__lte=3), name='death_saves_failure_range'),
         ]
-
-

@@ -1,14 +1,19 @@
+from django.shortcuts import render, redirect # type: ignore
 from django.views.generic.list import ListView # type: ignore
 from django.views.generic.detail import DetailView # type: ignore
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView # type: ignore
-from django.urls import reverse_lazy # type: ignore
-from django.shortcuts import render, redirect # type: ignore
+from django.urls import reverse_lazy
 from django.contrib.auth.views import LoginView 
+from django.contrib.auth.views import LoginView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
-
 from .models import Character
+from .forms import CharacterForm
+from .classes.rogue import Rogue # type: ignore
+from .classes.cleric import Cleric# type: ignore
+
+# --- AUTH VIEWS ---
 
 class CustomLoginView(LoginView):
     template_name = 'base/login.html'
@@ -17,7 +22,7 @@ class CustomLoginView(LoginView):
 
     def get_success_url(self):
         return reverse_lazy('characters')
-    
+
 class RegisterPage(FormView):
     template_name = 'base/register.html'
     form_class = UserCreationForm
@@ -30,11 +35,12 @@ class RegisterPage(FormView):
             login(self.request, user)
         return super(RegisterPage, self).form_valid(form)
 
-    def get(self, *args, **kwargs): 
+    def get(self, *args, **kwargs):
         if self.request.user.is_authenticated:
-            return redirect('characters')
+            return redirect('character-list')
         return super(RegisterPage, self).get(*args, **kwargs)
 
+# --- CHARACTER VIEWS ---
 
 class CharacterList(LoginRequiredMixin, ListView):
     model = Character
@@ -43,34 +49,40 @@ class CharacterList(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['characters'] = context['characters'].filter(user=self.request.user)
-        search_input = self.request.GET.get('search') or ''
-        if search_input:
-            context['characters'] = context['characters'].filter(character_name__istartswith=search_input)
-        context['search_input'] = search_input
         return context
 
 class CharacterDetail(LoginRequiredMixin, DetailView):
     model = Character
     context_object_name = 'character'
-    template_name = 'base/character.html'
+    template_name = 'base/character_detail.html'
 
-class CharacterCreate(LoginRequiredMixin,CreateView):
+class CharacterCreate(LoginRequiredMixin, CreateView):
     model = Character
-    fields = ['character_name', 'character_class', 'subclass', 'race', 'level', 'background', 'alligment', 'experience_points', 'strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma', 'armor_class', 'initiative', 'speed', 'hit_points', 'temporary_hit_points', 'hit_dice', 'death_saves_success', 'death_saves_failure', 'backstory', 'inspiration', 'languages']
+    form_class = CharacterForm
     template_name = 'base/character_form.html'
-    success_url = reverse_lazy('characters')
+    success_url = reverse_lazy('characters') # POPRAWIONE z 'character-list'
 
     def form_valid(self, form):
         form.instance.user = self.request.user
-        return super(CharacterCreate, self).form_valid(form)
+
+        response = super().form_valid(form) 
+
+        selected_class = self.object.character_class.upper()
+        selected_subclass = self.object.subclass 
+
+        if selected_class == 'ROGUE':
+            Rogue.objects.get_or_create(character=self.object, defaults={'subclass_type': selected_subclass})
+        elif selected_class == 'CLERIC':
+            Cleric.objects.get_or_create(character=self.object, defaults={'domain': selected_subclass})
+
+        return response
 
 class CharacterUpdate(LoginRequiredMixin, UpdateView):
     model = Character
-    fields = '__all__'
-    template_name = 'base/character_form.html'
-    success_url = reverse_lazy('characters')
+    form_class = CharacterForm
+    success_url = reverse_lazy('character-list')
 
 class CharacterDelete(LoginRequiredMixin, DeleteView):
     model = Character
-    template_name = 'base/character_confirm_delete.html'
+    context_object_name = 'character'
     success_url = reverse_lazy('characters')

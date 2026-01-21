@@ -1,65 +1,65 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Twoi Bohaterowie</title>
-    <style>
-        body { font-family: sans-serif; background-color: #f4f4f4; padding: 20px; }
-        .card { background: white; border-radius: 8px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .rogue-box { background: #fff5f5; border: 1px solid #feb2b2; padding: 10px; border-radius: 4px; margin-top: 10px; }
-        .btn { display: inline-block; padding: 8px 12px; background: #3182ce; color: white; text-decoration: none; border-radius: 4px; }
-    </style>
+    <meta charset="UTF-8">
+    <title>Character List</title>
 </head>
 <body>
 
-	<div style="background: #333; color: white; padding: 10px; display: flex; justify-content: space-between; align-items: center; border-radius: 5px; margin-bottom: 20px;">
-    {% if request.user.is_authenticated %}
-        <span>Zalogowany jako: <strong>{{ request.user }}</strong></span>
-        <a href="{% url 'logout' %}" style="color: #ff4d4d; text-decoration: none; font-weight: bold;">Wyloguj się</a>
-    {% else %}
-        <span>Nie jesteś zalogowany</span>
-        <a href="{% url 'login' %}" style="color: #00d4ff; text-decoration: none; font-weight: bold;">Zaloguj się</a>
-    {% endif %}
-	</div>
+    <div style="margin-bottom: 20px; border-bottom: 1px solid #ccc; padding-bottom: 10px;">
+        <h1>My Characters</h1>
+        
+        {% if request.user.is_authenticated %}
+            <p>Logged in as: <strong>{{ request.user }}</strong> | <a href="{% url 'logout' %}">Logout</a></p>
+        {% else %}
+            <a href="{% url 'login' %}">Login</a>
+        {% endif %}
+    </div>
 
-    <div style="display: flex; justify-content: space-between;">
-        <h1>Twoi Bohaterowie</h1>
-        <a href="{% url 'character-create' %}" class="btn">＋ Dodaj nową postać</a>
+    <div style="margin-bottom: 20px;">
+        <form method="GET" style="display: inline;">
+            <input type='text' name='search-area' placeholder="Search..." value="{{search_input}}">
+            <input type="submit" value="Search">
+        </form>
+        
+        {% if request.user.is_authenticated %}
+            <span style="margin-left: 20px;">
+                <a href="{% url 'character-create' %}"><strong>+ Add New Character</strong></a>
+            </span>
+        {% endif %}
     </div>
 
     <hr>
+    <ul>
+        {% for character in characters %}
+        <li style="margin-bottom: 10px; padding: 10px; border: 1px solid #eee;">
+            <a href="{% url 'character' character.id %}" style="font-size: 1.2em; font-weight: bold; text-decoration: none;">
+                {{ character.character_name }}
+            </a>
 
-    {% for character in characters %}
-        <div class="card">
-            <h2 style="margin: 0;">{{ character.character_name }}</h2>
-            <p>Klasa: <strong>{{ character.character_class }}</strong> | Zręczność: {{ character.dexterity }}</p>
-
-            {% if character.rogue_profile %}
-			<div style="background: #2d1b1b; padding: 10px; border-left: 4px solid #e74c3c; border-radius: 4px; margin-top: 5px;">
-				<span style="color: #e74c3c; font-weight: bold;">
-					🥷 {{ character.rogue_profile.get_subclass_type_display }}:
-				</span><br>
-				Bonus: +{{ character.rogue_profile.stealth_bonus }} | 
-				<strong>Atak specjalny: {{ character.rogue_profile.backstab_damage }} pkt.</strong>
-			</div>
-			{% endif %}
-            {% if character.cleric_profile %}
-            <div class="cleric-card">
-                 Domena: {{ character.cleric_profile.get_domain_display }} <br>
-                 Moc leczenia: {{ character.cleric_profile.healing_power }} pkt.
-                {% if character.cleric_profile.armor_bonus > 0 %}
-                     Bonus do pancerza: +{{ character.cleric_profile.armor_bonus }}
+            <span style="color: gray; margin-left: 10px;">
+                {{ character.get_character_class_display }}
+                
+                {% if character.character_class == 'ROGUE' or character.character_class == 'Rogue' %}
+                    {% if character.rogue_profile %}
+                        - {{ character.rogue_profile.get_subclass_type_display }}
+                    {% endif %}
+                {% elif character.character_class == 'CLERIC' or character.character_class == 'Cleric' %}
+                    {% if character.cleric_profile %}
+                        - {{ character.cleric_profile.get_domain_display }}
+                    {% endif %}
                 {% endif %}
+            </span>
+
+            <div style="margin-top: 5px;">
+                <a href="{% url 'character-update' character.id %}" style="margin-right: 10px; color: blue;">Edit</a>
+                <a href="{% url 'character-delete' character.id %}" style="color: red;">Delete</a>
             </div>
-            {% endif %}
-            <div style="margin-top: 15px;">
-                <a href="{% url 'character' character.id %}">Szczegóły</a> | 
-                <a href="{% url 'character-update' character.id %}">Edytuj</a> | 
-                <a href="{% url 'character-delete' character.id %}" style="color: red;">Usuń</a>
-            </div>
-        </div>
-    {% empty %}
-        <p>Nie masz jeszcze żadnych postaci.</p>
-    {% endfor %}
+        </li>
+        {% empty %}
+        <p>No characters found.</p>
+        {% endfor %}
+    </ul>
 
 </body>
 </html>

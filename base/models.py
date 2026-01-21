@@ -2,7 +2,6 @@ from django.db import models # type: ignore
 from django.contrib.auth.models import User # type: ignore
 from django.core.validators import MinValueValidator, MaxValueValidator # type: ignore
 
-# Create your models here.
 
 class Language(models.Model):
     name = models.CharField(max_length=100)
@@ -93,23 +92,13 @@ class SubclassChoices(models.TextChoices):
 class Character(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     character_name = models.CharField(max_length=100)
-    character_class = models.CharField(
-        max_length=20,
-        choices=ClassChoices.choices,
-        default=ClassChoices.FIGHTER,
-    )
+
     character_class = models.CharField(
         max_length=20,
         choices=ClassChoices.choices,
         default=ClassChoices.FIGHTER,
     )
 
-    # To pole zastępuje Twoje stare 'subclass'
-    subclass = models.CharField(
-        max_length=30,
-        choices=SubclassChoices.choices,
-        default=SubclassChoices.NONE,
-    )
     race = models.CharField(
         max_length=30,
         choices=RaceChoices.choices,
@@ -122,7 +111,7 @@ class Character(models.Model):
         choices=BackgroundChoices.choices,
         default=BackgroundChoices.ACOLYTE,
     )
-    alligment = models.CharField(
+    alignment = models.CharField(
         max_length=2,
         choices=Alignment.choices,
         default=Alignment.TRUE_NEUTRAL,
@@ -170,21 +159,3 @@ class Character(models.Model):
             models.CheckConstraint(condition=models.Q(death_saves_success__gte=0) & models.Q(death_saves_success__lte=3), name='death_saves_success_range'),
             models.CheckConstraint(condition=models.Q(death_saves_failure__gte=0) & models.Q(death_saves_failure__lte=3), name='death_saves_failure_range'),
         ]
-
-
-
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-from .classes import Rogue, Cleric
-
-@receiver(post_save, sender=Character)
-def create_character_profile(sender, instance, created, **kwargs):
-    if created:
-        char_class = str(instance.character_class).upper()
-        
-        if char_class == 'ROGUE':
-            Rogue.objects.create(character=instance, subclass_type=instance.subclass)
-        
-        elif char_class == 'CLERIC':
-            # Mapujemy ogólne 'subclass' z modelu Character na 'domain' w modelu Cleric
-            Cleric.objects.create(character=instance, domain=instance.subclass)

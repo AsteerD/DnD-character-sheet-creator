@@ -70,44 +70,11 @@ class CharacterCreate(LoginRequiredMixin,CreateView):
     def form_valid(self, form):
         form.instance.user = self.request.user
         response = super().form_valid(form)
-        character = self.object
-
-        self.assign_starting_items(character)
+        
+        self.object.assign_starting_equipment()
         
         return response
-
-    def assign_starting_items(self, character):
-        starter_packs = {
-            'Barbarian': [('Greataxe', 7.0), ('Handaxe', 2.0), ('Explorer\'s Pack', 5.0), ('Javelin', 2.0)],
-            'Bard': [('Rapier', 2.0), ('Entertainer\'s Pack', 5.0), ('Lute', 2.0), ('Leather Armor', 10.0), ('Dagger', 1.0)],
-            'Cleric': [('Mace', 4.0), ('Scale Mail', 45.0), ('Light Crossbow', 5.0), ('Shield', 6.0), ('Holy Symbol', 1.0)],
-            'Fighter': [('Chain Mail', 55.0), ('Longsword', 3.0), ('Shield', 6.0), ('Light Crossbow', 5.0), ('Dungeoneer\'s Pack', 10.0)],
-            'Monk': [('Shortsword', 2.0), ('Dart', 0.25)],
-            'Paladin': [('Longsword', 3.0), ('Shield', 6.0), ('Chain Mail', 55.0), ('Holy Symbol', 1.0)],
-            'Ranger': [('Scale Mail', 45.0), ('Shortsword', 2.0), ('Longbow', 2.0), ('Dungeoneer\'s Pack', 10.0)],
-            'Rogue': [('Rapier', 2.0), ('Shortbow', 2.0), ('Leather Armor', 10.0), ('Dagger', 1.0), ('Thieves\' Tools', 1.0)],
-            'Sorcerer': [('Light Crossbow', 5.0), ('Component Pouch', 2.0), ('Dagger', 1.0)],
-            'Warlock': [('Light Crossbow', 5.0), ('Component Pouch', 2.0), ('Leather Armor', 10.0), ('Dagger', 1.0)],
-            'Wizard': [('Quarterstaff', 4.0), ('Component Pouch', 2.0), ('Scholar\'s Pack', 10.0), ('Spellbook', 3.0)],
-        }
-
-        items_data = starter_packs.get(character.character_class, [])
-
-        for item_name, item_weight in items_data: 
-            item_obj, created = Item.objects.get_or_create(
-                name=item_name,
-                defaults={
-                    'item_type': 'gear', 
-                    'weight': item_weight,
-                    'description': f'Standard starting equipment for {character.character_class}.'
-                }
-            )
-            
-            InventoryItem.objects.create(
-                character=character,
-                item=item_obj,
-                quantity=1
-            )
+    
 
 class CharacterUpdate(LoginRequiredMixin, UpdateView):
     model = Character

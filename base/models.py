@@ -120,6 +120,37 @@ class Character(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def assign_starting_equipment(self):
+        from .models import Item, InventoryItem
+
+        starter_packs = {
+            'Barbarian': ['Greataxe', 'Handaxe', "Explorer's Pack", 'Javelin'],
+            'Bard': ['Rapier', "Entertainer's Pack", 'Lute', 'Leather Armor', 'Dagger'],
+            'Cleric': ['Mace', 'Scale Mail', 'Light Crossbow', 'Shield', 'Holy Symbol'],
+            'Fighter': ['Chain Mail', 'Longsword', 'Shield', 'Light Crossbow', "Dungeoneer's Pack"],
+            'Monk': ['Shortsword', 'Dart'],
+            'Paladin': ['Longsword', 'Shield', 'Chain Mail', 'Holy Symbol'],
+            'Ranger': ['Scale Mail', 'Shortsword', 'Longbow', "Dungeoneer's Pack"],
+            'Rogue': ['Rapier', 'Shortbow', 'Leather Armor', 'Dagger', "Thieves' Tools"],
+            'Sorcerer': ['Light Crossbow', 'Component Pouch', 'Dagger'],
+            'Warlock': ['Light Crossbow', 'Component Pouch', 'Leather Armor', 'Dagger'],
+            'Wizard': ['Quarterstaff', 'Component Pouch', "Scholar's Pack", 'Spellbook'],
+        }
+
+        class_name = self.character_class
+        item_names = starter_packs.get(class_name, [])
+
+        for name in item_names:
+            try:
+                item_obj = Item.objects.get(name=name)
+                InventoryItem.objects.get_or_create(
+                    character=self,
+                    item=item_obj,
+                    defaults={'quantity': 1}
+                )
+            except Item.DoesNotExist:
+                raise ValueError(f"Missing item in database: {name}. Please check JSON fixtures.")
+
     def __str__(self):
         return f"{self.character_name}, {self.created_at}, {self.user}, {self.character_class}"
     
@@ -142,7 +173,6 @@ class Character(models.Model):
             models.CheckConstraint(condition=models.Q(death_saves_success__gte=0) & models.Q(death_saves_success__lte=3), name='death_saves_success_range'),
             models.CheckConstraint(condition=models.Q(death_saves_failure__gte=0) & models.Q(death_saves_failure__lte=3), name='death_saves_failure_range'),
         ]
-from django.db import models
 
 class Item(models.Model):
     CATEGORY_CHOICES = [

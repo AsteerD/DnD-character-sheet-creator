@@ -1,8 +1,9 @@
+
 import json
 from django.core.management.base import BaseCommand
 from base.models import Spell, CharacterClass
 import os
-
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'setup.settings')
 class Command(BaseCommand):
     help = 'Imports spells from a JSON file into the database.'
 

@@ -1,20 +1,20 @@
 from django.db import models
 
-class Rogue(models.Model):
+class Paladin(models.Model):
     SUBCLASS_CHOICES = [
-        ('thief', 'Thief'),
-        ('assassin', 'Assassin'),
-        ('trickster', 'Arcane Trickster'),
+        ('devotion', 'Oath of Devotion'),
+        ('ancients', 'Oath of the Ancients'),
+        ('vengeance', 'Oath of Vengeance'),
     ]
     character = models.OneToOneField(
         'base.Character', 
         on_delete=models.CASCADE, 
-        related_name='rogue_profile'
+        related_name='paladin_profile'
     )
     subclass_type = models.CharField(
         max_length=20, 
         choices=SUBCLASS_CHOICES, 
-        default='thief'
+        default='devotion'
     )
 
     def __str__(self):

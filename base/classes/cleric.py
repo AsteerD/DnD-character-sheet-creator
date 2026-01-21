@@ -13,7 +13,6 @@ class Cleric(models.Model):
         related_name='cleric_profile'
     )
     
-    # Przechowujemy tylko wybór domeny
     domain = models.CharField(
         max_length=20, 
         choices=DOMAIN_CHOICES, 

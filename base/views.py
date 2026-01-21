@@ -12,6 +12,9 @@ from .models import Character
 from .forms import CharacterForm
 from .classes.rogue import Rogue # type: ignore
 from .classes.cleric import Cleric# type: ignore
+from .classes.paladin import Paladin# type: ignore
+from .classes.fighter import Fighter# type: ignore
+from .models import ClassChoices
 
 # --- AUTH VIEWS ---
 
@@ -60,22 +63,30 @@ class CharacterCreate(LoginRequiredMixin, CreateView):
     model = Character
     form_class = CharacterForm
     template_name = 'base/character_form.html'
-    success_url = reverse_lazy('characters') # POPRAWIONE z 'character-list'
+    success_url = reverse_lazy('characters')
 
     def form_valid(self, form):
-        form.instance.user = self.request.user
+        self.object = form.save(commit=False)
+        self.object.user = self.request.user
+        self.object.save() #
 
-        response = super().form_valid(form) 
+        selected_class = self.object.character_class.upper() 
+        selected_subclass = self.object.subclass             
+        class_models = {
+            'ROGUE': Rogue,
+            'CLERIC': Cleric,
+            'FIGHTER': Fighter,
+            'PALADIN': Paladin,
+        }
 
-        selected_class = self.object.character_class.upper()
-        selected_subclass = self.object.subclass 
+        if selected_class in class_models:
+            model_class = class_models[selected_class] # Wyciągamy odpowiedni model (np. Fighter)
+            model_class.objects.get_or_create(
+                character=self.object,
+                defaults={'subclass_type': selected_subclass}
+            )
 
-        if selected_class == 'ROGUE':
-            Rogue.objects.get_or_create(character=self.object, defaults={'subclass_type': selected_subclass})
-        elif selected_class == 'CLERIC':
-            Cleric.objects.get_or_create(character=self.object, defaults={'domain': selected_subclass})
-
-        return response
+        return redirect(self.get_success_url())
 
 class CharacterUpdate(LoginRequiredMixin, UpdateView):
     model = Character

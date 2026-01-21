@@ -78,15 +78,21 @@ class SubclassChoices(models.TextChoices):
     ASSASSIN = 'assassin', 'Assassin'
     ARCANE_TRICKSTER = 'trickster', 'Arcane Trickster'
     
-    # Fighter Subclasses
-    CHAMPION = 'champion', 'Champion'
-    BATTLE_MASTER = 'battle_master', 'Battle Master'
-    
     # Cleric Subclasses
     LIFE = 'life', 'Life Domain'
     WAR = 'war', 'War Domain'
     LIGHT = 'light', 'Light Domain'
     NONE = 'none', 'None'
+
+    # --- FIGHTER  ---
+    CHAMPION = 'champion', 'Champion'
+    BATTLE_MASTER = 'battle_master', 'Battle Master'
+    ELDRITCH_KNIGHT = 'eldritch_knight', 'Eldritch Knight'
+
+    # --- PALADIN  ---
+    DEVOTION = 'devotion', 'Oath of Devotion'
+    ANCIENTS = 'ancients', 'Oath of the Ancients'
+    VENGEANCE = 'vengeance', 'Oath of Vengeance'
 
 
 class Character(models.Model):

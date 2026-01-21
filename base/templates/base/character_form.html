@@ -1,56 +1,84 @@
-<h1>{% if form.instance.pk %}Edit Character{% else %}Create Character{% endif %}</h1>
-<button type="submit">{% if form.instance.pk %}Save{% else %}Create{% endif %}</button>
-<p><a href="{% url 'characters' %}">Back to list</a></p>
-<form method="POST" action="">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">{% if form.instance.pk %}Save{% else %}Create{% endif %}</button>
-</form>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% if form.instance.pk %}Edit Character{% else %}Create Character{% endif %}</title>
+</head>
+<body>
 
-<script>
-    const classSelect = document.getElementById('id_character_class');
-    const subclassSelect = document.getElementById('id_subclass');
+    <div style="padding: 20px;">
+        <h1>{% if form.instance.pk %}Edit Character{% else %}Create Character{% endif %}</h1>
+        
+        <p><a href="{% url 'characters' %}">&#8592; Back to list</a></p>
 
-    const subclassContainer = subclassSelect.closest('p') || subclassSelect.parentElement;
+        <form method="POST" action="">
+            {% csrf_token %}
+            
+            {{ form.as_p }}
+            
+            <br>
+            <button type="submit" style="padding: 10px 20px; background-color: #e53935; color: white; border: none; cursor: pointer;">
+                {% if form.instance.pk %}Save Changes{% else %}Create Character{% endif %}
+            </button>
+        </form>
+    </div>
 
-    function updateSubclasses() {
-    const selectedClass = classSelect.value.toUpperCase(); 
-    const options = subclassSelect.options;
-    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const classSelect = document.getElementById('id_character_class');
+            const subclassSelect = document.getElementById('id_subclass');
 
-    if (selectedClass === 'ROGUE' || selectedClass === 'FIGHTER' || selectedClass === 'CLERIC') {
-        subclassContainer.style.display = 'block';
-    } else {
-        subclassContainer.style.display = 'none';
-        subclassSelect.value = 'none';
-        return;
-    }
-
-    for (let i = 0; i < options.length; i++) {
-        const val = options[i].value;
-
-        if (selectedClass === 'ROGUE') {
-            const rogueSubs = ['thief', 'assassin', 'trickster', 'none'];
-            options[i].style.display = rogueSubs.includes(val) ? 'block' : 'none';
-        } 
-        else if (selectedClass === 'FIGHTER') {
-            const fighterSubs = ['champion', 'battle_master', 'none'];
-            options[i].style.display = fighterSubs.includes(val) ? 'block' : 'none';
-        }
-
-        else if (selectedClass === 'CLERIC') {
-            const clericSubs = ['life', 'war', 'light', 'none'];
-            options[i].style.display = clericSubs.includes(val) ? 'block' : 'none';
-        }
-    }
+            const subclassContainer = subclassSelect.closest('p') || subclassSelect.parentElement;
 
 
-        if (options[subclassSelect.selectedIndex].style.display === 'none') {
-                subclassSelect.value = 'none';
-        }
-    }
+            const subclassMap = {
+                'ROGUE': ['thief', 'assassin', 'trickster'],
+                'CLERIC': ['life', 'war', 'light'],
+                'FIGHTER': ['champion', 'battle_master', 'eldritch_knight'],
+                'PALADIN': ['devotion', 'ancients', 'vengeance']
+            };
 
-    classSelect.addEventListener('change', updateSubclasses);
+            function updateSubclasses() {
+                const selectedClass = classSelect.value.toUpperCase(); 
+                const options = subclassSelect.options;
+                
 
-    window.addEventListener('load', updateSubclasses);
-</script>
+                const allowedSubclasses = subclassMap[selectedClass];
+
+                if (allowedSubclasses) {
+
+                    subclassContainer.style.display = 'block';
+                } else {
+
+                    subclassContainer.style.display = 'none';
+                    subclassSelect.value = 'none'; 
+                    return; 
+                }
+
+                for (let i = 0; i < options.length; i++) {
+                    const val = options[i].value;
+
+                    if (val === 'none' || val === '') {
+                        options[i].style.display = 'block';
+                        continue;
+                    }
+
+                    if (allowedSubclasses.includes(val)) {
+                        options[i].style.display = 'block';
+                    } else {
+                        options[i].style.display = 'none';
+                    }
+                }
+
+                if (options[subclassSelect.selectedIndex].style.display === 'none') {
+                    subclassSelect.value = 'none';
+                }
+            }
+            classSelect.addEventListener('change', updateSubclasses);
+
+            updateSubclasses();
+        });
+    </script>
+
+</body>
+</html>

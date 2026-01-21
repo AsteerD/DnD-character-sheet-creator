@@ -38,12 +38,12 @@
             </a>
 
             <span style="color: gray; margin-left: 10px;">
-                {{ character.get_character_class_display }}
-                
-                {% if character.subclass and character.subclass != 'none' %}
-                    - {{ character.get_subclass_display }}
-                {% endif %}
-            </span>
+            {{ character.get_character_class_display }}
+            
+            {% if character.subclass and character.subclass != 'none' %}
+                - {{ character.get_subclass_display }}
+            {% endif %}
+        </span>
 
             <div style="margin-top: 5px;">
                 <a href="{% url 'character-update' character.id %}" style="margin-right: 10px; color: blue;">Edit</a>

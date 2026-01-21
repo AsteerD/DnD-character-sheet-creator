@@ -1,20 +1,20 @@
 from django.db import models
 
-class Rogue(models.Model):
+class Fighter(models.Model):
     SUBCLASS_CHOICES = [
-        ('thief', 'Thief'),
-        ('assassin', 'Assassin'),
-        ('trickster', 'Arcane Trickster'),
+        ('champion', 'Champion'),
+        ('battle_master', 'Battle Master'),
+        ('eldritch_knight', 'Eldritch Knight'),
     ]
     character = models.OneToOneField(
         'base.Character', 
         on_delete=models.CASCADE, 
-        related_name='rogue_profile'
+        related_name='fighter_profile'
     )
     subclass_type = models.CharField(
         max_length=20, 
         choices=SUBCLASS_CHOICES, 
-        default='thief'
+        default='champion'
     )
 
     def __str__(self):

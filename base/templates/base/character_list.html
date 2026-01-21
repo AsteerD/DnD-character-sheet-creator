@@ -40,14 +40,8 @@
             <span style="color: gray; margin-left: 10px;">
                 {{ character.get_character_class_display }}
                 
-                {% if character.character_class == 'ROGUE' or character.character_class == 'Rogue' %}
-                    {% if character.rogue_profile %}
-                        - {{ character.rogue_profile.get_subclass_type_display }}
-                    {% endif %}
-                {% elif character.character_class == 'CLERIC' or character.character_class == 'Cleric' %}
-                    {% if character.cleric_profile %}
-                        - {{ character.cleric_profile.get_domain_display }}
-                    {% endif %}
+                {% if character.subclass and character.subclass != 'none' %}
+                    - {{ character.get_subclass_display }}
                 {% endif %}
             </span>
 

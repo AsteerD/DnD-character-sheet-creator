@@ -2,12 +2,6 @@ from django import forms
 from .models import Character, SubclassChoices
 
 class CharacterForm(forms.ModelForm):
-    subclass = forms.ChoiceField(
-        choices=SubclassChoices.choices, 
-        label="Subclass / Domain",
-        required=False,
-        widget=forms.Select(attrs={'class': 'form-control', 'id': 'id_subclass'})
-    )
 
     class Meta:
         model = Character

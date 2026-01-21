@@ -98,6 +98,13 @@ class Character(models.Model):
         choices=ClassChoices.choices,
         default=ClassChoices.FIGHTER,
     )
+    subclass = models.CharField(
+        max_length=20,
+        choices=SubclassChoices.choices,
+        default=SubclassChoices.NONE,
+        blank=True,
+        null=True
+    )
 
     race = models.CharField(
         max_length=30,

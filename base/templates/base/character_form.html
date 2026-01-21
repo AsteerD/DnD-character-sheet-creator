@@ -14,7 +14,7 @@
     const subclassContainer = subclassSelect.closest('p') || subclassSelect.parentElement;
 
     function updateSubclasses() {
-    const selectedClass = classSelect.value.toUpperCase(); // Pobiera np. 'ROGUE' lub 'CLERIC'
+    const selectedClass = classSelect.value.toUpperCase(); 
     const options = subclassSelect.options;
     
 
@@ -45,10 +45,10 @@
     }
 
 
-    if (options[subclassSelect.selectedIndex].style.display === 'none') {
-        subclassSelect.value = 'none';
+        if (options[subclassSelect.selectedIndex].style.display === 'none') {
+                subclassSelect.value = 'none';
+        }
     }
-}
 
     classSelect.addEventListener('change', updateSubclasses);
 

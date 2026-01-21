@@ -1,18 +1,17 @@
-from django.shortcuts import render, redirect
-from django.views.generic.list import ListView
-from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
+from django.shortcuts import render, redirect # type: ignore
+from django.views.generic.list import ListView # type: ignore
+from django.views.generic.detail import DetailView # type: ignore
+from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView # type: ignore
 from django.urls import reverse_lazy
-
+from django.contrib.auth.views import LoginView 
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
-
 from .models import Character
 from .forms import CharacterForm
-from .classes.rogue import Rogue
-from .classes.cleric import Cleric
+from .classes.rogue import Rogue # type: ignore
+from .classes.cleric import Cleric# type: ignore
 
 # --- AUTH VIEWS ---
 
@@ -22,7 +21,7 @@ class CustomLoginView(LoginView):
     redirect_authenticated_user = True
 
     def get_success_url(self):
-        return reverse_lazy('character-list')
+        return reverse_lazy('characters')
 
 class RegisterPage(FormView):
     template_name = 'base/register.html'
@@ -61,26 +60,27 @@ class CharacterCreate(LoginRequiredMixin, CreateView):
     model = Character
     form_class = CharacterForm
     template_name = 'base/character_form.html'
-    success_url = reverse_lazy('characters')
+    success_url = reverse_lazy('characters') # POPRAWIONE z 'character-list'
 
     def form_valid(self, form):
-        form.instance.user = self.request.user # Assign user
-        self.object = form.save()
+        form.instance.user = self.request.user
+
+        response = super().form_valid(form) 
 
         selected_class = self.object.character_class.upper()
-        selected_subclass = form.cleaned_data.get('subclass')
+        selected_subclass = self.object.subclass 
 
         if selected_class == 'ROGUE':
-            Rogue.objects.create(character=self.object, subclass_type=selected_subclass)
+            Rogue.objects.get_or_create(character=self.object, defaults={'subclass_type': selected_subclass})
         elif selected_class == 'CLERIC':
-            Cleric.objects.create(character=self.object, domain=selected_subclass)
+            Cleric.objects.get_or_create(character=self.object, defaults={'domain': selected_subclass})
 
-        return super().form_valid(form)
+        return response
 
 class CharacterUpdate(LoginRequiredMixin, UpdateView):
     model = Character
     form_class = CharacterForm
-    success_url = reverse_lazy('characters')
+    success_url = reverse_lazy('character-list')
 
 class CharacterDelete(LoginRequiredMixin, DeleteView):
     model = Character

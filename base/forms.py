@@ -1,6 +1,7 @@
 from django import forms
 from .models import Character, SubclassChoices
 
+
 class CharacterForm(forms.ModelForm):
 
     class Meta:
@@ -53,13 +54,13 @@ class CharacterForm(forms.ModelForm):
         allowed_subclasses = {
             'ROGUE': ['thief', 'assassin', 'trickster'],
             'CLERIC': ['life', 'war', 'light'],
+            'FIGHTER': ['champion', 'battle_master', 'eldritch_knight'],
+            'PALADIN': ['devotion', 'ancients', 'vengeance'],
+            'RANGER': ['hunter', 'beast_master', 'gloom_stalker'],
+            'BARD': ['lore', 'valor', 'glamour'],
         }
 
-        if char_class and subclass:
-            char_class_upper = char_class.upper()
-            if char_class_upper in allowed_subclasses:
-                if subclass not in allowed_subclasses[char_class_upper]:
-                    raise forms.ValidationError(
-                        f"Invalid subclass '{subclass}' selected for {char_class}."
-                    )
+        if char_class in allowed_subclasses:
+            if subclass and subclass != 'none' and subclass not in allowed_subclasses[char_class]:
+                raise forms.ValidationError(f"Invalid subclass for {char_class}")
         return cleaned_data

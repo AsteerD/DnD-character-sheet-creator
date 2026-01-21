@@ -14,6 +14,8 @@ from .classes.rogue import Rogue # type: ignore
 from .classes.cleric import Cleric# type: ignore
 from .classes.paladin import Paladin# type: ignore
 from .classes.fighter import Fighter# type: ignore
+from .classes.ranger import Ranger # type: ignore
+from .classes.bard import Bard  # type: ignore
 from .models import ClassChoices
 
 # --- AUTH VIEWS ---
@@ -77,6 +79,8 @@ class CharacterCreate(LoginRequiredMixin, CreateView):
             'CLERIC': Cleric,
             'FIGHTER': Fighter,
             'PALADIN': Paladin,
+            'RANGER': Ranger,
+            'BARD': Bard,
         }
 
         if selected_class in class_models:

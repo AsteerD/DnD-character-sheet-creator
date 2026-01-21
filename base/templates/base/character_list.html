@@ -37,13 +37,26 @@
                 {{ character.character_name }}
             </a>
 
-            <span style="color: gray; margin-left: 10px;">
-            {{ character.get_character_class_display }}
-            
-            {% if character.subclass and character.subclass != 'none' %}
-                - {{ character.get_subclass_display }}
-            {% endif %}
-        </span>
+        <span style="color: gray; margin-left: 10px;">
+                {{ character.get_character_class_display }}
+                
+                {% if character.subclass and character.subclass != 'none' %}
+                    - {{ character.get_subclass_display }}
+                
+                {% elif character.rogue_profile %}
+                    - {{ character.rogue_profile.get_subclass_type_display }}
+                {% elif character.cleric_profile %}
+                    - {{ character.cleric_profile.get_subclass_type_display }}
+                {% elif character.fighter_profile %}
+                    - {{ character.fighter_profile.get_subclass_type_display }}
+                {% elif character.paladin_profile %}
+                    - {{ character.paladin_profile.get_subclass_type_display }}
+                {% elif character.ranger_profile %}
+                    - {{ character.ranger_profile.get_subclass_type_display }}
+                {% elif character.bard_profile %}
+                    - {{ character.bard_profile.get_subclass_type_display }}
+                {% endif %}
+            </span>
 
             <div style="margin-top: 5px;">
                 <a href="{% url 'character-update' character.id %}" style="margin-right: 10px; color: blue;">Edit</a>

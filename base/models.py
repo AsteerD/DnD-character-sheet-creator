@@ -82,6 +82,7 @@ class SubclassChoices(models.TextChoices):
     LIFE = 'life', 'Life Domain'
     WAR = 'war', 'War Domain'
     LIGHT = 'light', 'Light Domain'
+    
     NONE = 'none', 'None'
 
     # --- FIGHTER  ---
@@ -93,6 +94,16 @@ class SubclassChoices(models.TextChoices):
     DEVOTION = 'devotion', 'Oath of Devotion'
     ANCIENTS = 'ancients', 'Oath of the Ancients'
     VENGEANCE = 'vengeance', 'Oath of Vengeance'
+
+    # --- RANGER  ---
+    HUNTER = 'hunter', 'Hunter'
+    BEAST_MASTER = 'beast_master', 'Beast Master'
+    GLOOM_STALKER = 'gloom_stalker', 'Gloom Stalker'
+
+    # --- BARD  ---
+    LORE = 'lore', 'College of Lore'
+    VALOR = 'valor', 'College of Valor'
+    GLAMOUR = 'glamour', 'College of Glamour'
 
 
 class Character(models.Model):

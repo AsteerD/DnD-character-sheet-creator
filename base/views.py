@@ -54,7 +54,7 @@ class CharacterList(LoginRequiredMixin, ListView):
 class CharacterDetail(LoginRequiredMixin, DetailView):
     model = Character
     context_object_name = 'character'
-    template_name = 'base/character_detail.html'
+    template_name = 'base/character.html'
 
 class CharacterCreate(LoginRequiredMixin, CreateView):
     model = Character

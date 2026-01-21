@@ -92,6 +92,65 @@ class SubclassChoices(models.TextChoices):
 class Character(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     character_name = models.CharField(max_length=100)
+    
+    @property
+    def background_details(self):
+        background_data = {
+            BackgroundChoices.ACOLYTE: {
+                "proficiencies": "Insight, Religion, Two languages",
+                "equipment": "Holy symbol, Prayer book, 5 sticks of incense, Vestments, 15gp"
+            },
+            BackgroundChoices.CHARLATAN: {
+                "proficiencies": "Deception, Sleight of Hand, Disguise kit, Forgery kit",
+                "equipment": "Fine clothes, Disguise kit, Weighted dice, 15gp"
+            },
+            BackgroundChoices.CRIMINAL: {
+                "proficiencies": "Deception, Stealth, Thieves' tools",
+                "equipment": "Crowbar, Dark common clothes, 15gp"
+            },
+            BackgroundChoices.ENTERTAINER: {
+                "proficiencies": "Acrobatics, Performance, Disguise kit, Musical instrument",
+                "equipment": "Musical instrument, Costume, 15gp"
+            },
+            BackgroundChoices.FOLK_HERO: {
+                "proficiencies": "Animal Handling, Survival, Artisan's tools, Land vehicles",
+                "equipment": "Artisan's tools, Shovel, Iron pot, Common clothes, 10gp"
+            },
+            BackgroundChoices.GUILD_ARTISAN: {
+                "proficiencies": "Insight, Persuasion, Artisan's tools, One language",
+                "equipment": "Artisan's tools, Letter of introduction, Fine clothes, 15gp"
+            },
+            BackgroundChoices.HERMIT: {
+                "proficiencies": "Medicine, Religion, Herbalism kit, One language",
+                "equipment": "Scroll case, Winter blanket, Common clothes, Herbalism kit, 5gp"
+            },
+            BackgroundChoices.NOBLE: {
+                "proficiencies": "History, Persuasion, Gaming set, One language",
+                "equipment": "Fine clothes, Signet ring, Scroll of pedigree, 25gp"
+            },
+            BackgroundChoices.OUTLANDER: {
+                "proficiencies": "Athletics, Survival, Musical instrument, One language",
+                "equipment": "Staff, Hunting trap, Trophy, Traveling clothes, 10gp"
+            },
+            BackgroundChoices.SAGE: {
+                "proficiencies": "Arcana, History, Two languages",
+                "equipment": "Ink bottle, Quill, Small knife, Letter from a dead colleague, 10gp"
+            },
+            BackgroundChoices.SAILOR: {
+                "proficiencies": "Athletics, Perception, Navigator's tools, Water vehicles",
+                "equipment": "Belaying pin, Silk rope, Lucky charm, Common clothes, 10gp"
+            },
+            BackgroundChoices.SOLDIER: {
+                "proficiencies": "Athletics, Intimidation, Gaming set, Land vehicles",
+                "equipment": "Insignia of rank, Trophy, Bone dice, Common clothes, 10gp"
+            },
+            BackgroundChoices.URCHIN: {
+                "proficiencies": "Sleight of Hand, Stealth, Disguise kit, Thieves' tools",
+                "equipment": "Small knife, Map of city, Pet mouse, Token of parents, 10gp"
+            },
+        }
+        return background_data.get(self.background, {"proficiencies": "None", "equipment": "None"})
+
 
     character_class = models.CharField(
         max_length=20,

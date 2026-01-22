@@ -166,3 +166,28 @@ class Character(models.Model):
             models.CheckConstraint(condition=models.Q(death_saves_success__gte=0) & models.Q(death_saves_success__lte=3), name='death_saves_success_range'),
             models.CheckConstraint(condition=models.Q(death_saves_failure__gte=0) & models.Q(death_saves_failure__lte=3), name='death_saves_failure_range'),
         ]
+
+class CharacterClass(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.name
+
+class Spell(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    desc = models.TextField()
+    higher_level = models.TextField(blank=True, null=True)
+    page = models.CharField(max_length=50)
+    range = models.CharField(max_length=100)
+    components = models.CharField(max_length=255)
+    material = models.CharField(max_length=255, blank=True, null=True)
+    ritual = models.BooleanField(default=False)
+    duration = models.CharField(max_length=100)
+    concentration = models.BooleanField(default=False)
+    casting_time = models.CharField(max_length=100)
+    level = models.IntegerField()
+    school = models.CharField(max_length=100)
+    dnd_classes = models.ManyToManyField(CharacterClass, related_name='spells')
+
+    def __str__(self):
+        return self.name

@@ -134,6 +134,60 @@
     {% endfor %}
     </tbody>
   </table>
+  </table>
+
+<h2 style="margin-top: 40px;">Spellbook</h2>
+
+{% if character.spells.exists %}
+    
+    {% regroup character.spells.all|dictsort:"level" by level as spell_levels %}
+
+    {% for level_group in spell_levels %}
+        <h4 style="margin-top: 20px; color: #444;">
+            {% if level_group.grouper == 0 %} 
+                🔮 Cantrips (0 Level)
+            {% else %} 
+                ⚡ Level {{ level_group.grouper }} 
+            {% endif %}
+        </h4>
+
+        <table class="detail-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>School</th>
+                    <th>Casting Time</th>
+                    <th>Range</th>
+                    <th>Duration</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for spell in level_group.list %}
+                <tr>
+                    <td><strong>{{ spell.name }}</strong></td>
+                    <td>{{ spell.school }}</td>
+                    <td>{{ spell.casting_time }}</td>
+                    <td>{{ spell.range }}</td>
+                    <td>
+                        {{ spell.duration }}
+                        {% if spell.concentration %} (C){% endif %}
+                        {% if spell.ritual %} (R){% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endfor %}
+
+{% else %}
+    {% if character.character_class.spells.exists %}
+        <p>This character knows magic but hasn't prepared any spells yet. 
+           <a href="{% url 'character_spells' character.pk %}">Click here to manage spells.</a>
+        </p>
+    {% else %}
+        <p>This character has no magical abilities.</p>
+    {% endif %}
+{% endif %}
 {% else %}
   <p>Character not found.</p>
 {% endif %}

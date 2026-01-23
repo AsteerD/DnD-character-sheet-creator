@@ -8,6 +8,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .serializers import CharacterSerializer
+
 from .models import Character
 
 CHARACTER_FORM_FIELDS = ['character_name', 'character_class', 'subclass', 'race', 'level', 'background', 'alignment', 'experience_points', 'strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma', 'initiative', 'speed', 'hit_points', 'temporary_hit_points', 'hit_dice', 'death_saves_success', 'death_saves_failure', 'backstory', 'inspiration', 'languages']
@@ -78,6 +83,14 @@ class CharacterUpdate(LoginRequiredMixin, UpdateView):
     fields = CHARACTER_FORM_FIELDS
     template_name = 'base/character_form.html'
     success_url = reverse_lazy('characters')
+
+class CharacterCreateView(APIView):
+    def post(self, request):
+        serializer = CharacterSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class CharacterDelete(LoginRequiredMixin, DeleteView):
     model = Character

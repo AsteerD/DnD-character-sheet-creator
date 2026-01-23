@@ -18,7 +18,7 @@
       <tr><th>Race</th><td>{% if character.get_race_display %}{{ character.get_race_display }}{% else %}{{ character.race }}{% endif %}</td></tr>
       <tr><th>Level</th><td>{{ character.level }}</td></tr>
       <tr><th>Background</th><td>{% if character.get_background_display %}{{ character.get_background_display }}{% else %}{{ character.background }}{% endif %}</td></tr>
-      <tr><th>Alignment</th><td>{% if character.get_alligment_display %}{{ character.get_alligment_display }}{% else %}{{ character.alligment }}{% endif %}</td></tr>
+      <tr><th>Alignment</th><td>{% if character.get_alignment_display %}{{ character.get_alignment_display }}{% else %}{{ character.alignment }}{% endif %}</td></tr>
       <tr><th>Experience points</th><td>{{ character.experience_points|default:'-' }}</td></tr>
       <tr><th>Strength</th><td>{{ character.strength }}</td></tr>
       <tr><th>Dexterity</th><td>{{ character.dexterity }}</td></tr>

@@ -23,19 +23,6 @@ class Alignment(models.TextChoices):
     NEUTRAL_EVIL = 'NE', 'Neutral Evil'
     CHAOTIC_EVIL = 'CE', 'Chaotic Evil'
     
-class ClassChoices(models.TextChoices):
-    BARBARIAN = 'Barbarian', 'Barbarian'
-    BARD = 'Bard', 'Bard'
-    CLERIC = 'Cleric', 'Cleric'
-    DRUID = 'Druid', 'Druid'
-    FIGHTER = 'Fighter', 'Fighter'
-    MONK = 'Monk', 'Monk'
-    PALADIN = 'Paladin', 'Paladin'
-    RANGER = 'Ranger', 'Ranger'
-    ROGUE = 'Rogue', 'Rogue'
-    SORCERER = 'Sorcerer', 'Sorcerer'
-    WARLOCK = 'Warlock', 'Warlock'
-    WIZARD = 'Wizard', 'Wizard'
 
 
 class BackgroundChoices(models.TextChoices):
@@ -78,10 +65,12 @@ class Character(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     character_name = models.CharField(max_length=100)
 
-    character_class = models.CharField(
-        max_length=20,
-        choices=ClassChoices.choices,
-        default=ClassChoices.FIGHTER,
+    character_class = models.ForeignKey(
+        'CharacterClass',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='characters',
     )
     
 

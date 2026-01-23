@@ -1,6 +1,7 @@
 # base/forms.py
 from django import forms
 from .models import Character, Skill, Subclass, CharacterClass, Spell
+from django.core.exceptions import ValidationError
 
 class CharacterForm(forms.ModelForm):
     skills = forms.ModelMultipleChoiceField(
@@ -98,6 +99,25 @@ class CharacterForm(forms.ModelForm):
 
         print("DEBUG: skills queryset =", list(self.fields['skills'].queryset))
 
+# Tabela "Spells Known" dla klas, które mają sztywny limit (z PHB 5e)
+# Format: 'Klasa': {Level: Liczba_Czarów}
+SPELLS_KNOWN_TABLE = {
+    'Bard': {1: 4, 2: 5, 3: 6, 4: 7, 5: 8, 6: 9, 7: 10, 8: 11, 9: 12, 10: 14, 11: 15, 12: 15, 13: 16, 14: 18, 15: 19, 16: 19, 17: 20, 18: 22, 19: 22, 20: 22},
+    'Sorcerer': {1: 2, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10, 10: 11, 11: 12, 12: 12, 13: 13, 14: 13, 15: 14, 16: 14, 17: 15, 18: 15, 19: 15, 20: 15},
+    'Warlock': {1: 2, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10, 10: 10, 11: 11, 12: 11, 13: 12, 14: 12, 15: 13, 16: 13, 17: 14, 18: 14, 19: 15, 20: 15},
+    'Ranger': {1: 0, 2: 2, 3: 3, 4: 3, 5: 4, 6: 4, 7: 5, 8: 5, 9: 6, 10: 6, 11: 7, 12: 7, 13: 8, 14: 8, 15: 9, 16: 9, 17: 10, 18: 10, 19: 11, 20: 11},
+    # Paladin i inni Prepared Casters są liczeni wzorem, nie tabelą
+}
+
+CANTRIPS_KNOWN_TABLE = {
+    'Bard': {1: 2, 4: 3, 10: 4},
+    'Cleric': {1: 3, 4: 4, 10: 5},
+    'Druid': {1: 2, 4: 3, 10: 4},
+    'Sorcerer': {1: 4, 4: 5, 10: 6},
+    'Warlock': {1: 2, 4: 3, 10: 4},
+    'Wizard': {1: 3, 4: 4, 10: 5},
+}
+
 class SpellSelectionForm(forms.ModelForm):
     class Meta:
         model = Character
@@ -121,3 +141,67 @@ class SpellSelectionForm(forms.ModelForm):
                 classspell__unlock_level__lte=char_level
             ).order_by('level', 'name').distinct()
             self.fields['spells'].label = ""
+    def clean(self):
+        cleaned_data = super().clean()
+        spells = cleaned_data.get('spells')
+        character = self.instance
+        
+        if not spells or not character:
+            return cleaned_data
+
+        # --- Rozdzielamy Cantripy (lvl 0) i Spelle (lvl 1+) ---
+        cantrips_selected = [s for s in spells if s.level == 0]
+        leveled_spells_selected = [s for s in spells if s.level > 0]
+        
+        c_count = len(cantrips_selected)
+        s_count = len(leveled_spells_selected)
+
+        # Pobieramy dane postaci
+        char_class = character.character_class.name
+        level = character.level
+        
+        # --- 1. WALIDACJA CANTRIPÓW ---
+        max_cantrips = 0
+        if char_class in CANTRIPS_KNOWN_TABLE:
+            # Szukamy odpowiedniego progu (np. jeśli level 5, bierzemy wartość dla level 4)
+            table = CANTRIPS_KNOWN_TABLE[char_class]
+            for lvl_threshold in sorted(table.keys()):
+                if level >= lvl_threshold:
+                    max_cantrips = table[lvl_threshold]
+        
+        # Jeśli klasa ma cantripy i wybrano za dużo
+        if max_cantrips > 0 and c_count > max_cantrips:
+            self.add_error('spells', f"Too many Cantrips selected! You can have max {max_cantrips}, but you selected {c_count}.")
+
+        # --- 2. WALIDACJA CZARÓW POZIOMOWYCH (Level 1+) ---
+        max_spells = 0
+        limit_type = "Known" # Czy to "Znane" czy "Przygotowane"
+
+        # A) Prepared Casters (Wzór: Level + Modifier)
+        if char_class in ['Cleric', 'Druid', 'Wizard']:
+            limit_type = "Prepared"
+            # Pobierz modyfikator (Cleric/Druid -> Wis, Wizard -> Int)
+            modifier = 0
+            if char_class == 'Wizard':
+                modifier = character.get_ability_modifier('intelligence')
+            else:
+                modifier = character.get_ability_modifier('wisdom')
+            
+            # Minimum 1 czar
+            max_spells = max(1, level + modifier)
+        
+        elif char_class == 'Paladin':
+            limit_type = "Prepared"
+            modifier = character.get_ability_modifier('charisma')
+            max_spells = max(1, (level // 2) + modifier)
+
+        # B) Known Casters (Sztywna Tabela)
+        elif char_class in SPELLS_KNOWN_TABLE:
+            limit_type = "Known"
+            max_spells = SPELLS_KNOWN_TABLE[char_class].get(level, 0)
+
+        # Sprawdzenie limitu
+        if max_spells > 0 and s_count > max_spells:
+            self.add_error('spells', f"Too many Spells selected! As a lvl {level} {char_class}, you can have max {max_spells} Spells {limit_type}. You selected {s_count}.")
+            
+        return cleaned_data

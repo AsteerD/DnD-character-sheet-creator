@@ -79,7 +79,6 @@ class Skill(models.Model):
     def __str__(self):
         return self.name
 
-# --- SPELL MODELS MUST BE DEFINED BEFORE CHARACTER ---
 
 class Spell(models.Model):
     name = models.CharField(max_length=255, unique=True)

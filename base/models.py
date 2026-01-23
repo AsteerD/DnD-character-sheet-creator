@@ -2,7 +2,6 @@ from django.db import models # type: ignore
 from django.contrib.auth.models import User # type: ignore
 from django.core.validators import MinValueValidator, MaxValueValidator # type: ignore
 
-# Create your models here.
 
 class Language(models.Model):
     name = models.CharField(max_length=100)
@@ -24,19 +23,6 @@ class Alignment(models.TextChoices):
     NEUTRAL_EVIL = 'NE', 'Neutral Evil'
     CHAOTIC_EVIL = 'CE', 'Chaotic Evil'
     
-class ClassChoices(models.TextChoices):
-    BARBARIAN = 'Barbarian', 'Barbarian'
-    BARD = 'Bard', 'Bard'
-    CLERIC = 'Cleric', 'Cleric'
-    DRUID = 'Druid', 'Druid'
-    FIGHTER = 'Fighter', 'Fighter'
-    MONK = 'Monk', 'Monk'
-    PALADIN = 'Paladin', 'Paladin'
-    RANGER = 'Ranger', 'Ranger'
-    ROGUE = 'Rogue', 'Rogue'
-    SORCERER = 'Sorcerer', 'Sorcerer'
-    WARLOCK = 'Warlock', 'Warlock'
-    WIZARD = 'Wizard', 'Wizard'
 
 
 class BackgroundChoices(models.TextChoices):
@@ -73,15 +59,21 @@ class RaceChoices(models.TextChoices):
     HALF_ORC = 'Half-Orc', 'Half-Orc'
     ORC = 'Orc', 'Orc'
 
+
+
 class Character(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     character_name = models.CharField(max_length=100)
-    character_class = models.CharField(
-        max_length=20,
-        choices=ClassChoices.choices,
-        default=ClassChoices.FIGHTER,
+
+    character_class = models.ForeignKey(
+        'CharacterClass',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='characters',
     )
-    subclass = models.CharField(max_length=100) #class should be conected to subclass
+    
+
     race = models.CharField(
         max_length=30,
         choices=RaceChoices.choices,
@@ -94,7 +86,7 @@ class Character(models.Model):
         choices=BackgroundChoices.choices,
         default=BackgroundChoices.ACOLYTE,
     )
-    alligment = models.CharField(
+    alignment = models.CharField(
         max_length=2,
         choices=Alignment.choices,
         default=Alignment.TRUE_NEUTRAL,
@@ -143,4 +135,74 @@ class Character(models.Model):
             models.CheckConstraint(condition=models.Q(death_saves_failure__gte=0) & models.Q(death_saves_failure__lte=3), name='death_saves_failure_range'),
         ]
 
+class CharacterClass(models.Model):
+    name = models.CharField(max_length=100, unique=True)
 
+    def __str__(self):
+        return self.name
+
+class Subclass(models.Model):
+    name = models.CharField(max_length=50)
+    character_class = models.ForeignKey(
+        CharacterClass,
+        on_delete=models.CASCADE,
+        related_name='subclasses'
+    )
+
+    def __str__(self):
+        return f"{self.character_class}: {self.name}"
+
+class Spell(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    desc = models.TextField()
+    higher_level = models.TextField(blank=True, null=True)
+    page = models.CharField(max_length=50)
+    range = models.CharField(max_length=100)
+    components = models.CharField(max_length=255)
+    material = models.CharField(max_length=255, blank=True, null=True)
+    ritual = models.BooleanField(default=False)
+    duration = models.CharField(max_length=100)
+    concentration = models.BooleanField(default=False)
+    casting_time = models.CharField(max_length=100)
+    level = models.IntegerField()
+    school = models.CharField(max_length=100)
+
+    dnd_classes = models.ManyToManyField(
+        CharacterClass,
+        through='ClassSpell',
+        related_name='spells'
+    )
+
+    def __str__(self):
+        return self.name
+
+class ClassSpell(models.Model):
+    spell = models.ForeignKey(Spell, on_delete=models.CASCADE)
+    character_class = models.ForeignKey(CharacterClass, on_delete=models.CASCADE)
+
+    # 👇 NOWE
+    subclass = models.ForeignKey(
+        Subclass,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        help_text="Jeśli null → spell dostępny dla całej klasy"
+    )
+
+    unlock_level = models.IntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(20)]
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['spell', 'character_class', 'subclass'],
+                name='unique_spell_class_subclass'
+            )
+        ]
+        ordering = ['unlock_level']
+
+    def __str__(self):
+        if self.subclass:
+            return f"{self.character_class}/{self.subclass} → {self.spell} (lvl {self.unlock_level})"
+        return f"{self.character_class} → {self.spell} (lvl {self.unlock_level})"

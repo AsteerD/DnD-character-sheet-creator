@@ -15,7 +15,7 @@ class CharacterDeleteTests(TestCase):
             race='Human',
             level=1,
             background='Acolyte',
-            alligment='TN',
+            alignment='TN',
             armor_class=10,
             initiative=0,
             speed=30,

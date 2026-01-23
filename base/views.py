@@ -8,7 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 
-from .models import Character
+from .models import Character, Background
 
 CHARACTER_FORM_FIELDS = ['character_name', 'character_class', 'subclass', 'race', 'level', 'background', 'alignment', 'experience_points', 'strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma', 'initiative', 'speed', 'hit_points', 'temporary_hit_points', 'hit_dice', 'death_saves_success', 'death_saves_failure', 'backstory', 'inspiration', 'languages']
 
@@ -57,10 +57,23 @@ class CharacterDetail(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        inventory = self.object.inventory.all()
+
+        character = self.object
+
+        # Inventory
+        inventory = character.inventory.all()
         context['inventory'] = inventory
-        context['current_ac'] = self.object.total_armor_class
-        context['total_weight'] = sum(item.item.weight * item.quantity for item in inventory)
+        context['current_ac'] = character.total_armor_class
+        context['total_weight'] = sum(
+            item.item.weight * item.quantity for item in inventory
+        )
+
+        # 👇 BACKGROUND OBJECT (NOWE)
+        background_obj = Background.objects.filter(
+            name=character.background
+        ).first()
+        context['background_obj'] = background_obj
+
         return context
 
 class CharacterCreate(LoginRequiredMixin,CreateView):

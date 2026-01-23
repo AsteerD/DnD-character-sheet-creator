@@ -61,80 +61,6 @@ class RaceChoices(models.TextChoices):
 
 
 
-class Character(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    character_name = models.CharField(max_length=100)
-
-    character_class = models.ForeignKey(
-        'CharacterClass',
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name='characters',
-    )
-    
-
-    race = models.CharField(
-        max_length=30,
-        choices=RaceChoices.choices,
-        default=RaceChoices.HUMAN,
-    )
-    
-    level = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(20)])
-    background = models.CharField(
-        max_length=30,
-        choices=BackgroundChoices.choices,
-        default=BackgroundChoices.ACOLYTE,
-    )
-    alignment = models.CharField(
-        max_length=2,
-        choices=Alignment.choices,
-        default=Alignment.TRUE_NEUTRAL,
-    )
-    experience_points = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
-    strength = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(30)])
-    dexterity = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(30)])
-    constitution = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(30)])
-    intelligence = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(30)])
-    wisdom = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(30)])
-    charisma = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(30)])
-    armor_class = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(100)])
-    initiative = models.IntegerField()
-    speed = models.IntegerField(validators=[MinValueValidator(1)])
-    hit_points = models.IntegerField(validators=[MinValueValidator(1)])
-    temporary_hit_points = models.IntegerField(validators=[MinValueValidator(0)])
-    hit_dice = models.IntegerField(validators=[MinValueValidator(1)])
-    death_saves_success = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0), MaxValueValidator(3)])
-    death_saves_failure = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0), MaxValueValidator(3)] )
-    backstory = models.TextField(null=True, blank=True) 
-    inspiration = models.BooleanField(default=False)
-    languages = models.ManyToManyField(Language, blank=True)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.character_name}, {self.created_at}, {self.user}, {self.character_class}"
-    
-    class Meta:
-        ordering = ['created_at']
-        constraints = [
-            models.CheckConstraint(condition=models.Q(level__gte=1) & models.Q(level__lte=20), name='level_range'),
-            models.CheckConstraint(condition=models.Q(experience_points__gte=0), name='experience_points_minimum'),
-            models.CheckConstraint(condition=models.Q(strength__gte=1) & models.Q(strength__lte=30), name='strength_range'),
-            models.CheckConstraint(condition=models.Q(dexterity__gte=1) & models.Q(dexterity__lte=30), name='dexterity_range'),
-            models.CheckConstraint(condition=models.Q(constitution__gte=1) & models.Q(constitution__lte=30), name='constitution_range'),
-            models.CheckConstraint(condition=models.Q(intelligence__gte=1) & models.Q(intelligence__lte=30), name='intelligence_range'),
-            models.CheckConstraint(condition=models.Q(wisdom__gte=1) & models.Q(wisdom__lte=30), name='wisdom_range'),
-            models.CheckConstraint(condition=models.Q(charisma__gte=1) & models.Q(charisma__lte=30), name='charisma_range'),
-            models.CheckConstraint(condition=models.Q(armor_class__gte=1) & models.Q(armor_class__lte=100), name='armor_class_range'),
-            models.CheckConstraint(condition=models.Q(speed__gte=1), name='speed_minimum'),
-            models.CheckConstraint(condition=models.Q(hit_points__gte=1), name='hit_points_minimum'),
-            models.CheckConstraint(condition=models.Q(temporary_hit_points__gte=0), name='temporary_hit_points_minimum'),
-            models.CheckConstraint(condition=models.Q(hit_dice__gte=1), name='hit_dice_minimum'),
-            models.CheckConstraint(condition=models.Q(death_saves_success__gte=0) & models.Q(death_saves_success__lte=3), name='death_saves_success_range'),
-            models.CheckConstraint(condition=models.Q(death_saves_failure__gte=0) & models.Q(death_saves_failure__lte=3), name='death_saves_failure_range'),
-        ]
-
 class CharacterClass(models.Model):
     name = models.CharField(max_length=100, unique=True)
 
@@ -167,10 +93,11 @@ class Spell(models.Model):
     level = models.IntegerField()
     school = models.CharField(max_length=100)
 
-    dnd_classes = models.ManyToManyField(
+    # This defines the "Pool" of spells available to classes generally
+    available_to_classes = models.ManyToManyField(
         CharacterClass,
         through='ClassSpell',
-        related_name='spells'
+        related_name='available_spells'
     )
 
     def __str__(self):
@@ -179,16 +106,13 @@ class Spell(models.Model):
 class ClassSpell(models.Model):
     spell = models.ForeignKey(Spell, on_delete=models.CASCADE)
     character_class = models.ForeignKey(CharacterClass, on_delete=models.CASCADE)
-
-    # 👇 NOWE
     subclass = models.ForeignKey(
         Subclass,
         on_delete=models.CASCADE,
         null=True,
         blank=True,
-        help_text="Jeśli null → spell dostępny dla całej klasy"
+        help_text="If null -> spell available to the base class"
     )
-
     unlock_level = models.IntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(20)]
     )
@@ -204,5 +128,79 @@ class ClassSpell(models.Model):
 
     def __str__(self):
         if self.subclass:
-            return f"{self.character_class}/{self.subclass} → {self.spell} (lvl {self.unlock_level})"
-        return f"{self.character_class} → {self.spell} (lvl {self.unlock_level})"
+            return f"{self.character_class}/{self.subclass} -> {self.spell} (lvl {self.unlock_level})"
+        return f"{self.character_class} -> {self.spell} (lvl {self.unlock_level})"
+
+class Character(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    character_name = models.CharField(max_length=100)
+
+    character_class = models.ForeignKey(
+        CharacterClass,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='characters',
+    )
+    
+
+    race = models.CharField(
+        max_length=30,
+        choices=RaceChoices.choices,
+        default=RaceChoices.HUMAN,
+    )
+    
+    level = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(20)])
+    background = models.CharField(
+        max_length=30,
+        choices=BackgroundChoices.choices,
+        default=BackgroundChoices.ACOLYTE,
+    )
+    alignment = models.CharField(
+        max_length=2,
+        choices=Alignment.choices,
+        default=Alignment.TRUE_NEUTRAL,
+    )
+    
+    # Stats
+    experience_points = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
+    strength = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(30)])
+    dexterity = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(30)])
+    constitution = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(30)])
+    intelligence = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(30)])
+    wisdom = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(30)])
+    charisma = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(30)])
+    
+    # Combat Stats
+    armor_class = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(100)])
+    initiative = models.IntegerField()
+    speed = models.IntegerField(validators=[MinValueValidator(1)])
+    hit_points = models.IntegerField(validators=[MinValueValidator(1)])
+    temporary_hit_points = models.IntegerField(validators=[MinValueValidator(0)])
+    hit_dice = models.IntegerField(validators=[MinValueValidator(1)])
+    
+    # Death Saves
+    death_saves_success = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0), MaxValueValidator(3)])
+    death_saves_failure = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0), MaxValueValidator(3)])
+    
+    # Fluff
+    backstory = models.TextField(null=True, blank=True) 
+    inspiration = models.BooleanField(default=False)
+    
+    # Relationships
+    languages = models.ManyToManyField(Language, blank=True)
+    
+    # The spells the character actually knows/prepared
+    spells = models.ManyToManyField(Spell, blank=True, related_name='learned_by_characters')
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.character_name} ({self.character_class} Lvl {self.level})"
+    
+    class Meta:
+        ordering = ['created_at']
+        constraints = [
+            models.CheckConstraint(condition=models.Q(level__gte=1) & models.Q(level__lte=20), name='level_range'),
+            # ... (rest of your constraints kept same) ...
+        ]

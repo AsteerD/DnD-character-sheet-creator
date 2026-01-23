@@ -50,3 +50,9 @@
 {% else %}
   <p>Character not found.</p>
 {% endif %}
+
+<a href="{% url 'character_spells' character.id %}" class="btn btn-info text-white">
+    📖 Manage spells
+
+<a href="{% url 'character-update' character.id %}" class="btn btn-primary">Edit</a>
+<a href="{% url 'character-delete' character.id %}" class="btn btn-danger">Delete</a>

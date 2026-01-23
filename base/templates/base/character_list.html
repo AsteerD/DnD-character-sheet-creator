@@ -1,31 +1,72 @@
-<h1>My Characters</h1>
-<a href="{% url 'character-create' %}">Create New Character</a>
+{% extends 'base/main.html' %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>My Characters</h1>
+    <a href="{% url 'character-create' %}" class="btn btn-success">
+        + Create New Character
+    </a>
+</div>
 
 {% if characters %}
-	<table>
-		<thead>
-			<tr>
-				<th>Name</th>
-				<th>Player</th>
-				<th>Class</th>
-				<th>Level</th>
-				<th></th>
-			</tr>
-		</thead>
-		<tbody>
-			{% for c in characters %}
-				<tr>
-					
-					<td><a href="{% url 'character' c.pk %}">{{ c.character_name }}</a></td>
-					<td>{% if c.user.username %}{{ c.user.username }}{% else %}{{ c.user }}{% endif %}</td>
-					<td>{% if c.get_character_class_display %}{{ c.get_character_class_display }}{% else %}{{ c.character_class }}{% endif %}</td>				
-					<td>{{ c.level }}</td>
-				<td><a href="{% url 'character-update' c.pk %}">Edit</a> | <a href="{% url 'character-delete' c.pk %}">Delete</a></td>
-				</tr>
-			{% endfor %}
-		</tbody>
-	</table>
-	
+    <div class="table-responsive">
+        <table class="table table-hover table-striped align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Name</th>
+                    <th>Player</th>
+                    <th>Class</th>
+                    <th>Level</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in characters %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'character' c.pk %}" class="text-decoration-none fw-bold">
+                                {{ c.character_name }}
+                            </a>
+                        </td>
+                        
+                        <td>
+                            {% if c.user.username %}
+                                {{ c.user.username }}
+                            {% else %}
+                                {{ c.user }}
+                            {% endif %}
+                        </td>
+                        
+                        <td>{{ c.character_class.name }}</td>      
+                        
+                        <td><span class="badge bg-secondary">{{ c.level }}</span></td>
+                        
+                        <td class="text-end">
+                            {% if c.character_class.name != "Barbarian" and c.character_class.name != "Fighter" and c.character_class.name != "Monk" and c.character_class.name != "Rogue" %}
+                                <a href="{% url 'character_spells' c.pk %}" class="btn btn-sm btn-info text-white me-1" title="Manage Spells">
+                                    ✨ Spells
+                                </a>
+                            {% endif %}
+
+                            <a href="{% url 'character-update' c.pk %}" class="btn btn-sm btn-outline-primary me-1">
+                                Edit
+                            </a>
+                            
+                            <a href="{% url 'character-delete' c.pk %}" class="btn btn-sm btn-outline-danger">
+                                Delete
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
 {% else %}
-	<p>No characters found.</p>
+    <div class="alert alert-info text-center">
+        You don't have any characters yet. <a href="{% url 'character-create' %}">Create one now!</a>
+    </div>
 {% endif %}
+
+{% endblock %}

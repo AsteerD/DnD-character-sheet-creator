@@ -67,6 +67,47 @@
   {% else %}
     <p>No items in inventory.</p>
   {% endif %}
+
+
+  {% if background_obj %}
+  <h2>Background: {{ background_obj.name }}</h2>
+
+  <p><strong>Description:</strong><br>
+     {{ background_obj.description }}</p>
+
+  <p><strong>Feature – {{ background_obj.feature_name }}:</strong><br>
+     {{ background_obj.feature_description }}</p>
+{% endif %}
+
+
+{% if background_obj.backgroundskillproficiency_set.all %}
+  <h3>Background Skill Proficiencies</h3>
+  <ul>
+    {% for prof in background_obj.backgroundskillproficiency_set.all %}
+      <li>{{ prof.skill.name }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+
+
+{% if background_obj.backgroundtoolproficiency_set.all %}
+  <h3>Tool Proficiencies</h3>
+  <ul>
+    {% for prof in background_obj.backgroundtoolproficiency_set.all %}
+      <li>{{ prof.tool.name }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+
+
+{% if background_obj.backgroundstartingequipment_set.all %}
+  <h3>Background Equipment</h3>
+  <ul>
+    {% for eq in background_obj.backgroundstartingequipment_set.all %}
+      <li>{{ eq.item.name }} × {{ eq.quantity }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
     </tbody>
   </table>
 {% else %}

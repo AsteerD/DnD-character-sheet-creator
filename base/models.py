@@ -2,6 +2,26 @@ from django.db import models # type: ignore
 from django.contrib.auth.models import User # type: ignore
 from django.core.validators import MinValueValidator, MaxValueValidator # type: ignore
 
+class Background(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+
+    description = models.TextField(
+        help_text="General description of the background"
+    )
+
+    feature_name = models.CharField(
+        max_length=100,
+        help_text="Name of the background feature (e.g. Shelter of the Faithful)"
+    )
+
+    feature_description = models.TextField(
+        help_text="Rules text of the background feature"
+    )
+
+    def __str__(self):
+        return self.name
+
+
 class AbilityScoreChoices(models.TextChoices):
     STRENGTH = 'strength', 'Strength'
     DEXTERITY = 'dexterity', 'Dexterity'
@@ -51,25 +71,14 @@ class Alignment(models.TextChoices):
     NEUTRAL_EVIL = 'NE', 'Neutral Evil'
     CHAOTIC_EVIL = 'CE', 'Chaotic Evil'
 
-class BackgroundChoices(models.TextChoices):
-    ACOLYTE = 'Acolyte', 'Acolyte'
-    CHARLATAN = 'Charlatan', 'Charlatan'
-    CRIMINAL = 'Criminal', 'Criminal'
-    ENTERTAINER = 'Entertainer', 'Entertainer'
-    FOLK_HERO = 'Folk Hero', 'Folk Hero'
-    GUILD_ARTISAN = 'Guild Artisan', 'Guild Artisan'
-    HERMIT = 'Hermit', 'Hermit'
-    NOBLE = 'Noble', 'Noble'
-    OUTLANDER = 'Outlander', 'Outlander'
-    SAGE = 'Sage', 'Sage'
-    SAILOR = 'Sailor', 'Sailor'
-    SOLDIER = 'Soldier', 'Soldier'
-    URCHIN = 'Urchin', 'Urchin'
-    HAUNTED_ONE = 'Haunted One', 'Haunted One'
-    URBAN_BOUNTY_HUNTER = 'Urban Bounty Hunter', 'Urban Bounty Hunter'
-    KNIGHT = 'Knight', 'Knight'
-    FACTION_AGENT = 'Faction Agent', 'Faction Agent'
-    MERCENARY_VETERAN = 'Mercenary Veteran', 'Mercenary Veteran'
+
+class StartingEquipment(models.Model):
+    character_class = models.ForeignKey('CharacterClass', on_delete=models.CASCADE, related_name='starting_equipment')
+    item = models.ForeignKey('Item', on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.character_class}: {self.item} x{self.quantity}"
 
 class StartingEquipment(models.Model):
     character_class = models.ForeignKey('CharacterClass', on_delete=models.CASCADE, related_name='starting_equipment')
@@ -89,6 +98,16 @@ class Character(models.Model):
             equipment_qs = StartingEquipment.objects.filter(character_class=self.character_class)
             for eq in equipment_qs:
                 InventoryItem.objects.create(character=self, item=eq.item, quantity=eq.quantity)
+    
+            # background equipment
+            bg_equipment = BackgroundStartingEquipment.objects.filter(background=self.background)
+            for eq in bg_equipment:
+                InventoryItem.objects.create(
+                    character=self,
+                    item=eq.item,
+                    quantity=eq.quantity
+        )
+    
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     character_name = models.CharField(max_length=100)
 
@@ -116,10 +135,12 @@ class Character(models.Model):
     )
     
     level = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(20)])
-    background = models.CharField(
-        max_length=30,
-        choices=BackgroundChoices.choices,
-        default=BackgroundChoices.ACOLYTE,
+    background = models.ForeignKey(
+        Background,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='characters',
     )
     alignment = models.CharField(
         max_length=2,
@@ -276,3 +297,39 @@ class InventoryItem(models.Model):
 
     def __str__(self):
         return f"{self.item.name} (x{self.quantity})"
+    
+    
+class BackgroundStartingEquipment(models.Model):
+    background = models.ForeignKey(
+        Background,
+        on_delete=models.CASCADE,
+        related_name='starting_equipment'
+    )
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.background}: {self.item} x{self.quantity}"
+    
+
+class Skill(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
+class Tool(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.name
+    
+class BackgroundSkillProficiency(models.Model):
+    background = models.ForeignKey(Background, on_delete=models.CASCADE)
+    skill = models.ForeignKey(Skill, on_delete=models.CASCADE)
+
+
+class BackgroundToolProficiency(models.Model):
+    background = models.ForeignKey(Background, on_delete=models.CASCADE)
+    tool = models.ForeignKey(Tool, on_delete=models.CASCADE)

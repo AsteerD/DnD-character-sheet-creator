@@ -72,6 +72,14 @@ class Character(models.Model):
         blank=True,
         related_name='characters',
     )
+
+    subclass = models.ForeignKey(
+        'Subclass',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='characters',
+    )
     
 
     race = models.CharField(
@@ -109,6 +117,11 @@ class Character(models.Model):
     backstory = models.TextField(null=True, blank=True) 
     inspiration = models.BooleanField(default=False)
     languages = models.ManyToManyField(Language, blank=True)
+
+    @property
+    def total_armor_class(self):
+        dex_mod = (self.dexterity - 10) // 2
+        return 10 + dex_mod
 
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -206,3 +219,19 @@ class ClassSpell(models.Model):
         if self.subclass:
             return f"{self.character_class}/{self.subclass} → {self.spell} (lvl {self.unlock_level})"
         return f"{self.character_class} → {self.spell} (lvl {self.unlock_level})"
+
+class Item(models.Model):
+    name = models.CharField(max_length=100)
+    weight = models.DecimalField(max_digits=5, decimal_places=2, default=0.0)
+    value = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.name
+
+class InventoryItem(models.Model):
+    character = models.ForeignKey(Character, on_delete=models.CASCADE, related_name='inventory')
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.item.name} (x{self.quantity})"

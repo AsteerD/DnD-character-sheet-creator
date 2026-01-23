@@ -1,11 +1,13 @@
 from django.urls import path # pyright: ignore[reportMissingModuleSource]
 from .views import CharacterList, CharacterDetail, CharacterCreate, CharacterUpdate, CharacterDelete, CharacterDelete, character_spells, CustomLoginView
 from django.contrib.auth.views import LogoutView
+from .views import RegisterPage
 
 urlpatterns = [
     # --- AUTHENTICATION ---
     path('login/', CustomLoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(next_page='login'), name='logout'),
+    path('register/', RegisterPage.as_view(), name='register'),
 
     # --- CHARACTER ---
     path('', CharacterList.as_view(), name='characters'),

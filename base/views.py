@@ -1,13 +1,14 @@
 from django.shortcuts import render, redirect, get_object_or_404 # type: ignore
 from django.views.generic.list import ListView # type: ignore
 from django.views.generic.detail import DetailView # type: ignore
-from django.views.generic.edit import CreateView, UpdateView, DeleteView # type: ignore
+from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView# type: ignore
 from django.urls import reverse_lazy # type: ignore
 from .models import Character
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
-from .forms import SpellSelectionForm, CharacterForm
+from .forms import SpellSelectionForm, CharacterForm, CustomUserCreationForm
 from django.contrib.auth.views import LoginView
+from django.contrib.auth import login
 
 class CustomLoginView(LoginView):
     template_name = 'base/login.html'
@@ -16,6 +17,23 @@ class CustomLoginView(LoginView):
 
     def get_success_url(self):
         return reverse_lazy('characters')
+
+class RegisterPage(FormView):
+    template_name = 'base/register.html'
+    form_class = CustomUserCreationForm
+    redirect_authenticated_user = True
+    success_url = reverse_lazy('characters')
+
+    def form_valid(self, form):
+        user = form.save()
+        if user is not None:
+            login(self.request, user) # Automatyczne logowanie po rejestracji
+        return super(RegisterPage, self).form_valid(form)
+
+    def get(self, *args, **kwargs):
+        if self.request.user.is_authenticated:
+            return redirect('characters') # Przekieruj, jeśli już zalogowany
+        return super(RegisterPage, self).get(*args, **kwargs)
 
 class CharacterList(LoginRequiredMixin, ListView):
     model = Character

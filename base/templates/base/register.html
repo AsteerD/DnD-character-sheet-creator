@@ -3,8 +3,8 @@
 {% block content %}
 <div class="container" style="max-width: 400px; margin-top: 50px;">
     <div class="card shadow">
-        <div class="card-header bg-primary text-white text-center">
-            <h3>Login</h3>
+        <div class="card-header bg-success text-white text-center">
+            <h3>Sign Up</h3>
         </div>
         <div class="card-body">
             <form method="POST">
@@ -13,12 +13,12 @@
                 {{ form.as_p }}
 
                 <div class="d-grid gap-2 mt-4">
-                    <button type="submit" class="btn btn-primary">Log in</button>
+                    <button type="submit" class="btn btn-success">Create Account</button>
                 </div>
             </form>
         </div>
         <div class="card-footer text-center text-muted">
-            <p>Don't have an account? <a href="{% url 'register' %}">Sign up</a></p>
+            <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
         </div>
     </div>
 </div>

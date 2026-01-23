@@ -755,6 +755,7 @@
                     <h3>Backstory</h3>
                     <div class="story-box" id="charStory">—</div>
                 </div>
+                <button onclick="saveCharacter()">Save character</button>
 
             </div>
         </div>
@@ -899,9 +900,41 @@
             updateStats();
         });
     });
+     
+    function saveCharacter() {
+    const payload = {
+        character_name: character.name,
+        character_class: character.class,
+        race: character.race,
+        background: character.background,
+        alignment: character.alignment,
+        strength: character.stats.str,
+        dexterity: character.stats.dex,
+        constitution: character.stats.con,
+        intelligence: character.stats.int,
+        wisdom: character.stats.wis,
+        charisma: character.stats.cha,
+        backstory: character.story
+    };
+
+    fetch('/api/characters/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert('Postać zapisana!');
+        console.log(data);
+    })
+    .catch(err => console.error(err));
+}
 
     updateStats();
     </script>
 
 </body>
 </html>
+

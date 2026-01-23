@@ -2,7 +2,55 @@ from django.db import models # type: ignore
 from django.contrib.auth.models import User # type: ignore
 from django.core.validators import MinValueValidator, MaxValueValidator # type: ignore
 
+class Background(models.Model):
+    name = models.CharField(max_length=100, unique=True)
 
+    description = models.TextField(
+        help_text="General description of the background"
+    )
+
+    feature_name = models.CharField(
+        max_length=100,
+        help_text="Name of the background feature (e.g. Shelter of the Faithful)"
+    )
+
+    feature_description = models.TextField(
+        help_text="Rules text of the background feature"
+    )
+
+    def __str__(self):
+        return self.name
+
+
+class AbilityScoreChoices(models.TextChoices):
+    STRENGTH = 'strength', 'Strength'
+    DEXTERITY = 'dexterity', 'Dexterity'
+    CONSTITUTION = 'constitution', 'Constitution'
+    INTELLIGENCE = 'intelligence', 'Intelligence'
+    WISDOM = 'wisdom', 'Wisdom'
+    CHARISMA = 'charisma', 'Charisma'
+
+class RaceChoices(models.TextChoices):
+    AASIMAR = 'Aasimar', 'Aasimar'
+    HUMAN = 'Human', 'Human'
+    ELF = 'Elf', 'Elf'
+    DWARF = 'Dwarf', 'Dwarf'
+    HALFLING = 'Halfling', 'Halfling'
+    GNOME = 'Gnome', 'Gnome'
+    DRAGONBORN = 'Dragonborn', 'Dragonborn'
+    TIEFLING = 'Tiefling', 'Tiefling'
+    HALF_ELF = 'Half-Elf', 'Half-Elf'
+    HALF_ORC = 'Half-Orc', 'Half-Orc'
+    ORC = 'Orc', 'Orc'
+
+class RaceModifier(models.Model):
+    race = models.CharField(max_length=30, choices=RaceChoices.choices)
+    ability = models.CharField(max_length=20, choices=AbilityScoreChoices.choices)
+    modifier = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.race}: {self.ability} {self.modifier:+d}"
+    
 class Language(models.Model):
     name = models.CharField(max_length=100)
 
@@ -46,18 +94,24 @@ class BackgroundChoices(models.TextChoices):
     MERCENARY_VETERAN = 'Mercenary Veteran', 'Mercenary Veteran'
 
 
-class RaceChoices(models.TextChoices):
-    AASIMAR = 'Aasimar', 'Aasimar'
-    HUMAN = 'Human', 'Human'
-    ELF = 'Elf', 'Elf'
-    DWARF = 'Dwarf', 'Dwarf'
-    HALFLING = 'Halfling', 'Halfling'
-    GNOME = 'Gnome', 'Gnome'
-    DRAGONBORN = 'Dragonborn', 'Dragonborn'
-    TIEFLING = 'Tiefling', 'Tiefling'
-    HALF_ELF = 'Half-Elf', 'Half-Elf'
-    HALF_ORC = 'Half-Orc', 'Half-Orc'
-    ORC = 'Orc', 'Orc'
+class StartingEquipment(models.Model):
+    character_class = models.ForeignKey('CharacterClass', on_delete=models.CASCADE, related_name='starting_equipment')
+    item = models.ForeignKey('Item', on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.character_class}: {self.item} x{self.quantity}"
+
+class Skill(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    ability = models.CharField(
+        max_length=20,
+        choices=AbilityScoreChoices.choices,
+        default=AbilityScoreChoices.DEXTERITY,
+    )
+
+    def __str__(self):
+        return self.name
 
 
 
@@ -132,6 +186,34 @@ class ClassSpell(models.Model):
         return f"{self.character_class} -> {self.spell} (lvl {self.unlock_level})"
 
 class Character(models.Model):
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        self.armor_class = self.total_armor_class
+        self.initiative = self.calculate_initiative
+
+        self.speed = 30
+        self.hit_dice = self.calculate_hit_dice
+        self.hit_points = self.calculate_hit_points
+        self.temporary_hit_points = 0
+        self.death_saves_success = 0
+        self.death_saves_failure = 0
+
+        super().save(*args, **kwargs)
+        # Assign starting equipment only when character is first created
+        if is_new:
+            equipment_qs = StartingEquipment.objects.filter(character_class=self.character_class)
+            for eq in equipment_qs:
+                InventoryItem.objects.create(character=self, item=eq.item, quantity=eq.quantity)
+    
+            # background equipment
+            bg_equipment = BackgroundStartingEquipment.objects.filter(background=self.background)
+            for eq in bg_equipment:
+                InventoryItem.objects.create(
+                    character=self,
+                    item=eq.item,
+                    quantity=eq.quantity
+        )
+    
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     character_name = models.CharField(max_length=100)
 
@@ -151,10 +233,12 @@ class Character(models.Model):
     )
     
     level = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(20)])
-    background = models.CharField(
-        max_length=30,
-        choices=BackgroundChoices.choices,
-        default=BackgroundChoices.ACOLYTE,
+    background = models.ForeignKey(
+        Background,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='characters',
     )
     alignment = models.CharField(
         max_length=2,
@@ -193,7 +277,108 @@ class Character(models.Model):
     # The spells the character actually knows/prepared
     spells = models.ManyToManyField(Spell, blank=True, related_name='learned_by_characters')
 
+    @property
+    def calculate_initiative(self):
+        """
+        Calculates total Initiative based on character class and features.
+        Default: DEX mod
+        Extend as needed for other classes/features.
+        """
+        dex_mod = (self.dexterity - 10) // 2
+        return dex_mod
+    
+    @property
+    def calculate_hit_dice(self):
+        class_hit_dice = {
+            'Barbarian': 12,
+            'Bard': 8,
+            'Cleric': 8,
+            'Druid': 8,
+            'Fighter': 10,
+            'Monk': 8,
+            'Paladin': 10,
+            'Ranger': 10,
+            'Rogue': 8,
+            'Sorcerer': 6,
+            'Warlock': 8,
+            'Wizard': 6,
+        }
+        if self.character_class and self.character_class.name in class_hit_dice:
+            return class_hit_dice[self.character_class.name]
+        return 8
+    
+    @property
+    def calculate_hit_points(self):
+        con_mod = (self.constitution - 10) // 2
+        hit_die = self.calculate_hit_dice
+        return hit_die + con_mod + ( (self.level - 1) * ( (hit_die // 2) + 1 + con_mod ) )
+
+    @property
+    def total_armor_class(self):
+        """
+        Calculates total Armor Class (AC) based on character class and features.
+        Default: 10 + DEX mod
+        Monk: 10 + DEX mod + WIS mod (if not wearing armor)
+        Barbarian: 10 + DEX mod + CON mod (if not wearing armor)
+        Extend as needed for other classes/features.
+        """
+        dex_mod = (self.dexterity - 10) // 2
+        wis_mod = (self.wisdom - 10) // 2
+        con_mod = (self.constitution - 10) // 2
+        char_class = self.character_class.name.lower() if self.character_class else ""
+        if char_class == "monk":
+            return 10 + dex_mod + wis_mod
+        elif char_class == "barbarian":
+            return 10 + dex_mod + con_mod
+        return 10 + dex_mod
+
     created_at = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def proficiency_bonus(self):
+        # D&D 5e
+        return 2 + (self.level - 1) // 4
+    
+    def get_ability_modifier(self, ability_name: str) -> int:
+        score = getattr(self, ability_name)
+        return (score - 10) // 2
+
+    def get_skill_bonus(self, skill: Skill) -> int:
+        bonus = self.get_ability_modifier(skill.ability)
+
+        if skill in self.get_skill_proficiencies():
+            bonus += self.proficiency_bonus
+
+        return bonus
+
+    def get_skill_proficiencies(self):
+        """
+        Skille, w których postać ma proficiency
+        (background + wybory gracza)
+        """
+        skills = Skill.objects.none()
+
+        # background (automatycznie)
+        if self.background:
+            skills |= Skill.objects.filter(
+                backgroundskillproficiency__background=self.background
+            )
+
+        # wybory gracza (klasa)
+        skills |= Skill.objects.filter(
+            characterskillproficiency__character=self
+        )
+
+        return skills.distinct()
+    
+    def get_background_skill_proficiencies(self):
+        background = Background.objects.filter(name=self.background).first()
+        if not background:
+            return Skill.objects.none()
+
+        return Skill.objects.filter(
+            backgroundskillproficiency__background=background
+        )
 
     def __str__(self):
         return f"{self.character_name} ({self.character_class} Lvl {self.level})"

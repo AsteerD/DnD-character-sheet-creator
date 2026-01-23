@@ -9,6 +9,11 @@
     </a>
 </div>
 
+<form method="GET">
+	<input type="text" name="search" placeholder="Search characters..." value="{{search_input}}">
+	<button type="submit">Search</button>
+</form>
+
 {% if characters %}
     <div class="table-responsive">
         <table class="table table-hover table-striped align-middle">

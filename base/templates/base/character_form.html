@@ -1,83 +1,146 @@
-<h1>
-  {% if form.instance.pk %}Edit Character{% else %}Create Character{% endif %}
-</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Character Creator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Drobna poprawka, żeby lista atutów miała pasek przewijania, jeśli jest ich dużo */
+        .feats-container { max-height: 80vh; overflow-y: auto; padding-right: 5px; }
+        /* Kursor rączki na napisie "Pokaż opis" */
+        summary { cursor: pointer; outline: none; }
+    </style>
+</head>
+<body class="bg-light p-4">
 
-<form method="POST" action="">
-  {% csrf_token %}
-  
-  <button type="submit">
-    {% if form.instance.pk %}Save{% else %}Create{% endif %}
-  </button>
+<div class="container bg-white p-4 border rounded shadow-sm">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <h2 class="m-0">
+            {% if form.instance.pk %}Edit Character{% else %}Create Character{% endif %}
+        </h2>
+        <a href="{% url 'characters' %}" class="btn btn-outline-secondary">Back to List</a>
+    </div>
 
-  {{ form.as_p }}
+    <form method="POST" id="characterForm">
+        {% csrf_token %}
 
-  <button type="submit">
-    {% if form.instance.pk %}Save{% else %}Create{% endif %}
-  </button>
-</form>
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+        {% endif %}
 
-<p><a href="{% url 'characters' %}">Back to list</a></p>
+        <div class="row">
+            <div class="col-md-7">
+                <h4 class="text-primary">Stats</h4>
+                <hr>
+                <div class="row">
+                    {% for field in form %}
+                        {% if field.name != 'feats' %}
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold small text-muted text-uppercase">{{ field.label }}</label>
+                                {{ field }} 
+                                {% if field.errors %}
+                                    <div class="text-danger small">{{ field.errors }}</div>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="col-md-5">
+                <div class="bg-light p-3 rounded h-100 border">
+                    <h4 class="text-primary">Feats</h4>
+                    <small class="text-muted d-block mb-2">Available at levels: 4, 8, 12, 16, 19</small>
+                    <hr>
+                    
+                    {% if form.feats.errors %}
+                        <div class="alert alert-danger">{{ form.feats.errors }}</div>
+                    {% endif %}
+
+                    <div class="feats-container">
+                        {% for feat in all_feats %}
+                            <div class="card mb-2 border-0 shadow-sm">
+                                <div class="card-body p-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input mt-1" type="checkbox" 
+                                               name="feats" 
+                                               value="{{ feat.id }}" 
+                                               id="feat_{{ feat.id }}"
+                                               style="transform: scale(1.2);"
+                                               {% if feat in form.instance.feats.all %}checked{% endif %}>
+                                        
+                                        <label class="form-check-label fw-bold ms-2 text-dark" for="feat_{{ feat.id }}">
+                                            {{ feat.name }}
+                                        </label>
+                                        
+                                        <details class="ms-2 mt-1">
+                                            <summary class="text-primary small user-select-none"></summary>
+                                            <div class="mt-2 small text-secondary border-top pt-2">
+                                                {{ feat.description|linebreaksbr }}
+                                                {% if feat.prerequisite %}
+                                                    <div class="text-danger fw-bold mt-1">
+                                                        Wymagania: {{ feat.prerequisite }}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </details>
+                                    </div>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="alert alert-warning">Brak atutów w bazie.</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-grid gap-2 mt-4 pt-3 border-top">
+            <button type="submit" class="btn btn-success btn-lg fw-bold">Save Character</button>
+        </div>
+    </form>
+</div>
 
 <script>
-const classSelect = document.getElementById("id_character_class");
-const subclassSelect = document.getElementById("id_subclass");
+    document.addEventListener("DOMContentLoaded", function() {
+        // Pobieramy elementy po ich ID generowanym przez Django
+        const classSelect = document.getElementById('id_character_class');
+        const subclassSelect = document.getElementById('id_subclass');
 
-classSelect.addEventListener("change", function () {
-    const classId = this.value;
+        console.log("Skrypt załadowany.");
+        console.log("Pole Klasy:", classSelect);
+        console.log("Pole Podklasy:", subclassSelect);
 
-    subclassSelect.innerHTML = "<option value=''>---------</option>";
+        if (classSelect && subclassSelect) {
+            classSelect.addEventListener('change', function() {
+                const classId = this.value;
+                console.log("Zmieniono klasę na ID:", classId);
 
-    if (!classId) return;
+                if (classId) {
+                    const url = "{% url 'ajax_load_subclasses' %}"; 
+                    console.log("Wysyłam zapytanie do:", `${url}?class_id=${classId}`);
 
-    fetch(`/ajax/subclasses/?class_id=${classId}`)
-        .then(res => res.json())
-        .then(data => {
-            data.forEach(subclass => {
-                const opt = document.createElement("option");
-                opt.value = subclass.id;
-                opt.textContent = subclass.name;
-                subclassSelect.appendChild(opt);
+                    fetch(`${url}?class_id=${classId}`)
+                        .then(response => {
+                            if (!response.ok) {
+                                console.error("Błąd sieci:", response.status);
+                                throw new Error("Network response was not ok");
+                            }
+                            return response.text();
+                        })
+                        .then(html => {
+                            console.log("Otrzymano odpowiedź (HTML):", html);
+                            subclassSelect.innerHTML = html;
+                        })
+                        .catch(error => console.error('Błąd fetch:', error));
+                } else {
+                    subclassSelect.innerHTML = '<option value="">---------</option>';
+                }
             });
-        });
-});
-</script>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const classSelect = document.getElementById('id_character_class');
-    const skillsContainer = document.querySelector('#id_skills');
-
-    function updateSkills(classId) {
-        fetch(`/skills-for-class/?class_id=${classId}`)
-            .then(response => response.json())
-            .then(data => {
-                // Clear existing checkboxes
-                skillsContainer.innerHTML = '';
-
-                data.forEach(skill => {
-                    const label = document.createElement('label');
-                    label.style.display = 'block';
-                    const input = document.createElement('input');
-                    input.type = 'checkbox';
-                    input.name = 'skills';
-                    input.value = skill.id;
-                    label.appendChild(input);
-                    label.appendChild(document.createTextNode(' ' + skill.name));
-                    skillsContainer.appendChild(label);
-                });
-            });
-    }
-
-    classSelect.addEventListener('change', function() {
-        const selectedClass = this.value;
-        if (selectedClass) {
-            updateSkills(selectedClass);
+        } else {
+            console.error("Nie znaleziono pól formularza! Sprawdź ID.");
         }
     });
-
-    // Optional: trigger update on page load if class already selected
-    if (classSelect.value) {
-        updateSkills(classSelect.value);
-    }
-});
 </script>

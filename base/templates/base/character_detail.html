@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ character.character_name }}</title>
+</head>
+<body>
+
+    <h1>{{ character.character_name }}</h1>
+    <p>
+        <strong>Level:</strong> {{ character.level }} | 
+        <strong>Race:</strong> {{ character.race }} | 
+        <strong>Class:</strong> {{ character.character_class }} 
+        {% if character.subclass %}({{ character.subclass.name }}){% endif %}
+    </p>
+
+    <p>
+        <a href="{% url 'character-update' character.pk %}">[Edit Character]</a>
+        <a href="{% url 'character-delete' character.pk %}">[Delete Character]</a>
+        <a href="{% url 'characters' %}">[Back to List]</a>
+    </p>
+
+    <hr>
+
+    <h2>Attributes</h2>
+    <ul>
+        <li><strong>STR:</strong> {{ character.strength }}</li>
+        <li><strong>DEX:</strong> {{ character.dexterity }}</li>
+        <li><strong>CON:</strong> {{ character.constitution }}</li>
+        <li><strong>INT:</strong> {{ character.intelligence }}</li>
+        <li><strong>WIS:</strong> {{ character.wisdom }}</li>
+        <li><strong>CHA:</strong> {{ character.charisma }}</li>
+    </ul>
+
+    <hr>
+
+    <h2>Combat</h2>
+    <ul>
+        <li><strong>HP:</strong> {{ character.hit_points }}</li>
+        <li><strong>AC:</strong> {{ character.armor_class }}</li>
+        <li><strong>Speed:</strong> {{ character.speed }} ft.</li>
+        <li><strong>Initiative:</strong> {{ character.initiative }}</li>
+    </ul>
+
+    <hr>
+
+    <h2>Background</h2>
+    <p><strong>Background:</strong> {{ character.background }}</p>
+    <p><strong>Alignment:</strong> {{ character.get_alignment_display }}</p>
+    <h3>Backstory:</h3>
+    <p>{{ character.backstory|default:"No backstory."|linebreaksbr }}</p>
+
+    <hr>
+
+    <h2>Feats</h2>
+    {% if character.feats.all %}
+        <ul>
+        {% for feat in character.feats.all %}
+            <li>
+                <strong>{{ feat.name }}</strong>: {{ feat.description }}
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>None.</p>
+    {% endif %}
+
+    <h2>Languages</h2>
+    {% if character.languages.all %}
+        <ul>
+        {% for language in character.languages.all %}
+            <li>{{ language.name }}</li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>None.</p>
+    {% endif %}
+
+</body>
+</html>

@@ -165,7 +165,7 @@ def subclasses_for_class(request):
     class_id = request.GET.get("class_id")
     subclasses = Subclass.objects.filter(character_class_id=class_id)
     data = [{"id": s.id, "name": s.name} for s in subclasses]
-    return JsonResponse(data, safe=False)
+    
 
 
 def skills_for_class(request):

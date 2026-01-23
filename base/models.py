@@ -72,6 +72,10 @@ class BackgroundChoices(models.TextChoices):
     MERCENARY_VETERAN = 'Mercenary Veteran', 'Mercenary Veteran'
 
 class Character(models.Model):
+    def save(self, *args, **kwargs):
+        # Automatically set armor_class using the property
+        self.armor_class = self.total_armor_class
+        super().save(*args, **kwargs)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     character_name = models.CharField(max_length=100)
 
@@ -116,7 +120,7 @@ class Character(models.Model):
     intelligence = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(30)])
     wisdom = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(30)])
     charisma = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(30)])
-    armor_class = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(100)])
+    armor_class = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(100)], blank=True, editable=False, default=10)
     initiative = models.IntegerField()
     speed = models.IntegerField(validators=[MinValueValidator(1)])
     hit_points = models.IntegerField(validators=[MinValueValidator(1)])
@@ -130,7 +134,21 @@ class Character(models.Model):
 
     @property
     def total_armor_class(self):
+        """
+        Calculates total Armor Class (AC) based on character class and features.
+        Default: 10 + DEX mod
+        Monk: 10 + DEX mod + WIS mod (if not wearing armor)
+        Barbarian: 10 + DEX mod + CON mod (if not wearing armor)
+        Extend as needed for other classes/features.
+        """
         dex_mod = (self.dexterity - 10) // 2
+        wis_mod = (self.wisdom - 10) // 2
+        con_mod = (self.constitution - 10) // 2
+        char_class = self.character_class.name.lower() if self.character_class else ""
+        if char_class == "monk":
+            return 10 + dex_mod + wis_mod
+        elif char_class == "barbarian":
+            return 10 + dex_mod + con_mod
         return 10 + dex_mod
 
     created_at = models.DateTimeField(auto_now_add=True)

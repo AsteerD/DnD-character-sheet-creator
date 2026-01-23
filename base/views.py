@@ -10,7 +10,7 @@ from django.contrib.auth import login
 
 from .models import Character
 
-CHARACTER_FORM_FIELDS = ['character_name', 'character_class', 'subclass', 'race', 'level', 'background', 'alignment', 'experience_points', 'strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma', 'armor_class', 'initiative', 'speed', 'hit_points', 'temporary_hit_points', 'hit_dice', 'death_saves_success', 'death_saves_failure', 'backstory', 'inspiration', 'languages']
+CHARACTER_FORM_FIELDS = ['character_name', 'character_class', 'subclass', 'race', 'level', 'background', 'alignment', 'experience_points', 'strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma', 'initiative', 'speed', 'hit_points', 'temporary_hit_points', 'hit_dice', 'death_saves_success', 'death_saves_failure', 'backstory', 'inspiration', 'languages']
 
 class CustomLoginView(LoginView):
     template_name = 'base/login.html'

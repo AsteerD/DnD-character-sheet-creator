@@ -81,5 +81,5 @@ class CharacterUpdate(LoginRequiredMixin, UpdateView):
 
 class CharacterDelete(LoginRequiredMixin, DeleteView):
     model = Character
-    template_name = 'base/character_form.html'
+    template_name = 'base/character_confirm_delete.html'
     success_url = reverse_lazy('characters')

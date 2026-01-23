@@ -10,6 +10,9 @@ from django.contrib.auth import login
 
 from .models import Character
 
+CHARACTER_FORM_FIELDS = ['character_name', 'character_class', 'subclass', 'race', 'level', 'background', 'alignment', 'experience_points', 'strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma', 'armor_class', 'initiative', 'speed', 'hit_points', 'temporary_hit_points', 'hit_dice', 'death_saves_success', 'death_saves_failure', 'backstory', 'inspiration', 'languages']
+
+
 class CustomLoginView(LoginView):
     template_name = 'base/login.html'
     fields = '__all__'
@@ -56,7 +59,7 @@ class CharacterDetail(LoginRequiredMixin, DetailView):
 
 class CharacterCreate(LoginRequiredMixin,CreateView):
     model = Character
-    fields = ['character_name', 'character_class', 'subclass', 'race', 'level', 'background', 'alligment', 'experience_points', 'strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma', 'armor_class', 'initiative', 'speed', 'hit_points', 'temporary_hit_points', 'hit_dice', 'death_saves_success', 'death_saves_failure', 'backstory', 'inspiration', 'languages']
+    fields = CHARACTER_FORM_FIELDS
     template_name = 'base/character_form.html'
     success_url = reverse_lazy('characters')
 
@@ -66,7 +69,7 @@ class CharacterCreate(LoginRequiredMixin,CreateView):
 
 class CharacterUpdate(LoginRequiredMixin, UpdateView):
     model = Character
-    fields = '__all__'
+    fields = CHARACTER_FORM_FIELDS
     template_name = 'base/character_form.html'
     success_url = reverse_lazy('characters')
 

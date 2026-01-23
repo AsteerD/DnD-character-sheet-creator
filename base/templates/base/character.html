@@ -1,5 +1,19 @@
 <h1>Character detail: {{ character.character_name }}</h1>
 
+{% if character %}
+<div class="mb-3">
+    <a href="{% url 'character-update' character.pk %}" class="btn btn-sm btn-outline-primary">Edit</a>
+    
+    <a href="{% url 'character-delete' character.pk %}" class="btn btn-sm btn-outline-danger">Delete</a>
+
+    {% if character.character_class.spells.exists %}
+        <a href="{% url 'character_spells' character.pk %}" class="btn btn-sm btn-warning fw-bold ms-2">
+            ✨ Manage Spells
+        </a>
+    {% endif %}
+</div>
+{% endif %}
+
 <style>
   .detail-table { border-collapse: collapse; width: 100%; max-width: 900px; box-shadow: 0 0 0 1px #444; }
   .detail-table th, .detail-table td { border: 1px solid #444; padding: 8px 10px; vertical-align: top; }

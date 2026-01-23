@@ -1,6 +1,6 @@
 # base/forms.py
 from django import forms
-from .models import Character, Skill, Subclass, CharacterClass
+from .models import Character, Skill, Subclass, CharacterClass, Spell
 
 class CharacterForm(forms.ModelForm):
     skills = forms.ModelMultipleChoiceField(
@@ -97,3 +97,27 @@ class CharacterForm(forms.ModelForm):
             self.fields['skills'].queryset = Skill.objects.none()
 
         print("DEBUG: skills queryset =", list(self.fields['skills'].queryset))
+
+class SpellSelectionForm(forms.ModelForm):
+    class Meta:
+        model = Character
+        fields = ['spells']
+        widgets = {
+            'spells': forms.CheckboxSelectMultiple,
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        character = self.instance
+
+        if character and character.pk:
+            # Pobieramy obiekt klasy i poziom postaci
+            char_class = character.character_class
+            char_level = character.level
+            
+            
+            self.fields['spells'].queryset = Spell.objects.filter(
+                classspell__character_class=char_class,
+                classspell__unlock_level__lte=char_level
+            ).order_by('level', 'name').distinct()
+            self.fields['spells'].label = ""

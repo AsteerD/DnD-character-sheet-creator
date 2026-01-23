@@ -2,12 +2,13 @@ from django.views.generic.list import ListView # type: ignore
 from django.views.generic.detail import DetailView # type: ignore
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView # type: ignore
 from django.urls import reverse_lazy # type: ignore
-from django.shortcuts import render, redirect # type: ignore
+from django.shortcuts import render, redirect, get_object_or_404 # type: ignore
 from django.contrib.auth.views import LoginView 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
-from .forms import CharacterForm
+from .forms import CharacterForm, SpellSelectionForm
+from django.contrib.auth.decorators import login_required
 
 from .models import Character, Background, CharacterClass, Skill
 
@@ -164,3 +165,22 @@ def skills_for_class(request):
     except CharacterClass.DoesNotExist:
         data = []
     return JsonResponse(data, safe=False)
+
+@login_required
+def character_spells(request, pk):
+    # Get character only if it belongs to the current user
+    character = get_object_or_404(Character, pk=pk, user=request.user)
+
+    if request.method == 'POST':
+        form = SpellSelectionForm(request.POST, instance=character)
+        if form.is_valid():
+            form.save()
+            return redirect('character', pk=character.pk) 
+    else:
+        form = SpellSelectionForm(instance=character)
+
+    context = {
+        'form': form,
+        'character': character
+    }
+    return render(request, 'base/character_spells.html', context)

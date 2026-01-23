@@ -2,6 +2,8 @@ from django.urls import path # pyright: ignore[reportMissingModuleSource]
 from .views import CharacterList, CharacterDetail, CharacterCreate, CharacterUpdate, CharacterDelete, CharacterDelete, CustomLoginView, RegisterPage 
 from django.contrib.auth.views import LogoutView
 
+from base import views
+
 
 urlpatterns = [
     path('login/', CustomLoginView.as_view(), name='login'),
@@ -14,4 +16,5 @@ urlpatterns = [
     path('character-create/', CharacterCreate.as_view(), name='character-create'),
     path('character-update/<int:pk>/', CharacterUpdate.as_view(), name='character-update'),
     path('character-delete/<int:pk>/', CharacterDelete.as_view(), name='character-delete'),
+    path("ajax/subclasses/", views.subclasses_for_class, name="subclasses_for_class"),
 ]

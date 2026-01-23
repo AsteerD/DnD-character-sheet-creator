@@ -80,13 +80,16 @@ class StartingEquipment(models.Model):
     def __str__(self):
         return f"{self.character_class}: {self.item} x{self.quantity}"
 
-class StartingEquipment(models.Model):
-    character_class = models.ForeignKey('CharacterClass', on_delete=models.CASCADE, related_name='starting_equipment')
-    item = models.ForeignKey('Item', on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(default=1)
+class Skill(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    ability = models.CharField(
+        max_length=20,
+        choices=AbilityScoreChoices.choices,
+        default=AbilityScoreChoices.DEXTERITY,
+    )
 
     def __str__(self):
-        return f"{self.character_class}: {self.item} x{self.quantity}"
+        return self.name
 
 class Character(models.Model):
     def save(self, *args, **kwargs):
@@ -187,6 +190,52 @@ class Character(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
 
+    @property
+    def proficiency_bonus(self):
+        # D&D 5e
+        return 2 + (self.level - 1) // 4
+    
+    def get_ability_modifier(self, ability_name: str) -> int:
+        score = getattr(self, ability_name)
+        return (score - 10) // 2
+
+    def get_skill_bonus(self, skill: Skill) -> int:
+        bonus = self.get_ability_modifier(skill.ability)
+
+        if skill in self.get_skill_proficiencies():
+            bonus += self.proficiency_bonus
+
+        return bonus
+
+    def get_skill_proficiencies(self):
+        """
+        Skille, w których postać ma proficiency
+        (background + wybory gracza)
+        """
+        skills = Skill.objects.none()
+
+        # background (automatycznie)
+        if self.background:
+            skills |= Skill.objects.filter(
+                backgroundskillproficiency__background=self.background
+            )
+
+        # wybory gracza (klasa)
+        skills |= Skill.objects.filter(
+            characterskillproficiency__character=self
+        )
+
+        return skills.distinct()
+    
+    def get_background_skill_proficiencies(self):
+        background = Background.objects.filter(name=self.background).first()
+        if not background:
+            return Skill.objects.none()
+
+        return Skill.objects.filter(
+            backgroundskillproficiency__background=background
+        )
+
     def __str__(self):
         return f"{self.character_name}, {self.created_at}, {self.user}, {self.character_class}"
     
@@ -212,6 +261,7 @@ class Character(models.Model):
 
 class CharacterClass(models.Model):
     name = models.CharField(max_length=100, unique=True)
+    skill_choices_count = models.IntegerField(default=2)
 
     def __str__(self):
         return self.name
@@ -311,14 +361,6 @@ class BackgroundStartingEquipment(models.Model):
     def __str__(self):
         return f"{self.background}: {self.item} x{self.quantity}"
     
-
-class Skill(models.Model):
-    name = models.CharField(max_length=50, unique=True)
-
-    def __str__(self):
-        return self.name
-
-
 class Tool(models.Model):
     name = models.CharField(max_length=100, unique=True)
 
@@ -333,3 +375,14 @@ class BackgroundSkillProficiency(models.Model):
 class BackgroundToolProficiency(models.Model):
     background = models.ForeignKey(Background, on_delete=models.CASCADE)
     tool = models.ForeignKey(Tool, on_delete=models.CASCADE)
+
+class CharacterSkillProficiency(models.Model):
+    character = models.ForeignKey(Character, on_delete=models.CASCADE)
+    skill = models.ForeignKey(Skill, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('character', 'skill')
+
+class ClassSkillChoice(models.Model):
+    character_class = models.ForeignKey(CharacterClass, on_delete=models.CASCADE)
+    skill = models.ForeignKey(Skill, on_delete=models.CASCADE)

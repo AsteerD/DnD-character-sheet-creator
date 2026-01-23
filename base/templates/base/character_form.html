@@ -1,10 +1,19 @@
-<h1>{% if form.instance.pk %}Edit Character{% else %}Create Character{% endif %}</h1>
-<button type="submit">{% if form.instance.pk %}Save{% else %}Create{% endif %}</button>
-<p><a href="{% url 'characters' %}">Back to list</a></p>
+<h1>
+  {% if form.instance.pk %}Edit Character{% else %}Create Character{% endif %}
+</h1>
+
 <form method="POST" action="">
   {% csrf_token %}
+  
+  <button type="submit">
+    {% if form.instance.pk %}Save{% else %}Create{% endif %}
+  </button>
+
   {{ form.as_p }}
-  <button type="submit">{% if form.instance.pk %}Save{% else %}Create{% endif %}</button>
+
+  <button type="submit">
+    {% if form.instance.pk %}Save{% else %}Create{% endif %}
+  </button>
 </form>
 
-
+<p><a href="{% url 'characters' %}">Back to list</a></p>

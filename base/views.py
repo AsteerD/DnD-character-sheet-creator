@@ -7,8 +7,9 @@ from django.contrib.auth.views import LoginView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
+from .forms import CharacterForm
 
-from .models import Character, Background
+from .models import Character, Background, CharacterClass, Skill
 
 CHARACTER_FORM_FIELDS = ['character_name', 'character_class', 'subclass', 'race', 'level', 'background', 'alignment', 'experience_points', 'strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma', 'initiative', 'speed', 'hit_points', 'temporary_hit_points', 'hit_dice', 'death_saves_success', 'death_saves_failure', 'backstory', 'inspiration', 'languages']
 
@@ -74,25 +75,92 @@ class CharacterDetail(LoginRequiredMixin, DetailView):
         ).first()
         context['background_obj'] = background_obj
 
+        context['skill_proficiencies'] = character.get_skill_proficiencies()
+
+        skills_data = []
+        for skill in Skill.objects.all():
+            skills_data.append({
+                "skill": skill,
+                "ability": skill.get_ability_display(),
+                "is_proficient": skill in character.get_skill_proficiencies(),
+                "bonus": character.get_skill_bonus(skill),
+            })
+
+        context["skills_data"] = skills_data
+
         return context
 
-class CharacterCreate(LoginRequiredMixin,CreateView):
+class CharacterCreate(LoginRequiredMixin, CreateView):
     model = Character
-    fields = CHARACTER_FORM_FIELDS
+    form_class = CharacterForm
     template_name = 'base/character_form.html'
     success_url = reverse_lazy('characters')
 
     def form_valid(self, form):
         form.instance.user = self.request.user
-        return super(CharacterCreate, self).form_valid(form)
+        response = super().form_valid(form)
+        self._save_skills(form)
+        return response
+
+    def _save_skills(self, form):
+        from .models import CharacterSkillProficiency
+
+        CharacterSkillProficiency.objects.filter(
+            character=self.object
+        ).delete()
+
+        for skill in form.cleaned_data.get("skills", []):
+            CharacterSkillProficiency.objects.create(
+                character=self.object,
+                skill=skill
+            )
 
 class CharacterUpdate(LoginRequiredMixin, UpdateView):
     model = Character
-    fields = CHARACTER_FORM_FIELDS
+    form_class = CharacterForm
     template_name = 'base/character_form.html'
     success_url = reverse_lazy('characters')
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        self._save_skills(form)
+        return response
+
+    def _save_skills(self, form):
+        from .models import CharacterSkillProficiency
+
+        CharacterSkillProficiency.objects.filter(
+            character=self.object
+        ).delete()
+
+        for skill in form.cleaned_data.get("skills", []):
+            CharacterSkillProficiency.objects.create(
+                character=self.object,
+                skill=skill
+            )
 
 class CharacterDelete(LoginRequiredMixin, DeleteView):
     model = Character
     template_name = 'base/character_confirm_delete.html'
     success_url = reverse_lazy('characters')
+
+
+from django.http import JsonResponse
+from .models import Subclass
+
+def subclasses_for_class(request):
+    class_id = request.GET.get("class_id")
+    subclasses = Subclass.objects.filter(character_class_id=class_id)
+    data = [{"id": s.id, "name": s.name} for s in subclasses]
+    return JsonResponse(data, safe=False)
+
+
+def skills_for_class(request):
+    class_id = request.GET.get("class_id")
+    try:
+        char_class = CharacterClass.objects.get(pk=class_id)
+        skills = Skill.objects.filter(classskillchoice__character_class=char_class)
+        data = [{"id": s.id, "name": s.name} for s in skills]
+    except CharacterClass.DoesNotExist:
+        data = []
+    return JsonResponse(data, safe=False)

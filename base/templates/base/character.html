@@ -80,16 +80,6 @@
 {% endif %}
 
 
-{% if background_obj.backgroundskillproficiency_set.all %}
-  <h3>Background Skill Proficiencies</h3>
-  <ul>
-    {% for prof in background_obj.backgroundskillproficiency_set.all %}
-      <li>{{ prof.skill.name }}</li>
-    {% endfor %}
-  </ul>
-{% endif %}
-
-
 {% if background_obj.backgroundtoolproficiency_set.all %}
   <h3>Tool Proficiencies</h3>
   <ul>
@@ -108,6 +98,26 @@
     {% endfor %}
   </ul>
 {% endif %}
+
+<h2>Skills</h2>
+<table class="detail-table">
+  <thead>
+    <tr>
+      <th>Skill</th>
+      <th>Ability</th>
+      <th>Proficient</th>
+      <th>Bonus</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in skills_data %}
+      <tr>
+        <td>{{ row.skill.name }}</td>
+        <td>{{ row.ability }}</td>
+        <td>{% if row.is_proficient %}✓{% else %}—{% endif %}</td>
+        <td>{{ row.bonus }}</td>
+      </tr>
+    {% endfor %}
     </tbody>
   </table>
 {% else %}

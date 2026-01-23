@@ -80,12 +80,19 @@ class StartingEquipment(models.Model):
     def __str__(self):
         return f"{self.character_class}: {self.item} x{self.quantity}"
 
+class StartingEquipment(models.Model):
+    character_class = models.ForeignKey('CharacterClass', on_delete=models.CASCADE, related_name='starting_equipment')
+    item = models.ForeignKey('Item', on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.character_class}: {self.item} x{self.quantity}"
+
 class Character(models.Model):
     def save(self, *args, **kwargs):
         is_new = self.pk is None
         self.armor_class = self.total_armor_class
         super().save(*args, **kwargs)
-        
         # Assign starting equipment only when character is first created
         if is_new:
             equipment_qs = StartingEquipment.objects.filter(character_class=self.character_class)

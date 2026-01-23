@@ -95,6 +95,15 @@ class Character(models.Model):
     def save(self, *args, **kwargs):
         is_new = self.pk is None
         self.armor_class = self.total_armor_class
+        self.initiative = self.calculate_initiative
+
+        self.speed = 30
+        self.hit_dice = self.calculate_hit_dice
+        self.hit_points = self.calculate_hit_points
+        self.temporary_hit_points = 0
+        self.death_saves_success = 0
+        self.death_saves_failure = 0
+
         super().save(*args, **kwargs)
         # Assign starting equipment only when character is first created
         if is_new:
@@ -168,6 +177,42 @@ class Character(models.Model):
     backstory = models.TextField(null=True, blank=True) 
     inspiration = models.BooleanField(default=False)
     languages = models.ManyToManyField(Language, blank=True)
+
+    @property
+    def calculate_initiative(self):
+        """
+        Calculates total Initiative based on character class and features.
+        Default: DEX mod
+        Extend as needed for other classes/features.
+        """
+        dex_mod = (self.dexterity - 10) // 2
+        return dex_mod
+    
+    @property
+    def calculate_hit_dice(self):
+        class_hit_dice = {
+            'Barbarian': 12,
+            'Bard': 8,
+            'Cleric': 8,
+            'Druid': 8,
+            'Fighter': 10,
+            'Monk': 8,
+            'Paladin': 10,
+            'Ranger': 10,
+            'Rogue': 8,
+            'Sorcerer': 6,
+            'Warlock': 8,
+            'Wizard': 6,
+        }
+        if self.character_class and self.character_class.name in class_hit_dice:
+            return class_hit_dice[self.character_class.name]
+        return 8
+    
+    @property
+    def calculate_hit_points(self):
+        con_mod = (self.constitution - 10) // 2
+        hit_die = self.calculate_hit_dice
+        return hit_die + con_mod + ( (self.level - 1) * ( (hit_die // 2) + 1 + con_mod ) )
 
     @property
     def total_armor_class(self):

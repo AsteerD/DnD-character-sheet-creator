@@ -2,7 +2,35 @@ from django.db import models # type: ignore
 from django.contrib.auth.models import User # type: ignore
 from django.core.validators import MinValueValidator, MaxValueValidator # type: ignore
 
+class AbilityScoreChoices(models.TextChoices):
+    STRENGTH = 'strength', 'Strength'
+    DEXTERITY = 'dexterity', 'Dexterity'
+    CONSTITUTION = 'constitution', 'Constitution'
+    INTELLIGENCE = 'intelligence', 'Intelligence'
+    WISDOM = 'wisdom', 'Wisdom'
+    CHARISMA = 'charisma', 'Charisma'
 
+class RaceChoices(models.TextChoices):
+    AASIMAR = 'Aasimar', 'Aasimar'
+    HUMAN = 'Human', 'Human'
+    ELF = 'Elf', 'Elf'
+    DWARF = 'Dwarf', 'Dwarf'
+    HALFLING = 'Halfling', 'Halfling'
+    GNOME = 'Gnome', 'Gnome'
+    DRAGONBORN = 'Dragonborn', 'Dragonborn'
+    TIEFLING = 'Tiefling', 'Tiefling'
+    HALF_ELF = 'Half-Elf', 'Half-Elf'
+    HALF_ORC = 'Half-Orc', 'Half-Orc'
+    ORC = 'Orc', 'Orc'
+
+class RaceModifier(models.Model):
+    race = models.CharField(max_length=30, choices=RaceChoices.choices)
+    ability = models.CharField(max_length=20, choices=AbilityScoreChoices.choices)
+    modifier = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.race}: {self.ability} {self.modifier:+d}"
+    
 class Language(models.Model):
     name = models.CharField(max_length=100)
 
@@ -22,8 +50,6 @@ class Alignment(models.TextChoices):
     LAWFUL_EVIL = 'LE', 'Lawful Evil'
     NEUTRAL_EVIL = 'NE', 'Neutral Evil'
     CHAOTIC_EVIL = 'CE', 'Chaotic Evil'
-    
-
 
 class BackgroundChoices(models.TextChoices):
     ACOLYTE = 'Acolyte', 'Acolyte'
@@ -45,22 +71,6 @@ class BackgroundChoices(models.TextChoices):
     FACTION_AGENT = 'Faction Agent', 'Faction Agent'
     MERCENARY_VETERAN = 'Mercenary Veteran', 'Mercenary Veteran'
 
-
-class RaceChoices(models.TextChoices):
-    AASIMAR = 'Aasimar', 'Aasimar'
-    HUMAN = 'Human', 'Human'
-    ELF = 'Elf', 'Elf'
-    DWARF = 'Dwarf', 'Dwarf'
-    HALFLING = 'Halfling', 'Halfling'
-    GNOME = 'Gnome', 'Gnome'
-    DRAGONBORN = 'Dragonborn', 'Dragonborn'
-    TIEFLING = 'Tiefling', 'Tiefling'
-    HALF_ELF = 'Half-Elf', 'Half-Elf'
-    HALF_ORC = 'Half-Orc', 'Half-Orc'
-    ORC = 'Orc', 'Orc'
-
-
-
 class Character(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     character_name = models.CharField(max_length=100)
@@ -79,8 +89,8 @@ class Character(models.Model):
         null=True,
         blank=True,
         related_name='characters',
+        help_text='Subclass of the character (optional)'
     )
-    
 
     race = models.CharField(
         max_length=30,

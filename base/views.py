@@ -1,13 +1,16 @@
-from django.views.generic.list import ListView
-from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
-from django.urls import reverse_lazy
-from django.shortcuts import render, redirect
+from django.views.generic.list import ListView # type: ignore
+from django.views.generic.detail import DetailView # type: ignore
+from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView # type: ignore
+from django.urls import reverse_lazy # type: ignore
+from django.shortcuts import render, redirect # type: ignore
 from django.contrib.auth.views import LoginView 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
-from .models import Character, InventoryItem, Item
+
+from .models import Character
+
+CHARACTER_FORM_FIELDS = ['character_name', 'character_class', 'subclass', 'race', 'level', 'background', 'alignment', 'experience_points', 'strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma', 'armor_class', 'initiative', 'speed', 'hit_points', 'temporary_hit_points', 'hit_dice', 'death_saves_success', 'death_saves_failure', 'backstory', 'inspiration', 'languages']
 
 class CustomLoginView(LoginView):
     template_name = 'base/login.html'
@@ -60,33 +63,23 @@ class CharacterDetail(LoginRequiredMixin, DetailView):
         context['total_weight'] = sum(item.item.weight * item.quantity for item in inventory)
         return context
 
-character_fields = [
-    'character_name', 'character_class', 'subclass', 'race', 'level', 
-    'background', 'alignment', 'experience_points', 'strength', 
-    'dexterity', 'constitution', 'intelligence', 'wisdom', 
-    'charisma', 'armor_class', 'initiative', 'speed', 
-    'hit_points', 'temporary_hit_points', 'hit_dice', 
-    'death_saves_success', 'death_saves_failure', 'backstory', 
-    'inspiration', 'languages'
-]
-
-class CharacterCreate(LoginRequiredMixin, CreateView):
+class CharacterCreate(LoginRequiredMixin,CreateView):
     model = Character
-    fields = character_fields
+    fields = CHARACTER_FORM_FIELDS
     template_name = 'base/character_form.html'
     success_url = reverse_lazy('characters')
 
     def form_valid(self, form):
         form.instance.user = self.request.user
-        return super().form_valid(form)
+        return super(CharacterCreate, self).form_valid(form)
 
 class CharacterUpdate(LoginRequiredMixin, UpdateView):
     model = Character
-    fields = character_fields
+    fields = CHARACTER_FORM_FIELDS
     template_name = 'base/character_form.html'
     success_url = reverse_lazy('characters')
 
 class CharacterDelete(LoginRequiredMixin, DeleteView):
     model = Character
-    template_name = 'base/character_confirm_delete.html'
+    template_name = 'base/character_form.html'
     success_url = reverse_lazy('characters')

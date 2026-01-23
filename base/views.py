@@ -10,8 +10,7 @@ from django.contrib.auth import login
 
 from .models import Character
 
-CHARACTER_FORM_FIELDS = ['character_name', 'character_class', 'subclass', 'race', 'level', 'background', 'alignment', 'experience_points', 'strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma', 'armor_class', 'initiative', 'speed', 'hit_points', 'temporary_hit_points', 'hit_dice', 'death_saves_success', 'death_saves_failure', 'backstory', 'inspiration', 'languages']
-
+CHARACTER_FORM_FIELDS = ['character_name', 'character_class', 'subclass', 'race', 'level', 'background', 'alignment', 'experience_points', 'strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma', 'initiative', 'speed', 'hit_points', 'temporary_hit_points', 'hit_dice', 'death_saves_success', 'death_saves_failure', 'backstory', 'inspiration', 'languages']
 
 class CustomLoginView(LoginView):
     template_name = 'base/login.html'
@@ -38,7 +37,6 @@ class RegisterPage(FormView):
             return redirect('characters')
         return super(RegisterPage, self).get(*args, **kwargs)
 
-
 class CharacterList(LoginRequiredMixin, ListView):
     model = Character
     context_object_name = 'characters'
@@ -56,6 +54,14 @@ class CharacterDetail(LoginRequiredMixin, DetailView):
     model = Character
     context_object_name = 'character'
     template_name = 'base/character.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        inventory = self.object.inventory.all()
+        context['inventory'] = inventory
+        context['current_ac'] = self.object.total_armor_class
+        context['total_weight'] = sum(item.item.weight * item.quantity for item in inventory)
+        return context
 
 class CharacterCreate(LoginRequiredMixin,CreateView):
     model = Character

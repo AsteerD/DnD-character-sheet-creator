@@ -47,6 +47,28 @@
       <tr><th>Created at</th><td>{{ character.created_at|date:"Y-m-d H:i" }}</td></tr>
     </tbody>
   </table>
+
+  <h2>Inventory</h2>
+  {% if inventory %}
+    <table class="detail-table">
+      <thead>
+        <tr><th>Item</th><th>Quantity</th><th>Weight (each)</th>
+      </thead>
+      <tbody>
+        {% for inv in inventory %}
+          <tr>
+            <td>{{ inv.item.name }}</td>
+            <td>{{ inv.quantity }}</td>
+            <td>{{ inv.item.weight }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No items in inventory.</p>
+  {% endif %}
+    </tbody>
+  </table>
 {% else %}
   <p>Character not found.</p>
 {% endif %}

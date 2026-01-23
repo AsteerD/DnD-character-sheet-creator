@@ -72,21 +72,6 @@ class RaceChoices(models.TextChoices):
     HALF_ORC = 'Half-Orc', 'Half-Orc'
     ORC = 'Orc', 'Orc'
 
-class SubclassChoices(models.TextChoices):
-    # Rogue Subclasses
-    THIEF = 'thief', 'Thief'
-    ASSASSIN = 'assassin', 'Assassin'
-    ARCANE_TRICKSTER = 'trickster', 'Arcane Trickster'
-    
-    # Fighter Subclasses
-    CHAMPION = 'champion', 'Champion'
-    BATTLE_MASTER = 'battle_master', 'Battle Master'
-    
-    # Cleric Subclasses
-    LIFE = 'life', 'Life Domain'
-    WAR = 'war', 'War Domain'
-    LIGHT = 'light', 'Light Domain'
-    NONE = 'none', 'None'
 
 
 class Character(models.Model):
@@ -98,13 +83,7 @@ class Character(models.Model):
         choices=ClassChoices.choices,
         default=ClassChoices.FIGHTER,
     )
-    subclass = models.CharField(
-        max_length=20,
-        choices=SubclassChoices.choices,
-        default=SubclassChoices.NONE,
-        blank=True,
-        null=True
-    )
+    
 
     race = models.CharField(
         max_length=30,
@@ -173,6 +152,17 @@ class CharacterClass(models.Model):
     def __str__(self):
         return self.name
 
+class Subclass(models.Model):
+    name = models.CharField(max_length=50)
+    character_class = models.ForeignKey(
+        CharacterClass,
+        on_delete=models.CASCADE,
+        related_name='subclasses'
+    )
+
+    def __str__(self):
+        return f"{self.character_class}: {self.name}"
+
 class Spell(models.Model):
     name = models.CharField(max_length=255, unique=True)
     desc = models.TextField()
@@ -187,7 +177,43 @@ class Spell(models.Model):
     casting_time = models.CharField(max_length=100)
     level = models.IntegerField()
     school = models.CharField(max_length=100)
-    dnd_classes = models.ManyToManyField(CharacterClass, related_name='spells')
+
+    dnd_classes = models.ManyToManyField(
+        CharacterClass,
+        through='ClassSpell',
+        related_name='spells'
+    )
 
     def __str__(self):
         return self.name
+
+class ClassSpell(models.Model):
+    spell = models.ForeignKey(Spell, on_delete=models.CASCADE)
+    character_class = models.ForeignKey(CharacterClass, on_delete=models.CASCADE)
+
+    # 👇 NOWE
+    subclass = models.ForeignKey(
+        Subclass,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        help_text="Jeśli null → spell dostępny dla całej klasy"
+    )
+
+    unlock_level = models.IntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(20)]
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['spell', 'character_class', 'subclass'],
+                name='unique_spell_class_subclass'
+            )
+        ]
+        ordering = ['unlock_level']
+
+    def __str__(self):
+        if self.subclass:
+            return f"{self.character_class}/{self.subclass} → {self.spell} (lvl {self.unlock_level})"
+        return f"{self.character_class} → {self.spell} (lvl {self.unlock_level})"

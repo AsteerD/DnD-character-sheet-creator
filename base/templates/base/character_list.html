@@ -33,15 +33,15 @@
                 <th>Name</th>
                 <th>Race & Class</th>
                 <th>Level</th>
-                <th></th>
             </tr>
         </thead>
         <tbody>
             {% for c in characters %}
                 <tr>
-                    <td><a href="{% url 'character' c.pk %}">{{ c.character_name }}</a></td>
+                    <td rowspan="2">{{ c.character_name }}</td>
+
+                    <!-- Race & Class -->
                     <td>
-                      <!-- Race & Class -->
                       <table>
                         <tbody>
                           <tr>
@@ -63,8 +63,19 @@
                         </tbody>
                       </table>
                     </td>
+
                     <td> &nbsp; {{ c.level }}</td>
-                    <td><a href="{% url 'character-update' c.pk %}">Edit</a> | <a href="{% url 'character-delete' c.pk %}">Delete</a></td>
+                </tr>
+
+                <!-- Links -->
+                <tr>
+                    <td colspan="2">
+                      <a href="{% url 'character' c.pk %}">Details</a>
+                      |
+                      <a href="{% url 'character-update' c.pk %}">Edit</a>
+                      |
+                      <a href="{% url 'character-delete' c.pk %}">Delete</a>
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>

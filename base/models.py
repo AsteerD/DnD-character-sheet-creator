@@ -50,13 +50,13 @@ class RaceModifier(models.Model):
 
     def __str__(self):
         return f"{self.race}: {self.ability} {self.modifier:+d}"
-    
+
 class Language(models.Model):
     name = models.CharField(max_length=100)
 
     def __str__(self):
         return self.name
-    
+
     class Meta:
         ordering = ['name']
 
@@ -110,7 +110,7 @@ class Character(models.Model):
             equipment_qs = StartingEquipment.objects.filter(character_class=self.character_class)
             for eq in equipment_qs:
                 InventoryItem.objects.create(character=self, item=eq.item, quantity=eq.quantity)
-    
+
             # background equipment
             bg_equipment = BackgroundStartingEquipment.objects.filter(background=self.background)
             for eq in bg_equipment:
@@ -119,7 +119,7 @@ class Character(models.Model):
                     item=eq.item,
                     quantity=eq.quantity
         )
-    
+
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     character_name = models.CharField(max_length=100)
 
@@ -145,7 +145,7 @@ class Character(models.Model):
         choices=RaceChoices.choices,
         default=RaceChoices.HUMAN,
     )
-    
+
     level = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(20)])
     background = models.ForeignKey(
         Background,
@@ -174,7 +174,7 @@ class Character(models.Model):
     hit_dice = models.IntegerField(validators=[MinValueValidator(1)])
     death_saves_success = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0), MaxValueValidator(3)])
     death_saves_failure = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0), MaxValueValidator(3)] )
-    backstory = models.TextField(null=True, blank=True) 
+    backstory = models.TextField(null=True, blank=True)
     inspiration = models.BooleanField(default=False)
     languages = models.ManyToManyField(Language, blank=True)
 
@@ -187,7 +187,7 @@ class Character(models.Model):
         """
         dex_mod = (self.dexterity - 10) // 2
         return dex_mod
-    
+
     @property
     def calculate_hit_dice(self):
         class_hit_dice = {
@@ -207,7 +207,7 @@ class Character(models.Model):
         if self.character_class and self.character_class.name in class_hit_dice:
             return class_hit_dice[self.character_class.name]
         return 8
-    
+
     @property
     def calculate_hit_points(self):
         con_mod = (self.constitution - 10) // 2
@@ -239,7 +239,7 @@ class Character(models.Model):
     def proficiency_bonus(self):
         # D&D 5e
         return 2 + (self.level - 1) // 4
-    
+
     def get_ability_modifier(self, ability_name: str) -> int:
         score = getattr(self, ability_name)
         return (score - 10) // 2
@@ -271,7 +271,7 @@ class Character(models.Model):
         )
 
         return skills.distinct()
-    
+
     def get_background_skill_proficiencies(self):
         background = Background.objects.filter(name=self.background).first()
         if not background:
@@ -281,9 +281,12 @@ class Character(models.Model):
             backgroundskillproficiency__background=background
         )
 
+    # def get_character_class_display(self):
+    #     return "<button class='button'></button>"
+
     def __str__(self):
         return f"{self.character_name}, {self.created_at}, {self.user}, {self.character_class}"
-    
+
     class Meta:
         ordering = ['created_at']
         constraints = [
@@ -392,8 +395,8 @@ class InventoryItem(models.Model):
 
     def __str__(self):
         return f"{self.item.name} (x{self.quantity})"
-    
-    
+
+
 class BackgroundStartingEquipment(models.Model):
     background = models.ForeignKey(
         Background,
@@ -405,13 +408,13 @@ class BackgroundStartingEquipment(models.Model):
 
     def __str__(self):
         return f"{self.background}: {self.item} x{self.quantity}"
-    
+
 class Tool(models.Model):
     name = models.CharField(max_length=100, unique=True)
 
     def __str__(self):
         return self.name
-    
+
 class BackgroundSkillProficiency(models.Model):
     background = models.ForeignKey(Background, on_delete=models.CASCADE)
     skill = models.ForeignKey(Skill, on_delete=models.CASCADE)

@@ -1,0 +1,219 @@
+/* ===============================
+   Global typography & page base
+   =============================== */
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #2b1d0e; /* dark tavern brown */
+  font-family: "Georgia", "Times New Roman", serif;
+  color: #2a1a0a;
+  line-height: 1.5;
+}
+
+/* ===============================
+   Content container (assumes base.html wraps content)
+   =============================== */
+
+main, body > div, body > section {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 30px 40px;
+  background: #f3e6c6; /* parchment yellow */
+  border: 2px solid #8b6a3e;
+  box-shadow:
+    0 0 0 4px #d2b48c inset,
+    0 10px 30px rgba(0, 0, 0, 0.6);
+}
+
+/* ===============================
+   Headings
+   =============================== */
+
+h1, h2, h3 {
+  font-weight: normal;
+  letter-spacing: 1px;
+  color: #4a2f14;
+  margin-top: 0;
+  border-bottom: 2px solid #b08a4f;
+  padding-bottom: 8px;
+}
+
+h1 {
+  font-size: 2rem;
+}
+
+/* ===============================
+   Forms (Django form.as_p)
+   =============================== */
+
+form {
+  margin-top: 20px;
+}
+
+/* Each Django field comes wrapped in <p> */
+form p {
+  margin-bottom: 18px;
+}
+
+/* Labels */
+form label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 4px;
+  color: #3b240f;
+}
+
+/* Inputs, selects, textareas */
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+select,
+textarea {
+  width: 100%;
+  padding: 8px 10px;
+  font-family: inherit;
+  font-size: 1rem;
+  color: #2a1a0a;
+  background: #fff6dc;
+  border: 1px solid #9a7b4f;
+  border-radius: 2px;
+  box-sizing: border-box;
+}
+
+/* Focus state */
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #6f4a1d;
+  box-shadow: 0 0 4px rgba(111, 74, 29, 0.6);
+  background: #fffdf4;
+}
+
+/* ===============================
+   Checkboxes (skills list)
+   =============================== */
+
+input[type="checkbox"] {
+  margin-right: 6px;
+}
+
+label input[type="checkbox"] {
+  vertical-align: middle;
+}
+
+/* Make dynamically generated skill labels readable */
+#id_skills label {
+  font-weight: normal;
+  color: #2f1c0a;
+}
+
+/* ===============================
+   Buttons
+   =============================== */
+
+button,
+input[type="submit"] {
+  background: linear-gradient(#8b5a2b, #5c3a1a);
+  color: #fdf3d6;
+  font-family: inherit;
+  font-size: 1rem;
+  padding: 8px 16px;
+  border: 1px solid #3b240f;
+  border-radius: 3px;
+  cursor: pointer;
+  margin: 10px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+button:hover,
+input[type="submit"]:hover {
+  background: linear-gradient(#9c6a36, #6b4520);
+}
+
+button:active,
+input[type="submit"]:active {
+  background: #5c3a1a;
+}
+
+/* ===============================
+   Links
+   =============================== */
+
+a {
+  color: #6b3e16;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Back to list link */
+p a {
+  display: inline-block;
+  margin-top: 20px;
+}
+
+/* ===============================
+   Validation & help text
+   =============================== */
+
+ul.errorlist {
+  margin: 5px 0 0 0;
+  padding: 8px 10px;
+  list-style: none;
+  background: #f5c6a5;
+  border: 1px solid #b26a3c;
+  color: #4a1f0f;
+}
+
+.helptext {
+  display: block;
+  font-size: 0.9rem;
+  color: #5a3a1a;
+  margin-top: 4px;
+  font-style: italic;
+}
+
+/* ===============================
+   Tables (if used elsewhere)
+   =============================== */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #f8edd3;
+}
+
+th, td {
+  border: 1px solid #9a7b4f;
+  padding: 8px;
+}
+
+th {
+  background: #d6b985;
+  color: #3b240f;
+}
+
+/* ===============================
+   Small screens
+   =============================== */
+
+@media (max-width: 600px) {
+  main, body > div, body > section {
+    padding: 20px;
+    margin: 20px;
+  }
+
+  h1 {
+    font-size: 1.6rem;
+  }
+}

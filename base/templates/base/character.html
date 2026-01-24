@@ -1,3 +1,7 @@
+{% extends "base.html" %}
+
+{% block content %}
+
 <h1>Character detail: {{ character.character_name }}</h1>
 
 <style>
@@ -123,3 +127,5 @@
 {% else %}
   <p>Character not found.</p>
 {% endif %}
+
+{% endblock %}

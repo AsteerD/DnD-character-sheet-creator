@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+
+{% load static %}
+
+<html>
+  <head>
+    <title>{% block title %}DnD{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/app_main_style.css' %}">
+  </head>
+
+  <body>
+    <main>
+      {% block content %}
+      {% endblock %}
+    </main>
+  </body>
+</html>

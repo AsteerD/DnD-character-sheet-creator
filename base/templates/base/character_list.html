@@ -41,15 +41,27 @@
                 <tr>
                     <td><a href="{% url 'character' c.pk %}">{{ c.character_name }}</a></td>
                     <td>
-                      <img class="character-list-table-image-small"
-                           src="{% static 'pictures/races/' %}{{ c.race | lower }}.jpg"
-                           alt="" />
-                      <img class="character-list-table-image-small"
-                           src="{% static 'pictures/classes/' %}{{ c.character_class | lower }}.jpg"
-                           alt="" />
-
-                      {{ c.race }}
-                      {{ c.character_class }}
+                      <!-- Race & Class -->
+                      <table>
+                        <tbody>
+                          <tr>
+                            <td>
+                              <img class="character-list-table-image-small"
+                                   src="{% static 'pictures/races/' %}{{ c.race | lower }}.jpg"
+                                   alt="" />
+                            </td>
+                            <td>
+                              <img class="character-list-table-image-small"
+                                   src="{% static 'pictures/classes/' %}{{ c.character_class | lower }}.jpg"
+                                   alt="" />
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>{{ c.race }}</td>
+                            <td>{{ c.character_class }}</td>
+                          </tr>
+                        </tbody>
+                      </table>
                     </td>
                     <td> &nbsp; {{ c.level }}</td>
                     <td><a href="{% url 'character-update' c.pk %}">Edit</a> | <a href="{% url 'character-delete' c.pk %}">Delete</a></td>

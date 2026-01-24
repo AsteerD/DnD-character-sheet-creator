@@ -3,7 +3,7 @@ from django.views.generic.detail import DetailView # type: ignore
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView # type: ignore
 from django.urls import reverse_lazy # type: ignore
 from django.shortcuts import render, redirect # type: ignore
-from django.contrib.auth.views import LoginView 
+from django.contrib.auth.views import LoginView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
@@ -20,7 +20,7 @@ class CustomLoginView(LoginView):
 
     def get_success_url(self):
         return reverse_lazy('characters')
-    
+
 class RegisterPage(FormView):
     template_name = 'base/register.html'
     form_class = UserCreationForm
@@ -33,7 +33,7 @@ class RegisterPage(FormView):
             login(self.request, user)
         return super(RegisterPage, self).form_valid(form)
 
-    def get(self, *args, **kwargs): 
+    def get(self, *args, **kwargs):
         if self.request.user.is_authenticated:
             return redirect('characters')
         return super(RegisterPage, self).get(*args, **kwargs)

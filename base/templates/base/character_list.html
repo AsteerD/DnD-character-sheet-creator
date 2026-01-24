@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% load static %}
+
 {% block content %}
 
 {% if request.user.is_authenticated %}
@@ -29,7 +31,7 @@
         <thead>
             <tr>
                 <th>Name</th>
-                <th>Class</th>
+                <th>Race & Class</th>
                 <th>Level</th>
                 <th></th>
             </tr>
@@ -38,7 +40,17 @@
             {% for c in characters %}
                 <tr>
                     <td><a href="{% url 'character' c.pk %}">{{ c.character_name }}</a></td>
-                    <td>{% if c.get_character_class_display %}{{ c.get_character_class_display }}{% else %}{{ c.character_class }}{% endif %}</td>
+                    <td>
+                      <img class="character-list-table-image-small"
+                           src="{% static 'pictures/races/' %}{{ c.race | lower }}.jpg"
+                           alt="" />
+                      <img class="character-list-table-image-small"
+                           src="{% static 'pictures/classes/' %}{{ c.character_class | lower }}.jpg"
+                           alt="" />
+
+                      {{ c.race }}
+                      {{ c.character_class }}
+                    </td>
                     <td> &nbsp; {{ c.level }}</td>
                     <td><a href="{% url 'character-update' c.pk %}">Edit</a> | <a href="{% url 'character-delete' c.pk %}">Delete</a></td>
                 </tr>

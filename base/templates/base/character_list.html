@@ -19,11 +19,11 @@
 
 <h1>My Characters</h1>
 
-<a href="{% url 'character-create' %}">Create New Character</a>
+<button onclick="window.location.href='{% url 'character-create' %}'">Create New Character</button>
 
 <form method="GET">
-    <input type="text" name="search" placeholder="Search characters..." value="{{search_input}}">
-    <button type="submit">Search</button>
+  <input type="text" name="search" placeholder="Search characters..." value="{{search_input}}">
+  <button type="submit">Search</button>
 </form>
 
 {% if characters %}

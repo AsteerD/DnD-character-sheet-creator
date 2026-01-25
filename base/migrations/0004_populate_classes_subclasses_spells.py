@@ -29,14 +29,14 @@ def create_classes_subclasses_spells(apps, schema_editor):
 
     json_file_path = os.path.join(
         os.path.dirname(os.path.abspath(__file__)),
-        '..', 'management', 'commands', 'spellsv2.json'
+        '..', 'data', 'spells.json'
     )
 
     try:
         with open(json_file_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
     except FileNotFoundError:
-        raise Exception(f"spellsv2.json not found at {json_file_path}. This file is required for this migration.")
+        raise Exception(f"spells.json not found at {json_file_path}. This file is required for this migration.")
 
     spellbook = data.get('spellbook', {})
 

@@ -47,9 +47,18 @@ def create_classes_subclasses_spells(apps, schema_editor):
             continue
 
         for spell_data in spells_in_level:
-            # MAPPING LEGEND based on your new JSON:
-            # 0: name, 1: school, 2: cast, 3: comp, 4: dur, 
-            # 5: range, 6: classes, 7: material, 8: ritual, 9: concentration
+            # MAPPING LEGEND based on your newest JSON schema:
+            # 0: name
+            # 1: school
+            # 2: cast_time
+            # 3: components
+            # 4: duration
+            # 5: range
+            # 6: classes (Dictionary)
+            # 7: material
+            # 8: ritual (Boolean)
+            # 9: concentration (Boolean)
+            # 10: description (String)
 
             defaults = {
                 'level': level,
@@ -58,11 +67,9 @@ def create_classes_subclasses_spells(apps, schema_editor):
                 'components': spell_data[3],
                 'duration': spell_data[4],
                 'range': spell_data[5],
-                # Description was removed from the compact JSON, so we use a hardcoded default
-                'desc': 'No description available.',
+                'desc': spell_data[10],
                 'material': spell_data[7],
                 'ritual': spell_data[8],
-                # The new JSON has a dedicated boolean for concentration at index 9
                 'concentration': spell_data[9],
             }
 
@@ -71,7 +78,7 @@ def create_classes_subclasses_spells(apps, schema_editor):
                 defaults=defaults
             )
 
-            # Class info is now at index 6
+            # Class info is at index 6
             class_info = spell_data[6]
             
             for class_name, unlock_level in class_info.items():
@@ -83,7 +90,7 @@ def create_classes_subclasses_spells(apps, schema_editor):
                         defaults={'unlock_level': unlock_level}
                     )
                 except CharacterClass.DoesNotExist:
-                    # In case a class in the JSON is not in our predefined list
+                    # In case a class in the JSON is not in our predefined database list
                     pass
 
 def remove_classes_subclasses_spells(apps, schema_editor):

@@ -1,6 +1,7 @@
 from django.db import models # type: ignore
 from django.contrib.auth.models import User # type: ignore
 from django.core.validators import MinValueValidator, MaxValueValidator # type: ignore
+from django.core.exceptions import ValidationError
 
 class Background(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -104,6 +105,23 @@ class Spell(models.Model):
 
     def __str__(self):
         return self.name
+# --- Spell Tables Constants ---
+SPELLS_KNOWN_TABLE = {
+    'Bard': {1: 4, 2: 5, 3: 6, 4: 7, 5: 8, 6: 9, 7: 10, 8: 11, 9: 12, 10: 14, 11: 15, 12: 15, 13: 16, 14: 18, 15: 19, 16: 19, 17: 20, 18: 22, 19: 22, 20: 22},
+    'Sorcerer': {1: 2, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10, 10: 11, 11: 12, 12: 12, 13: 13, 14: 13, 15: 14, 16: 14, 17: 15, 18: 15, 19: 15, 20: 15},
+    'Warlock': {1: 2, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10, 10: 10, 11: 11, 12: 11, 13: 12, 14: 12, 15: 13, 16: 13, 17: 14, 18: 14, 19: 15, 20: 15},
+    'Ranger': {1: 0, 2: 2, 3: 3, 4: 3, 5: 4, 6: 4, 7: 5, 8: 5, 9: 6, 10: 6, 11: 7, 12: 7, 13: 8, 14: 8, 15: 9, 16: 9, 17: 10, 18: 10, 19: 11, 20: 11},
+    # Paladin/Cleric/Druid/Wizard are calculated dynamically
+}
+
+CANTRIPS_KNOWN_TABLE = {
+    'Bard': {1: 2, 4: 3, 10: 4},
+    'Cleric': {1: 3, 4: 4, 10: 5},
+    'Druid': {1: 2, 4: 3, 10: 4},
+    'Sorcerer': {1: 4, 4: 5, 10: 6},
+    'Warlock': {1: 2, 4: 3, 10: 4},
+    'Wizard': {1: 3, 4: 4, 10: 5},
+}
 
 class Character(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -237,7 +255,13 @@ class Character(models.Model):
         elif char_class == "barbarian":
             return 10 + dex_mod + con_mod
         return 10 + dex_mod
-
+        """
+        Calculates total Armor Class (AC) based on character class and features.
+        Default: 10 + DEX mod
+        Monk: 10 + DEX mod + WIS mod (if not wearing armor)
+        Barbarian: 10 + DEX mod + CON mod (if not wearing armor)
+        Extend as needed for other classes/features.
+        """       
     @property
     def proficiency_bonus(self):
         return 2 + (self.level - 1) // 4
@@ -265,6 +289,87 @@ class Character(models.Model):
             return Skill.objects.none()
         return Skill.objects.filter(backgroundskillproficiency__background=self.background)
 
+# --- SPELL LOGIC START ---
+
+    @property
+    def max_cantrips_known(self):
+        """Returns the maximum number of cantrips a character can know."""
+        if not self.character_class:
+            return 0
+        
+        char_class = self.character_class.name
+        if char_class in CANTRIPS_KNOWN_TABLE:
+            table = CANTRIPS_KNOWN_TABLE[char_class]
+            # Find the highest level threshold met
+            known = 0
+            for lvl_threshold in sorted(table.keys()):
+                if self.level >= lvl_threshold:
+                    known = table[lvl_threshold]
+            return known
+        return 0
+
+    @property
+    def max_spells_known(self):
+        """
+        Returns the maximum number of leveled spells (1+) a character can know or prepare.
+        Returns a tuple: (limit, limit_type) where limit_type is "Known" or "Prepared".
+        """
+        if not self.character_class:
+            return 0, "None"
+
+        char_class = self.character_class.name
+        
+        # A) Prepared Casters (Level + Ability Mod)
+        if char_class in ['Cleric', 'Druid', 'Wizard']:
+            modifier = 0
+            if char_class == 'Wizard':
+                modifier = self.get_ability_modifier('intelligence')
+            else:
+                modifier = self.get_ability_modifier('wisdom')
+            
+            # Minimum 1 spell
+            return max(1, self.level + modifier), "Prepared"
+        
+        elif char_class == 'Paladin':
+            modifier = self.get_ability_modifier('charisma')
+            return max(1, (self.level // 2) + modifier), "Prepared"
+
+        # B) Known Casters (Fixed Table)
+        elif char_class in SPELLS_KNOWN_TABLE:
+            return SPELLS_KNOWN_TABLE[char_class].get(self.level, 0), "Known"
+
+        return 0, "None"
+
+    # Note: Validating ManyToMany relationships in save() is impossible because 
+    # the object must be saved before you can add M2M relations.
+    # We create a custom validation method to be called in forms or views.
+    def validate_spell_choices(self):
+        """
+        Checks if the currently assigned spells exceed class limits.
+        Raises ValidationError if limits are exceeded.
+        """
+        if not self.pk:
+            return # Cannot check relations on unsaved object
+
+        current_spells = self.spells.all()
+        cantrips_count = current_spells.filter(level=0).count()
+        leveled_count = current_spells.filter(level__gt=0).count()
+
+        max_cantrips = self.max_cantrips_known
+        max_spells, limit_type = self.max_spells_known
+
+        errors = {}
+
+        if max_cantrips > 0 and cantrips_count > max_cantrips:
+            errors['cantrips'] = f"Too many Cantrips! Max {max_cantrips}, but you have {cantrips_count}."
+
+        if max_spells > 0 and leveled_count > max_spells:
+            errors['spells'] = f"Too many Spells! Max {max_spells} ({limit_type}), but you have {leveled_count}."
+
+        if errors:
+            raise ValidationError(errors)
+
+    # --- SPELL LOGIC END ---
     def __str__(self):
         return f"{self.character_name} ({self.character_class} Lvl {self.level})"
     

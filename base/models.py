@@ -193,6 +193,17 @@ class Character(models.Model):
         self.armor_class = self.total_armor_class
         self.initiative = self.calculate_initiative
 
+        if not is_new:
+            try:
+                # Fetch the version of the character currently in the database
+                old_instance = Character.objects.get(pk=self.pk)
+                # Check if the class is being changed
+                if old_instance.character_class != self.character_class:
+                    # Clear the Many-to-Many spell relationship immediately
+                    self.spells.clear()
+            except Character.DoesNotExist:
+                pass
+
         self.speed = 30 # Default speed, update logic if needed
         self.hit_dice = self.calculate_hit_dice
         # Only recalc max HP if it's 0 or None to avoid overwriting current HP during gameplay

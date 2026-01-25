@@ -47,25 +47,33 @@ def create_classes_subclasses_spells(apps, schema_editor):
             continue
 
         for spell_data in spells_in_level:
+            # MAPPING LEGEND based on your new JSON:
+            # 0: name, 1: school, 2: cast, 3: comp, 4: dur, 
+            # 5: range, 6: classes, 7: material, 8: ritual, 9: concentration
+
             defaults = {
                 'level': level,
-                'school': spell_data.get('school', ''),
-                'casting_time': spell_data.get('cast', ''),
-                'components': spell_data.get('comp', ''),
-                'duration': spell_data.get('dur', ''),
-                'range': spell_data.get('range', ''),
-                'desc': spell_data.get('desc', 'No description available.'),
-                'material': spell_data.get('material', ''),
-                'ritual': spell_data.get('ritual', False),
-                'concentration': 'concentration' in spell_data.get('dur', '').lower(),
+                'school': spell_data[1],
+                'casting_time': spell_data[2],
+                'components': spell_data[3],
+                'duration': spell_data[4],
+                'range': spell_data[5],
+                # Description was removed from the compact JSON, so we use a hardcoded default
+                'desc': 'No description available.',
+                'material': spell_data[7],
+                'ritual': spell_data[8],
+                # The new JSON has a dedicated boolean for concentration at index 9
+                'concentration': spell_data[9],
             }
 
             spell, _ = Spell.objects.update_or_create(
-                name=spell_data['name'],
+                name=spell_data[0],  # Name is at index 0
                 defaults=defaults
             )
 
-            class_info = spell_data.get('classes', {})
+            # Class info is now at index 6
+            class_info = spell_data[6]
+            
             for class_name, unlock_level in class_info.items():
                 try:
                     class_obj = CharacterClass.objects.get(name=class_name)

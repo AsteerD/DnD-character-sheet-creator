@@ -123,6 +123,13 @@ CANTRIPS_KNOWN_TABLE = {
     'Wizard': {1: 3, 4: 4, 10: 5},
 }
 
+class Race(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    speed = models.IntegerField(default=30)
+
+    def __str__(self):
+        return self.name
+
 class Character(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     character_name = models.CharField(max_length=100)
@@ -144,10 +151,11 @@ class Character(models.Model):
         help_text='Subclass of the character (optional)'
     )
 
-    race = models.CharField(
-        max_length=30,
-        choices=RaceChoices.choices,
-        default=RaceChoices.HUMAN,
+    race = models.ForeignKey(
+        Race, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True
     )
     
     level = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(20)])
@@ -172,7 +180,7 @@ class Character(models.Model):
     charisma = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(30)])
     armor_class = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(100)], blank=True, editable=False, default=10)
     initiative = models.IntegerField()
-    speed = models.IntegerField(validators=[MinValueValidator(1)])
+    speed = models.IntegerField(validators=[MinValueValidator(1)], editable=False, default=30)
     hit_points = models.IntegerField(validators=[MinValueValidator(1)])
     temporary_hit_points = models.IntegerField(validators=[MinValueValidator(0)])
     hit_dice = models.IntegerField(validators=[MinValueValidator(1)])
@@ -193,6 +201,11 @@ class Character(models.Model):
         self.armor_class = self.total_armor_class
         self.initiative = self.calculate_initiative
 
+        if self.race:
+            self.speed = self.race.speed
+        else:
+            self.speed = 30
+
         if not is_new:
             try:
                 # Fetch the version of the character currently in the database
@@ -204,7 +217,6 @@ class Character(models.Model):
             except Character.DoesNotExist:
                 pass
 
-        self.speed = 30 # Default speed, update logic if needed
         self.hit_dice = self.calculate_hit_dice
         # Only recalc max HP if it's 0 or None to avoid overwriting current HP during gameplay
         if not self.hit_points: 

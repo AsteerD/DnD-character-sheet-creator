@@ -76,6 +76,29 @@ class Subclass(models.Model):
     def __str__(self):
         return f"{self.character_class.name}: {self.name}"
 
+class Feat(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField()
+    prerequisite = models.CharField(max_length=255, blank=True, null=True, help_text="e.g. 'Dexterity 13' or 'Elf'")
+    
+    def __str__(self):
+        return self.name
+
+class ClassFeature(models.Model):
+    character_class = models.ForeignKey(CharacterClass, on_delete=models.CASCADE, related_name='features')
+    subclass = models.ForeignKey(Subclass, on_delete=models.CASCADE, null=True, blank=True, related_name='features')
+    
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    level_unlocked = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(20)])
+    
+    class Meta:
+        ordering = ['level_unlocked', 'name']
+        unique_together = ('character_class', 'subclass', 'name')
+
+    def __str__(self):
+        return f"{self.character_class.name} Lvl {self.level_unlocked}: {self.name}"
+
 class ClassSpellProgression(models.Model):
     """
     Data-driven table for spell slots and known spells/cantrips per level.
@@ -301,7 +324,7 @@ class Character(models.Model):
         default=Alignment.TRUE_NEUTRAL,
     )
     experience_points = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
-    
+    feats = models.ManyToManyField(Feat, blank=True, related_name='characters')
     # Abilities
     strength = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(30)])
     dexterity = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(30)])

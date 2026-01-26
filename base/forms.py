@@ -1,6 +1,7 @@
 # base/forms.py
 from django import forms
-from .models import Character, Skill, Subclass, CharacterClass
+from .models import Character, Skill, Subclass, CharacterClass, Spell
+from django.core.exceptions import ValidationError
 
 class CharacterForm(forms.ModelForm):
     skills = forms.ModelMultipleChoiceField(
@@ -97,3 +98,62 @@ class CharacterForm(forms.ModelForm):
             self.fields['skills'].queryset = Skill.objects.none()
 
         print("DEBUG: skills queryset =", list(self.fields['skills'].queryset))
+
+class SpellSelectionForm(forms.ModelForm):
+    class Meta:
+        model = Character
+        fields = ['spells']
+        widgets = {
+            'spells': forms.CheckboxSelectMultiple,
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        character = self.instance
+
+        # Filter the spells displayed in the form based on class and level
+        if character and character.pk:
+            char_class = character.character_class
+            char_level = character.level
+            
+            self.fields['spells'].queryset = Spell.objects.filter(
+                classspell__character_class=char_class,
+                classspell__unlock_level__lte=char_level
+            ).order_by('level', 'name').distinct()
+            
+            self.fields['spells'].label = ""
+
+    def clean(self):
+        cleaned_data = super().clean()
+        spells = cleaned_data.get('spells')
+        character = self.instance
+        
+        if not spells or not character:
+            return cleaned_data
+
+        # Split selection into Cantrips and Spells
+        cantrips_selected = [s for s in spells if s.level == 0]
+        leveled_spells_selected = [s for s in spells if s.level > 0]
+        
+        c_count = len(cantrips_selected)
+        s_count = len(leveled_spells_selected)
+
+        # --- 1. VALIDATE CANTRIPS ---
+        # Call the model property instead of using a local table
+        max_cantrips = character.max_cantrips_known 
+
+        if max_cantrips > 0 and c_count > max_cantrips:
+            self.add_error('spells', f"Too many Cantrips selected! You can have max {max_cantrips}, but you selected {c_count}.")
+
+        # --- 2. VALIDATE LEVELED SPELLS ---
+        # Call the model property instead of calculating it here
+        max_spells, limit_type = character.max_spells_known
+
+        if max_spells > 0 and s_count > max_spells:
+            self.add_error(
+                'spells', 
+                f"Too many Spells selected! As a lvl {character.level} {character.character_class.name}, "
+                f"you can have max {max_spells} Spells {limit_type}. You selected {s_count}."
+            )
+            
+        return cleaned_data

@@ -388,7 +388,20 @@ class Character(models.Model):
         ordering = ['created_at']
         constraints = [
             models.CheckConstraint(condition=models.Q(level__gte=1) & models.Q(level__lte=20), name='level_range'),
-            # ... (kept other constraints same as provided) ...
+            models.CheckConstraint(condition=models.Q(experience_points__gte=0), name='experience_points_minimum'),
+            models.CheckConstraint(condition=models.Q(strength__gte=1) & models.Q(strength__lte=30), name='strength_range'),
+            models.CheckConstraint(condition=models.Q(dexterity__gte=1) & models.Q(dexterity__lte=30), name='dexterity_range'),
+            models.CheckConstraint(condition=models.Q(constitution__gte=1) & models.Q(constitution__lte=30), name='constitution_range'),
+            models.CheckConstraint(condition=models.Q(intelligence__gte=1) & models.Q(intelligence__lte=30), name='intelligence_range'),
+            models.CheckConstraint(condition=models.Q(wisdom__gte=1) & models.Q(wisdom__lte=30), name='wisdom_range'),
+            models.CheckConstraint(condition=models.Q(charisma__gte=1) & models.Q(charisma__lte=30), name='charisma_range'),
+            models.CheckConstraint(condition=models.Q(armor_class__gte=1) & models.Q(armor_class__lte=100), name='armor_class_range'),
+            models.CheckConstraint(condition=models.Q(speed__gte=1), name='speed_minimum'),
+            models.CheckConstraint(condition=models.Q(hit_points__gte=1), name='hit_points_minimum'),
+            models.CheckConstraint(condition=models.Q(temporary_hit_points__gte=0), name='temporary_hit_points_minimum'),
+            models.CheckConstraint(condition=models.Q(hit_dice__gte=1), name='hit_dice_minimum'),
+            models.CheckConstraint(condition=models.Q(death_saves_success__gte=0) & models.Q(death_saves_success__lte=3), name='death_saves_success_range'),
+            models.CheckConstraint(condition=models.Q(death_saves_failure__gte=0) & models.Q(death_saves_failure__lte=3), name='death_saves_failure_range'),
         ]
 
 class CharacterClass(models.Model):

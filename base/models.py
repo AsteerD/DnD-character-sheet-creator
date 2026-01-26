@@ -153,9 +153,7 @@ class Character(models.Model):
 
     race = models.ForeignKey(
         Race, 
-        on_delete=models.SET_NULL, 
-        null=True, 
-        blank=True
+        on_delete=models.PROTECT, 
     )
     
     level = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(20)])
@@ -201,10 +199,7 @@ class Character(models.Model):
         self.armor_class = self.total_armor_class
         self.initiative = self.calculate_initiative
 
-        if self.race:
-            self.speed = self.race.speed
-        else:
-            self.speed = 30
+        self.speed = self.race.speed
 
         if not is_new:
             try:

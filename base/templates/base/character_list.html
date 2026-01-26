@@ -35,6 +35,7 @@
 					<td> &nbsp; {{ c.level }}</td>
 					<td><a href="{% url 'character-update' c.pk %}">Edit</a> | <a href="{% url 'character-delete' c.pk %}">Delete</a></td>
 				</tr>
+				
 			{% endfor %}
 		</tbody>
 	</table>

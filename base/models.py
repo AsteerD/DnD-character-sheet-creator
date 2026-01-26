@@ -1,16 +1,10 @@
-from django.db import models # type: ignore
-from django.contrib.auth.models import User # type: ignore
-from django.core.validators import MinValueValidator, MaxValueValidator # type: ignore
+from django.db import models
+from django.contrib.auth.models import User
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.exceptions import ValidationError
+from django.db.models import Q
 
-class Background(models.Model):
-    name = models.CharField(max_length=100, unique=True)
-    description = models.TextField(help_text="General description of the background")
-    feature_name = models.CharField(max_length=100, help_text="Name of the background feature")
-    feature_description = models.TextField(help_text="Rules text of the background feature")
-
-    def __str__(self):
-        return self.name
+# --- CONSTANTS & CHOICES ---
 
 class AbilityScoreChoices(models.TextChoices):
     STRENGTH = 'strength', 'Strength'
@@ -33,6 +27,95 @@ class RaceChoices(models.TextChoices):
     HALF_ORC = 'Half-Orc', 'Half-Orc'
     ORC = 'Orc', 'Orc'
 
+class Alignment(models.TextChoices):
+    LAWFUL_GOOD = 'LG', 'Lawful Good'
+    NEUTRAL_GOOD = 'NG', 'Neutral Good'
+    CHAOTIC_GOOD = 'CG', 'Chaotic Good'
+    LAWFUL_NEUTRAL = 'LN', 'Lawful Neutral'
+    TRUE_NEUTRAL = 'TN', 'True Neutral'
+    CHAOTIC_NEUTRAL = 'CN', 'Chaotic Neutral'
+    LAWFUL_EVIL = 'LE', 'Lawful Evil'
+    NEUTRAL_EVIL = 'NE', 'Neutral Evil'
+    CHAOTIC_EVIL = 'CE', 'Chaotic Evil'
+
+# --- CONFIGURATION MODELS ---
+
+class CharacterClass(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    hit_die = models.IntegerField(help_text="Hit die value, e.g., 8 for d8, 12 for d12")
+    skill_choices_count = models.IntegerField(default=2)
+    
+    # Spellcasting Configuration
+    spellcasting_ability = models.CharField(
+        max_length=20, 
+        choices=AbilityScoreChoices.choices,
+        null=True, 
+        blank=True, 
+        help_text="Primary ability for spellcasting. Leave empty for non-casters."
+    )
+    is_prepared_caster = models.BooleanField(
+        default=False,
+        help_text="If True, spells prepared limit = (Level * Multiplier) + Mod. If False, limit is taken from the progression table."
+    )
+    preparation_multiplier = models.FloatField(
+        default=1.0,
+        help_text="Multiplier for prepared spells formula. Wizard/Cleric = 1.0, Paladin = 0.5."
+    )
+
+    def __str__(self):
+        return self.name
+
+class Subclass(models.Model):
+    name = models.CharField(max_length=50)
+    character_class = models.ForeignKey(
+        CharacterClass,
+        on_delete=models.CASCADE,
+        related_name='subclasses'
+    )
+
+    def __str__(self):
+        return f"{self.character_class.name}: {self.name}"
+
+class ClassSpellProgression(models.Model):
+    """
+    Data-driven table for spell slots and known spells/cantrips per level.
+    Replaces hardcoded dictionaries.
+    """
+    character_class = models.ForeignKey(CharacterClass, on_delete=models.CASCADE, related_name='spell_progression')
+    level = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(20)])
+    
+    cantrips_known = models.IntegerField(default=0)
+    spells_known = models.IntegerField(default=0, help_text="Fixed known spells (Bard/Sorcerer). Set 0 for Prepared casters.")
+    
+    # Spell Slots
+    slots_level_1 = models.IntegerField(default=0)
+    slots_level_2 = models.IntegerField(default=0)
+    slots_level_3 = models.IntegerField(default=0)
+    slots_level_4 = models.IntegerField(default=0)
+    slots_level_5 = models.IntegerField(default=0)
+    slots_level_6 = models.IntegerField(default=0)
+    slots_level_7 = models.IntegerField(default=0)
+    slots_level_8 = models.IntegerField(default=0)
+    slots_level_9 = models.IntegerField(default=0)
+
+    class Meta:
+        unique_together = ('character_class', 'level')
+        ordering = ['character_class', 'level']
+
+    def __str__(self):
+        return f"{self.character_class.name} Lvl {self.level}"
+
+# --- GENERAL MODELS ---
+
+class Background(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(help_text="General description of the background")
+    feature_name = models.CharField(max_length=100, help_text="Name of the background feature")
+    feature_description = models.TextField(help_text="Rules text of the background feature")
+
+    def __str__(self):
+        return self.name
+
 class RaceModifier(models.Model):
     race = models.CharField(max_length=30, choices=RaceChoices.choices)
     ability = models.CharField(max_length=20, choices=AbilityScoreChoices.choices)
@@ -50,20 +133,17 @@ class Language(models.Model):
     class Meta:
         ordering = ['name']
 
-class Alignment(models.TextChoices):
-    LAWFUL_GOOD = 'LG', 'Lawful Good'
-    NEUTRAL_GOOD = 'NG', 'Neutral Good'
-    CHAOTIC_GOOD = 'CG', 'Chaotic Good'
-    LAWFUL_NEUTRAL = 'LN', 'Lawful Neutral'
-    TRUE_NEUTRAL = 'TN', 'True Neutral'
-    CHAOTIC_NEUTRAL = 'CN', 'Chaotic Neutral'
-    LAWFUL_EVIL = 'LE', 'Lawful Evil'
-    NEUTRAL_EVIL = 'NE', 'Neutral Evil'
-    CHAOTIC_EVIL = 'CE', 'Chaotic Evil'
+class Item(models.Model):
+    name = models.CharField(max_length=100)
+    weight = models.DecimalField(max_digits=5, decimal_places=2, default=0.0)
+    value = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.name
 
 class StartingEquipment(models.Model):
-    character_class = models.ForeignKey('CharacterClass', on_delete=models.CASCADE, related_name='starting_equipment')
-    item = models.ForeignKey('Item', on_delete=models.CASCADE)
+    character_class = models.ForeignKey(CharacterClass, on_delete=models.CASCADE, related_name='starting_equipment')
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
 
     def __str__(self):
@@ -80,7 +160,6 @@ class Skill(models.Model):
     def __str__(self):
         return self.name
 
-
 class Spell(models.Model):
     name = models.CharField(max_length=255, unique=True)
     desc = models.TextField()
@@ -96,32 +175,42 @@ class Spell(models.Model):
     level = models.IntegerField()
     school = models.CharField(max_length=100)
 
-    # This handles "Which classes CAN learn this spell"
     dnd_classes = models.ManyToManyField(
-        'CharacterClass',
+        CharacterClass,
         through='ClassSpell',
         related_name='spells'
     )
 
     def __str__(self):
         return self.name
-# --- Spell Tables Constants ---
-SPELLS_KNOWN_TABLE = {
-    'Bard': {1: 4, 2: 5, 3: 6, 4: 7, 5: 8, 6: 9, 7: 10, 8: 11, 9: 12, 10: 14, 11: 15, 12: 15, 13: 16, 14: 18, 15: 19, 16: 19, 17: 20, 18: 22, 19: 22, 20: 22},
-    'Sorcerer': {1: 2, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10, 10: 11, 11: 12, 12: 12, 13: 13, 14: 13, 15: 14, 16: 14, 17: 15, 18: 15, 19: 15, 20: 15},
-    'Warlock': {1: 2, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10, 10: 10, 11: 11, 12: 11, 13: 12, 14: 12, 15: 13, 16: 13, 17: 14, 18: 14, 19: 15, 20: 15},
-    'Ranger': {1: 0, 2: 2, 3: 3, 4: 3, 5: 4, 6: 4, 7: 5, 8: 5, 9: 6, 10: 6, 11: 7, 12: 7, 13: 8, 14: 8, 15: 9, 16: 9, 17: 10, 18: 10, 19: 11, 20: 11},
-    # Paladin/Cleric/Druid/Wizard are calculated dynamically
-}
 
-CANTRIPS_KNOWN_TABLE = {
-    'Bard': {1: 2, 4: 3, 10: 4},
-    'Cleric': {1: 3, 4: 4, 10: 5},
-    'Druid': {1: 2, 4: 3, 10: 4},
-    'Sorcerer': {1: 4, 4: 5, 10: 6},
-    'Warlock': {1: 2, 4: 3, 10: 4},
-    'Wizard': {1: 3, 4: 4, 10: 5},
-}
+class ClassSpell(models.Model):
+    spell = models.ForeignKey(Spell, on_delete=models.CASCADE)
+    character_class = models.ForeignKey(CharacterClass, on_delete=models.CASCADE)
+    subclass = models.ForeignKey(
+        Subclass,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        help_text="If null -> spell is available for the entire class"
+    )
+    unlock_level = models.IntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(20)]
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['spell', 'character_class', 'subclass'],
+                name='unique_spell_class_subclass'
+            )
+        ]
+        ordering = ['unlock_level']
+
+    def __str__(self):
+        if self.subclass:
+            return f"{self.character_class}/{self.subclass} -> {self.spell} (lvl {self.unlock_level})"
+        return f"{self.character_class} -> {self.spell} (lvl {self.unlock_level})"
 
 class Race(models.Model):
     name = models.CharField(max_length=50, unique=True)
@@ -130,12 +219,57 @@ class Race(models.Model):
     def __str__(self):
         return self.name
 
+class Tool(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.name
+
+class InventoryItem(models.Model):
+    character = models.ForeignKey('Character', on_delete=models.CASCADE, related_name='inventory')
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.item.name} (x{self.quantity})"
+    
+class BackgroundStartingEquipment(models.Model):
+    background = models.ForeignKey(Background, on_delete=models.CASCADE, related_name='starting_equipment')
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.background}: {self.item} x{self.quantity}"
+
+# --- PROFICIENCY MODELS ---
+
+class BackgroundSkillProficiency(models.Model):
+    background = models.ForeignKey(Background, on_delete=models.CASCADE)
+    skill = models.ForeignKey(Skill, on_delete=models.CASCADE)
+
+class BackgroundToolProficiency(models.Model):
+    background = models.ForeignKey(Background, on_delete=models.CASCADE)
+    tool = models.ForeignKey(Tool, on_delete=models.CASCADE)
+
+class CharacterSkillProficiency(models.Model):
+    character = models.ForeignKey('Character', on_delete=models.CASCADE)
+    skill = models.ForeignKey(Skill, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('character', 'skill')
+
+class ClassSkillChoice(models.Model):
+    character_class = models.ForeignKey(CharacterClass, on_delete=models.CASCADE)
+    skill = models.ForeignKey(Skill, on_delete=models.CASCADE)
+
+# --- CHARACTER MODEL ---
+
 class Character(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     character_name = models.CharField(max_length=100)
 
     character_class = models.ForeignKey(
-        'CharacterClass',
+        CharacterClass,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -143,7 +277,7 @@ class Character(models.Model):
     )
 
     subclass = models.ForeignKey(
-        'Subclass',
+        Subclass,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -151,10 +285,7 @@ class Character(models.Model):
         help_text='Subclass of the character (optional)'
     )
 
-    race = models.ForeignKey(
-        Race, 
-        on_delete=models.PROTECT, 
-    )
+    race = models.ForeignKey(Race, on_delete=models.PROTECT)
     
     level = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(20)])
     background = models.ForeignKey(
@@ -170,27 +301,30 @@ class Character(models.Model):
         default=Alignment.TRUE_NEUTRAL,
     )
     experience_points = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
+    
+    # Abilities
     strength = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(30)])
     dexterity = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(30)])
     constitution = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(30)])
     intelligence = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(30)])
     wisdom = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(30)])
     charisma = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(30)])
+    
+    # Computed Stats
     armor_class = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(100)], blank=True, editable=False, default=10)
     initiative = models.IntegerField()
     speed = models.IntegerField(validators=[MinValueValidator(1)], editable=False, default=30)
     hit_points = models.IntegerField(validators=[MinValueValidator(1)])
     temporary_hit_points = models.IntegerField(validators=[MinValueValidator(0)])
     hit_dice = models.IntegerField(validators=[MinValueValidator(1)])
+    
     death_saves_success = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0), MaxValueValidator(3)])
     death_saves_failure = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0), MaxValueValidator(3)] )
     backstory = models.TextField(null=True, blank=True) 
     inspiration = models.BooleanField(default=False)
     languages = models.ManyToManyField(Language, blank=True)
 
-    
     spells = models.ManyToManyField(Spell, blank=True, related_name='learned_by_characters')
-
 
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -199,32 +333,29 @@ class Character(models.Model):
         self.armor_class = self.total_armor_class
         self.initiative = self.calculate_initiative
 
-        self.speed = self.race.speed
+        if self.race:
+            self.speed = self.race.speed
 
         if not is_new:
             try:
-                # Fetch the version of the character currently in the database
                 old_instance = Character.objects.get(pk=self.pk)
-                # Check if the class is being changed
                 if old_instance.character_class != self.character_class:
-                    # Clear the Many-to-Many spell relationship immediately
                     self.spells.clear()
             except Character.DoesNotExist:
                 pass
 
         self.hit_dice = self.calculate_hit_dice
-        # Only recalc max HP if it's 0 or None to avoid overwriting current HP during gameplay
+        
         if not self.hit_points: 
             self.hit_points = self.calculate_hit_points
             
-        # Ensure these default to 0 if not set
         if self.temporary_hit_points is None: self.temporary_hit_points = 0
         if self.death_saves_success is None: self.death_saves_success = 0
         if self.death_saves_failure is None: self.death_saves_failure = 0
 
         super().save(*args, **kwargs)
         
-        # Assign starting equipment only when character is first created
+        # Starting Equipment Logic
         if is_new:
             if self.character_class:
                 equipment_qs = StartingEquipment.objects.filter(character_class=self.character_class)
@@ -247,13 +378,9 @@ class Character(models.Model):
     
     @property
     def calculate_hit_dice(self):
-        class_hit_dice = {
-            'Barbarian': 12, 'Bard': 8, 'Cleric': 8, 'Druid': 8, 'Fighter': 10,
-            'Monk': 8, 'Paladin': 10, 'Ranger': 10, 'Rogue': 8, 'Sorcerer': 6,
-            'Warlock': 8, 'Wizard': 6,
-        }
-        if self.character_class and self.character_class.name in class_hit_dice:
-            return class_hit_dice[self.character_class.name]
+        # Database driven: no more dictionaries
+        if self.character_class:
+            return self.character_class.hit_die
         return 8
     
     @property
@@ -267,25 +394,22 @@ class Character(models.Model):
         dex_mod = (self.dexterity - 10) // 2
         wis_mod = (self.wisdom - 10) // 2
         con_mod = (self.constitution - 10) // 2
-        char_class = self.character_class.name.lower() if self.character_class else ""
-        if char_class == "monk":
+        char_class_name = self.character_class.name.lower() if self.character_class else ""
+        
+        # Note: Ideally this logic should also be moved to CharacterClass fields (e.g., has_unarmored_defense=True)
+        # to strictly follow "no hardcoded rules", but keeping it simple for now as per instructions.
+        if char_class_name == "monk":
             return 10 + dex_mod + wis_mod
-        elif char_class == "barbarian":
+        elif char_class_name == "barbarian":
             return 10 + dex_mod + con_mod
         return 10 + dex_mod
-        """
-        Calculates total Armor Class (AC) based on character class and features.
-        Default: 10 + DEX mod
-        Monk: 10 + DEX mod + WIS mod (if not wearing armor)
-        Barbarian: 10 + DEX mod + CON mod (if not wearing armor)
-        Extend as needed for other classes/features.
-        """       
+
     @property
     def proficiency_bonus(self):
         return 2 + (self.level - 1) // 4
     
     def get_ability_modifier(self, ability_name: str) -> int:
-        score = getattr(self, ability_name)
+        score = getattr(self, ability_name.lower())
         return (score - 10) // 2
 
     def get_skill_bonus(self, skill: Skill) -> int:
@@ -302,72 +426,61 @@ class Character(models.Model):
         return skills.distinct()
     
     def get_background_skill_proficiencies(self):
-        # Fix: self.background is a ForeignKey, so we can access it directly if not null
         if not self.background:
             return Skill.objects.none()
         return Skill.objects.filter(backgroundskillproficiency__background=self.background)
 
-# --- SPELL LOGIC START ---
+    # --- SPELL LOGIC (DATA DRIVEN) ---
 
     @property
     def max_cantrips_known(self):
-        """Returns the maximum number of cantrips a character can know."""
+        """Returns the maximum number of cantrips a character can know from database."""
         if not self.character_class:
             return 0
         
-        char_class = self.character_class.name
-        if char_class in CANTRIPS_KNOWN_TABLE:
-            table = CANTRIPS_KNOWN_TABLE[char_class]
-            # Find the highest level threshold met
-            known = 0
-            for lvl_threshold in sorted(table.keys()):
-                if self.level >= lvl_threshold:
-                    known = table[lvl_threshold]
-            return known
-        return 0
+        try:
+            progression = self.character_class.spell_progression.get(level=self.level)
+            return progression.cantrips_known
+        except ClassSpellProgression.DoesNotExist:
+            return 0
 
     @property
     def max_spells_known(self):
         """
-        Returns the maximum number of leveled spells (1+) a character can know or prepare.
-        Returns a tuple: (limit, limit_type) where limit_type is "Known" or "Prepared".
+        Returns a tuple: (limit, limit_type)
+        limit_type is "Known" (fixed list) or "Prepared" (daily selection).
         """
         if not self.character_class:
             return 0, "None"
 
-        char_class = self.character_class.name
-        
-        # A) Prepared Casters (Level + Ability Mod)
-        if char_class in ['Cleric', 'Druid', 'Wizard']:
-            modifier = 0
-            if char_class == 'Wizard':
-                modifier = self.get_ability_modifier('intelligence')
-            else:
-                modifier = self.get_ability_modifier('wisdom')
+        # 1. Prepared Casters (Cleric, Druid, Paladin, Wizard)
+        if self.character_class.is_prepared_caster:
+            ability_name = self.character_class.spellcasting_ability
+            if not ability_name:
+                return 0, "None"
             
-            # Minimum 1 spell
-            return max(1, self.level + modifier), "Prepared"
-        
-        elif char_class == 'Paladin':
-            modifier = self.get_ability_modifier('charisma')
-            return max(1, (self.level // 2) + modifier), "Prepared"
+            modifier = self.get_ability_modifier(ability_name)
+            
+            # Formula: (Level * Multiplier) + Mod
+            # Wizard/Cleric: Multiplier 1.0 -> Level + Mod
+            # Paladin: Multiplier 0.5 -> Level/2 + Mod
+            level_base = int(self.level * self.character_class.preparation_multiplier)
+            
+            return max(1, level_base + modifier), "Prepared"
 
-        # B) Known Casters (Fixed Table)
-        elif char_class in SPELLS_KNOWN_TABLE:
-            return SPELLS_KNOWN_TABLE[char_class].get(self.level, 0), "Known"
+        # 2. Known Casters (Bard, Sorcerer, Warlock, Ranger) -> Read from DB Table
+        try:
+            progression = self.character_class.spell_progression.get(level=self.level)
+            return progression.spells_known, "Known"
+        except ClassSpellProgression.DoesNotExist:
+            return 0, "None"
 
-        return 0, "None"
-
-    # Note: Validating ManyToMany relationships in save() is impossible because 
-    # the object must be saved before you can add M2M relations.
-    # We create a custom validation method to be called in forms or views.
     def validate_spell_choices(self):
         """
-        Checks if the currently assigned spells exceed class limits.
-        Raises ValidationError if limits are exceeded.
+        Validation method to be called in views/forms.
         """
         if not self.pk:
-            return # Cannot check relations on unsaved object
+            return
 
         current_spells = self.spells.all()
         cantrips_count = current_spells.filter(level=0).count()
@@ -387,7 +500,6 @@ class Character(models.Model):
         if errors:
             raise ValidationError(errors)
 
-    # --- SPELL LOGIC END ---
     def __str__(self):
         return f"{self.character_name} ({self.character_class} Lvl {self.level})"
     
@@ -395,100 +507,4 @@ class Character(models.Model):
         ordering = ['created_at']
         constraints = [
             models.CheckConstraint(condition=models.Q(level__gte=1) & models.Q(level__lte=20), name='level_range'),
-            # ... (kept other constraints same as provided) ...
         ]
-
-class CharacterClass(models.Model):
-    name = models.CharField(max_length=100, unique=True)
-    skill_choices_count = models.IntegerField(default=2)
-
-    def __str__(self):
-        return self.name
-
-class Subclass(models.Model):
-    name = models.CharField(max_length=50)
-    character_class = models.ForeignKey(
-        CharacterClass,
-        on_delete=models.CASCADE,
-        related_name='subclasses'
-    )
-
-    def __str__(self):
-        return f"{self.character_class}: {self.name}"
-
-class ClassSpell(models.Model):
-    spell = models.ForeignKey(Spell, on_delete=models.CASCADE)
-    character_class = models.ForeignKey(CharacterClass, on_delete=models.CASCADE)
-    subclass = models.ForeignKey(
-        Subclass,
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
-        help_text="Jeśli null → spell dostępny dla całej klasy"
-    )
-    unlock_level = models.IntegerField(
-        validators=[MinValueValidator(1), MaxValueValidator(20)]
-    )
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=['spell', 'character_class', 'subclass'],
-                name='unique_spell_class_subclass'
-            )
-        ]
-        ordering = ['unlock_level']
-
-    def __str__(self):
-        if self.subclass:
-            return f"{self.character_class}/{self.subclass} → {self.spell} (lvl {self.unlock_level})"
-        return f"{self.character_class} → {self.spell} (lvl {self.unlock_level})"
-
-class Item(models.Model):
-    name = models.CharField(max_length=100)
-    weight = models.DecimalField(max_digits=5, decimal_places=2, default=0.0)
-    value = models.IntegerField(default=0)
-
-    def __str__(self):
-        return self.name
-
-class InventoryItem(models.Model):
-    character = models.ForeignKey(Character, on_delete=models.CASCADE, related_name='inventory')
-    item = models.ForeignKey(Item, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(default=1)
-
-    def __str__(self):
-        return f"{self.item.name} (x{self.quantity})"
-    
-class BackgroundStartingEquipment(models.Model):
-    background = models.ForeignKey(Background, on_delete=models.CASCADE, related_name='starting_equipment')
-    item = models.ForeignKey(Item, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(default=1)
-
-    def __str__(self):
-        return f"{self.background}: {self.item} x{self.quantity}"
-    
-class Tool(models.Model):
-    name = models.CharField(max_length=100, unique=True)
-
-    def __str__(self):
-        return self.name
-    
-class BackgroundSkillProficiency(models.Model):
-    background = models.ForeignKey(Background, on_delete=models.CASCADE)
-    skill = models.ForeignKey(Skill, on_delete=models.CASCADE)
-
-class BackgroundToolProficiency(models.Model):
-    background = models.ForeignKey(Background, on_delete=models.CASCADE)
-    tool = models.ForeignKey(Tool, on_delete=models.CASCADE)
-
-class CharacterSkillProficiency(models.Model):
-    character = models.ForeignKey(Character, on_delete=models.CASCADE)
-    skill = models.ForeignKey(Skill, on_delete=models.CASCADE)
-
-    class Meta:
-        unique_together = ('character', 'skill')
-
-class ClassSkillChoice(models.Model):
-    character_class = models.ForeignKey(CharacterClass, on_delete=models.CASCADE)
-    skill = models.ForeignKey(Skill, on_delete=models.CASCADE)

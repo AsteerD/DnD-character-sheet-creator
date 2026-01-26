@@ -6,50 +6,92 @@ def create_classes_subclasses_spells(apps, schema_editor):
     CharacterClass = apps.get_model('base', 'CharacterClass')
     Subclass = apps.get_model('base', 'Subclass')
     Spell = apps.get_model('base', 'Spell')
+    ClassSpell = apps.get_model('base', 'ClassSpell')
 
     classes_and_subclasses = [
         ("Barbarian", ["Path of the Berserker", "Path of the Zeolot", "Path of Totem warrior"]),
         ("Bard", ["College of Lore", "College of Glamour", "College of Whispers"]),
         ("Cleric", ["Life Domain", "Tempest Domain", "War Domain"]),
         ("Druid", ["Circle of the Moon", "Circle of the Land", "Circle of Spores"]),
-        ("Fighter", ["Champion", "Battle Master", "Eldritch Knight"]),
+        ("Fighter", ["Champion", "Battle Master", "Samurai"]),
         ("Monk", ["Way of the Open Hand", "Way of Four Elements", "Way of Shadow"]),
         ("Paladin", ["Oath of Devotion", "Oath of Vengance", "Oath of the Acients"]),
         ("Ranger", ["Hunter", "Beast master", "Gloom Stalker"]),
-        ("Rogue", ["Thief", "Assasin", "Arcane Trickster"]),
+        ("Rogue", ["Thief", "Assasin", "Inquisitive"]),
         ("Sorcerer", ["Draconic Bloodline", "Wild Magic", "Divine Soul"]),
         ("Warlock", ["The Fiend", "The Hexblade", "The Great Old One"]),
         ("Wizard", ["School of Evocation", "Necromancy", "Divination"]),
     ]
-    class_objs = {}
     for class_name, subclasses in classes_and_subclasses:
         char_class, _ = CharacterClass.objects.get_or_create(name=class_name)
-        class_objs[class_name] = char_class
         for subclass_name in subclasses:
             Subclass.objects.get_or_create(name=subclass_name, character_class=char_class)
 
-    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    spells_path = os.path.join(base_dir, 'spellsv2.json')
-    if not os.path.exists(spells_path):
-        return  # skip if not found
-    with open(spells_path, encoding='utf-8') as f:
-        spells = json.load(f)
-    for spell in spells:
-        Spell.objects.get_or_create(
-            name=spell['name'],
-            defaults={
-                'desc': spell.get('desc', ''),
-                'range': spell.get('range', ''),
-                'components': spell.get('components', ''),
-                'material': spell.get('material', ''),
-                'ritual': spell.get('ritual', False),
-                'duration': spell.get('duration', ''),
-                'concentration': spell.get('concentration', False),
-                'casting_time': spell.get('casting_time', ''),
-                'level': spell.get('level', 0),
-                'school': spell.get('school', ''),
+    json_file_path = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        '..', 'data', 'spells.json'
+    )
+
+    try:
+        with open(json_file_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+    except FileNotFoundError:
+        raise Exception(f"spells.json not found at {json_file_path}. This file is required for this migration.")
+
+    spellbook = data.get('spellbook', {})
+
+    for level_str, spells_in_level in spellbook.items():
+        try:
+            level = int(level_str.split('_')[-1])
+        except (ValueError, IndexError):
+            continue
+
+        for spell_data in spells_in_level:
+            # MAPPING LEGEND based on your newest JSON schema:
+            # 0: name
+            # 1: school
+            # 2: cast_time
+            # 3: components
+            # 4: duration
+            # 5: range
+            # 6: classes (Dictionary)
+            # 7: material
+            # 8: ritual (Boolean)
+            # 9: concentration (Boolean)
+            # 10: description (String)
+
+            defaults = {
+                'level': level,
+                'school': spell_data[1],
+                'casting_time': spell_data[2],
+                'components': spell_data[3],
+                'duration': spell_data[4],
+                'range': spell_data[5],
+                'desc': spell_data[10],
+                'material': spell_data[7],
+                'ritual': spell_data[8],
+                'concentration': spell_data[9],
             }
-        )
+
+            spell, _ = Spell.objects.update_or_create(
+                name=spell_data[0],  # Name is at index 0
+                defaults=defaults
+            )
+
+            # Class info is at index 6
+            class_info = spell_data[6]
+            
+            for class_name, unlock_level in class_info.items():
+                try:
+                    class_obj = CharacterClass.objects.get(name=class_name)
+                    ClassSpell.objects.get_or_create(
+                        spell=spell,
+                        character_class=class_obj,
+                        defaults={'unlock_level': unlock_level}
+                    )
+                except CharacterClass.DoesNotExist:
+                    # In case a class in the JSON is not in our predefined database list
+                    pass
 
 def remove_classes_subclasses_spells(apps, schema_editor):
     CharacterClass = apps.get_model('base', 'CharacterClass')
@@ -66,4 +108,5 @@ class Migration(migrations.Migration):
     ]
     operations = [
         migrations.RunPython(create_classes_subclasses_spells, remove_classes_subclasses_spells),
+     
     ]

@@ -136,6 +136,27 @@
   </table>
   </table>
 
+<h2 style="margin-top: 40px;">Class Features</h2>
+
+{% if class_features %}
+  {% for feature in class_features %}
+    <div style="margin-bottom: 16px;">
+      <strong>
+        {{ feature.name }}
+        <span style="color:#666;">(Level {{ feature.unlock_level }})</span>
+      </strong>
+      {% if feature.subclass %}
+        <em style="color:#888;"> – {{ feature.subclass.name }}</em>
+      {% endif %}
+      <p style="margin-top: 4px;">
+        {{ feature.description|linebreaksbr }}
+      </p>
+    </div>
+  {% endfor %}
+{% else %}
+  <p>This class has no features defined.</p>
+{% endif %}
+
 <h2 style="margin-top: 40px;">Spellbook</h2>
 
 {% if character.spells.exists %}

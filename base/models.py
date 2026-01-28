@@ -2,6 +2,7 @@ from django.db import models # type: ignore
 from django.contrib.auth.models import User # type: ignore
 from django.core.validators import MinValueValidator, MaxValueValidator # type: ignore
 from django.core.exceptions import ValidationError
+from django.db.models import Q
 
 class Background(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -299,6 +300,18 @@ class Character(models.Model):
         if not self.background:
             return Skill.objects.none()
         return Skill.objects.filter(backgroundskillproficiency__background=self.background)
+    
+    def get_class_features(self):
+        if not self.character_class:
+            return ClassFeature.objects.none()
+
+        return ClassFeature.objects.filter(
+            character_class=self.character_class,
+            unlock_level__lte=self.level
+        ).filter(
+            Q(subclass__isnull=True) |
+            Q(subclass=self.subclass)
+        ).order_by('unlock_level')
 
 # --- SPELL LOGIC START ---
 
@@ -421,6 +434,40 @@ class Subclass(models.Model):
 
     def __str__(self):
         return f"{self.character_class}: {self.name}"
+    
+class ClassFeature(models.Model):
+    character_class = models.ForeignKey(
+        CharacterClass,
+        on_delete=models.CASCADE,
+        related_name="class_features"
+    )
+    subclass = models.ForeignKey(
+        Subclass,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        help_text="Null = base class feature"
+    )
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    unlock_level = models.IntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(20)]
+    )
+
+    class Meta:
+        ordering = ["unlock_level"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["character_class", "subclass", "name"],
+                name="unique_class_feature"
+            )
+        ]
+
+    def __str__(self):
+        if self.subclass:
+            return f"{self.character_class}/{self.subclass} – {self.name} (lvl {self.unlock_level})"
+        return f"{self.character_class} – {self.name} (lvl {self.unlock_level})"
+
 
 class ClassSpell(models.Model):
     spell = models.ForeignKey(Spell, on_delete=models.CASCADE)

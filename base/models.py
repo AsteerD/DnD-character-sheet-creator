@@ -39,6 +39,13 @@ class RaceModifier(models.Model):
     def __str__(self):
         return f"{self.race.name}: {self.ability} {self.modifier:+d}"
     
+class Feat(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField()
+
+    def __str__(self):
+        return self.name
+    
 class Language(models.Model):
     name = models.CharField(max_length=100)
 
@@ -179,10 +186,16 @@ class Character(models.Model):
     inspiration = models.BooleanField(default=False)
     languages = models.ManyToManyField(Language, blank=True)
     
+    feats = models.ManyToManyField(Feat, blank=True, related_name='characters')
     spells = models.ManyToManyField(Spell, blank=True, related_name='learned_by_characters')
 
     created_at = models.DateTimeField(auto_now_add=True)
-
+    
+    @property
+    def max_feats_known(self):
+        """Returns max feats allowed (1 per 4 levels)."""
+        return self.level // 4
+    
     @property
     def total_strength(self):
         return self.strength + self.get_racial_bonus('strength')

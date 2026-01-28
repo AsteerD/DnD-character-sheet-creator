@@ -75,6 +75,9 @@ class Skill(models.Model):
         default=AbilityScoreChoices.DEXTERITY,
     )
 
+    class Meta:
+        ordering = ['name']
+
     def __str__(self):
         return self.name
 

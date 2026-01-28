@@ -238,6 +238,11 @@ class ClassSpell(models.Model):
 class Race(models.Model):
     name = models.CharField(max_length=50, unique=True)
     speed = models.IntegerField(default=30)
+    racial_features = models.TextField(
+        blank=True, 
+        default="", 
+        help_text="Opis cech rasowych, np. Darkvision, Resistances itp."
+    )
 
     def __str__(self):
         return self.name

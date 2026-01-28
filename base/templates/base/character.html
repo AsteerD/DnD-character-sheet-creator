@@ -113,6 +113,14 @@
   </ul>
 {% endif %}
 
+{% if character.race.racial_features %}
+  <h2 style="margin-top: 30px;">Racial Traits: {{ character.race.name }}</h2>
+  
+  <div>
+    {{ character.race.racial_features|linebreaks }}
+  </div>
+{% endif %}
+
 <h2>Skills</h2>
 <table class="detail-table">
   <thead>

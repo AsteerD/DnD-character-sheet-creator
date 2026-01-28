@@ -22,7 +22,6 @@ def populate_feats(apps, schema_editor):
             name=feat.get('name'), 
             defaults={
                 'description': feat.get('description', ''),
-                'prerequisite': feat.get('prerequisite', '')
             }
         )
         count += 1

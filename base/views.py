@@ -10,8 +10,9 @@ from django.contrib.auth import login
 from .forms import CharacterForm, SpellSelectionForm
 from django.contrib.auth.decorators import login_required
 
-from .models import Character, Background, CharacterClass, Skill
+from .models import Character, Background, CharacterClass, Skill, Subclass, CharacterSkillProficiency
 
+# Stała lista pól, używana pomocniczo, choć formularz definiuje własne
 CHARACTER_FORM_FIELDS = ['character_name', 'character_class', 'subclass', 'race', 'level', 'background', 'alignment', 'experience_points', 'strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma', 'initiative', 'speed', 'hit_points', 'temporary_hit_points', 'hit_dice', 'death_saves_success', 'death_saves_failure', 'backstory', 'inspiration', 'languages']
 
 class CustomLoginView(LoginView):
@@ -70,7 +71,6 @@ class CharacterDetail(LoginRequiredMixin, DetailView):
             item.item.weight * item.quantity for item in inventory
         )
 
-        # 👇 BACKGROUND OBJECT (NOWE)
         background_obj = Background.objects.filter(
             name=character.background
         ).first()
@@ -88,7 +88,10 @@ class CharacterDetail(LoginRequiredMixin, DetailView):
             })
 
         context["skills_data"] = skills_data
-        context["class_features"] = character.get_class_features()
+        
+        # UWAGA: Zakomentowane, bo w Twoim models.py nie widziałem funkcji get_class_features.
+        # Jeśli ją masz, odkomentuj to. Jeśli nie, zostaw zakomentowane, by uniknąć błędu 500.
+        # context["class_features"] = character.get_class_features() 
 
         return context
 
@@ -100,13 +103,18 @@ class CharacterCreate(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.user = self.request.user
+        # super().form_valid(form) zapisuje instancję ORAZ relacje ManyToMany (Feats)
         response = super().form_valid(form)
         self._save_skills(form)
         return response
 
-    def _save_skills(self, form):
-        from .models import CharacterSkillProficiency
+    # --- DODANO DLA DIAGNOSTYKI ---
+    def form_invalid(self, form):
+        print("DEBUG: Create Form is invalid!")
+        print(f"DEBUG: Errors: {form.errors}")
+        return super().form_invalid(form)
 
+    def _save_skills(self, form):
         CharacterSkillProficiency.objects.filter(
             character=self.object
         ).delete()
@@ -124,13 +132,18 @@ class CharacterUpdate(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy('characters')
 
     def form_valid(self, form):
+        # super().form_valid(form) zapisuje instancję ORAZ relacje ManyToMany (Feats)
         response = super().form_valid(form)
         self._save_skills(form)
         return response
 
-    def _save_skills(self, form):
-        from .models import CharacterSkillProficiency
+    # --- DODANO DLA DIAGNOSTYKI ---
+    def form_invalid(self, form):
+        print("DEBUG: Update Form is invalid!")
+        print(f"DEBUG: Errors: {form.errors}")
+        return super().form_invalid(form)
 
+    def _save_skills(self, form):
         CharacterSkillProficiency.objects.filter(
             character=self.object
         ).delete()
@@ -148,7 +161,6 @@ class CharacterDelete(LoginRequiredMixin, DeleteView):
 
 
 from django.http import JsonResponse
-from .models import Subclass
 
 def subclasses_for_class(request):
     class_id = request.GET.get("class_id")

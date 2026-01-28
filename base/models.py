@@ -126,7 +126,6 @@ CANTRIPS_KNOWN_TABLE = {
 class Feat(models.Model):
     name = models.CharField(max_length=100, unique=True)
     description = models.TextField()
-    prerequisite = models.CharField(max_length=255, blank=True, null=True, help_text="e.g. 'Dexterity 13' or 'Elf'")
     
     def __str__(self):
         return self.name
@@ -214,6 +213,14 @@ class Character(models.Model):
     @property
     def total_charisma(self):
         return self.charisma + self.get_racial_bonus('charisma')
+    
+    @property
+    def max_feats_known(self):
+        """
+        Calculates the max number of feats a character can have.
+        Rule: 1 feat every 4 levels (Level // 4).
+        """
+        return self.level // 4
 
     def save(self, *args, **kwargs):
         is_new = self.pk is None

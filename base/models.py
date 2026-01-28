@@ -206,7 +206,8 @@ class Character(models.Model):
 
     def save(self, *args, **kwargs):
         is_new = self.pk is None
-        
+        if self.speed is None and self.race:
+            self.speed = self.race.speed
         self.armor_class = self.total_armor_class
         self.initiative = self.calculate_initiative
         self.hit_dice = self.calculate_hit_dice

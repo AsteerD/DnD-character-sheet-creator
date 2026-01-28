@@ -32,7 +32,7 @@ def populate_feats(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('base', '0017_feat_alter_skill_options_character_feats'), 
+        ('base', '0017_feat_character_feats'),
     ]
 
     operations = [

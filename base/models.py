@@ -457,6 +457,18 @@ class Character(models.Model):
         if not self.background:
             return Skill.objects.none()
         return Skill.objects.filter(backgroundskillproficiency__background=self.background)
+    
+    def get_class_features(self):
+        if not self.character_class:
+            return ClassFeature.objects.none()
+
+        return ClassFeature.objects.filter(
+            character_class=self.character_class,
+            unlock_level__lte=self.level
+        ).filter(
+            Q(subclass__isnull=True) |
+            Q(subclass=self.subclass)
+        ).order_by('unlock_level')
 
     # --- SPELL LOGIC (DATA DRIVEN) ---
 
@@ -550,3 +562,132 @@ class Character(models.Model):
             models.CheckConstraint(condition=models.Q(death_saves_success__gte=0) & models.Q(death_saves_success__lte=3), name='death_saves_success_range'),
             models.CheckConstraint(condition=models.Q(death_saves_failure__gte=0) & models.Q(death_saves_failure__lte=3), name='death_saves_failure_range'),
         ]
+
+class CharacterClass(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    skill_choices_count = models.IntegerField(default=2)
+
+    def __str__(self):
+        return self.name
+
+class Subclass(models.Model):
+    name = models.CharField(max_length=50)
+    character_class = models.ForeignKey(
+        CharacterClass,
+        on_delete=models.CASCADE,
+        related_name='subclasses'
+    )
+
+    def __str__(self):
+        return f"{self.character_class}: {self.name}"
+    
+class ClassFeature(models.Model):
+    character_class = models.ForeignKey(
+        CharacterClass,
+        on_delete=models.CASCADE,
+        related_name="class_features"
+    )
+    subclass = models.ForeignKey(
+        Subclass,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        help_text="Null = base class feature"
+    )
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    unlock_level = models.IntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(20)]
+    )
+
+    class Meta:
+        ordering = ["unlock_level"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["character_class", "subclass", "name"],
+                name="unique_class_feature"
+            )
+        ]
+
+    def __str__(self):
+        if self.subclass:
+            return f"{self.character_class}/{self.subclass} – {self.name} (lvl {self.unlock_level})"
+        return f"{self.character_class} – {self.name} (lvl {self.unlock_level})"
+
+
+class ClassSpell(models.Model):
+    spell = models.ForeignKey(Spell, on_delete=models.CASCADE)
+    character_class = models.ForeignKey(CharacterClass, on_delete=models.CASCADE)
+    subclass = models.ForeignKey(
+        Subclass,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        help_text="Jeśli null → spell dostępny dla całej klasy"
+    )
+    unlock_level = models.IntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(20)]
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['spell', 'character_class', 'subclass'],
+                name='unique_spell_class_subclass'
+            )
+        ]
+        ordering = ['unlock_level']
+
+    def __str__(self):
+        if self.subclass:
+            return f"{self.character_class}/{self.subclass} → {self.spell} (lvl {self.unlock_level})"
+        return f"{self.character_class} → {self.spell} (lvl {self.unlock_level})"
+
+class Item(models.Model):
+    name = models.CharField(max_length=100)
+    weight = models.DecimalField(max_digits=5, decimal_places=2, default=0.0)
+    value = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.name
+
+class InventoryItem(models.Model):
+    character = models.ForeignKey(Character, on_delete=models.CASCADE, related_name='inventory')
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.item.name} (x{self.quantity})"
+    
+class BackgroundStartingEquipment(models.Model):
+    background = models.ForeignKey(Background, on_delete=models.CASCADE, related_name='starting_equipment')
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.background}: {self.item} x{self.quantity}"
+    
+class Tool(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.name
+    
+class BackgroundSkillProficiency(models.Model):
+    background = models.ForeignKey(Background, on_delete=models.CASCADE)
+    skill = models.ForeignKey(Skill, on_delete=models.CASCADE)
+
+class BackgroundToolProficiency(models.Model):
+    background = models.ForeignKey(Background, on_delete=models.CASCADE)
+    tool = models.ForeignKey(Tool, on_delete=models.CASCADE)
+
+class CharacterSkillProficiency(models.Model):
+    character = models.ForeignKey(Character, on_delete=models.CASCADE)
+    skill = models.ForeignKey(Skill, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('character', 'skill')
+
+class ClassSkillChoice(models.Model):
+    character_class = models.ForeignKey(CharacterClass, on_delete=models.CASCADE)
+    skill = models.ForeignKey(Skill, on_delete=models.CASCADE)

@@ -88,6 +88,7 @@ class CharacterDetail(LoginRequiredMixin, DetailView):
             })
 
         context["skills_data"] = skills_data
+        context["class_features"] = character.get_class_features()
 
         return context
 

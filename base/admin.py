@@ -1,11 +1,6 @@
-from django.contrib import admin
-from .models import (
-    Character, Language, Subclass, CharacterClass, StartingEquipment, 
-    ClassSpell, Item, InventoryItem, Background, BackgroundStartingEquipment, 
-    Skill, Tool, BackgroundSkillProficiency, BackgroundToolProficiency, 
-    CharacterSkillProficiency, ClassSkillChoice, ClassSpellProgression,
-    Feat, ClassFeature
-)
+from django.contrib import admin # type: ignore
+from .models import Character, Language, Subclass, CharacterClass, StartingEquipment, ClassSpell, Item, InventoryItem, Background, BackgroundStartingEquipment, Skill, Tool, BackgroundSkillProficiency, BackgroundToolProficiency, CharacterSkillProficiency, ClassSkillChoice, ClassFeature 
+ 
 admin.site.register(Character)
 admin.site.register(Language)
 admin.site.register(Subclass)
@@ -25,3 +20,5 @@ admin.site.register(ClassSkillChoice)
 admin.site.register(ClassSpellProgression)
 admin.site.register(Feat)
 admin.site.register(ClassFeature)
+admin.site.register(ClassFeature)
+

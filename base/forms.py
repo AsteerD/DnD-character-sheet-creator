@@ -1,6 +1,6 @@
 # base/forms.py
 from django import forms
-from .models import Character, Skill, Subclass, CharacterClass, Spell
+from .models import Character, Skill, Subclass, CharacterClass, Spell, Feat
 from django.core.exceptions import ValidationError
 
 class CharacterForm(forms.ModelForm):
@@ -9,6 +9,12 @@ class CharacterForm(forms.ModelForm):
         required=False,
         widget=forms.CheckboxSelectMultiple,
         label="Class Skill Proficiencies"
+    )
+    feats = forms.ModelMultipleChoiceField(
+        queryset=Feat.objects.all(),
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+        label="Feats"
     )
 
     class Meta:
@@ -31,6 +37,7 @@ class CharacterForm(forms.ModelForm):
             'backstory',
             'inspiration',
             'languages',
+            'feats',
         ]
 
     def __init__(self, *args, **kwargs):

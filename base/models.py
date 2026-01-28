@@ -123,7 +123,13 @@ CANTRIPS_KNOWN_TABLE = {
     'Warlock': {1: 2, 4: 3, 10: 4},
     'Wizard': {1: 3, 4: 4, 10: 5},
 }
-
+class Feat(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField()
+    prerequisite = models.CharField(max_length=255, blank=True, null=True, help_text="e.g. 'Dexterity 13' or 'Elf'")
+    
+    def __str__(self):
+        return self.name
 class Character(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     character_name = models.CharField(max_length=100)
@@ -179,6 +185,8 @@ class Character(models.Model):
     inspiration = models.BooleanField(default=False)
     languages = models.ManyToManyField(Language, blank=True)
     
+    feats = models.ManyToManyField(Feat, blank=True, related_name='characters')
+
     spells = models.ManyToManyField(Spell, blank=True, related_name='learned_by_characters')
 
     created_at = models.DateTimeField(auto_now_add=True)

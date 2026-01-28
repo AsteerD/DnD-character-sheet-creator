@@ -34,24 +34,6 @@
                 According to the <strong>{{ character.character_class.name }}</strong> progression at level <strong>{{ character.level }}</strong>:
             </p>
         </div>
-        
-        <div class="col-md-4 text-md-end mt-3 mt-md-0">
-            {% with progression=character.character_class.spell_progression.all|dictsort:"level" %}
-                {% for p in progression %}
-                    {% if p.level == character.level %}
-                        <span class="badge bg-dark p-2 fs-6">{{ p.cantrips_known }} Cantrips</span>
-                        
-                        {% if character.character_class.is_prepared_caster %}
-                            <span class="badge bg-primary p-2 fs-6">{{ character.max_spells_known.0 }} Prepared Spells</span>
-                        {% else %}
-                            <span class="badge bg-primary p-2 fs-6">{{ p.spells_known }} Known Spells</span>
-                        {% endif %}
-                    {% endif %}
-                {% endfor %}
-            {% endwith %}
-        </div>
-    </div>
-</div>
 
     <form method="POST">
         {% csrf_token %}

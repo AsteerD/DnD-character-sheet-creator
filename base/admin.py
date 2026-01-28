@@ -20,4 +20,3 @@ admin.site.register(BackgroundToolProficiency)
 admin.site.register(CharacterSkillProficiency)
 admin.site.register(ClassSkillChoice)
 admin.site.register(ClassFeature)
-

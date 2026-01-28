@@ -253,6 +253,48 @@ class Character(models.Model):
         modifier_obj = self.race.modifiers.filter(ability=ability_name.lower()).first()
         return modifier_obj.modifier if modifier_obj else 0
     
+    def clean(self):
+        """
+        Django calls this method to validate data before saving in Forms/Admin.
+        We use it to enforce Point Buy rules.
+        """
+        super().clean()
+        self.validate_point_buy()
+
+    def validate_point_buy(self):
+        # Point Buy Cost Table (Score: Cost)
+        # Scores 8-13 cost 1 point per increase.
+        # Scores 14-15 cost 2 points per increase.
+        POINT_COSTS = {
+            8: 0, 9: 1, 10: 2, 11: 3, 
+            12: 4, 13: 5, 14: 7, 15: 9
+        }
+        
+        MAX_POINTS = 27 
+        
+        abilities = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma']
+        total_spent = 0
+        errors = {}
+
+        for ability in abilities:
+            score = getattr(self, ability)
+           
+            if score is None:
+                continue
+
+            if score < 8 or score > 15:
+                errors[ability] = f"In Point Buy, base scores must be between 8 and 15. Value was {score}."
+            else:
+                total_spent += POINT_COSTS[score]
+
+        if errors:
+            raise ValidationError(errors)
+
+        if total_spent > MAX_POINTS:
+            raise ValidationError(
+                f"Point Buy budget exceeded. You have spent {total_spent} points, but the limit is {MAX_POINTS}."
+            )
+    
     @property
     def calculate_initiative(self):
         dex_mod = (self.dexterity - 10) // 2

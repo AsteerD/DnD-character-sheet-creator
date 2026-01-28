@@ -22,6 +22,96 @@
 
 <p><a href="{% url 'characters' %}">Back to list</a></p>
 
+<!-- Set initial skill numeric values to 8. -->
+<script type="module">
+document.addEventListener("DOMContentLoaded", () => {
+    const fields = [
+        "strength",
+        "dexterity",
+        "constitution",
+        "intelligence",
+        "wisdom",
+        "charisma",
+    ];
+
+    for (const name of fields) {
+        const el = document.getElementById(`id_${name}`);
+        if (!el || el.type !== "number") continue;
+
+        el.min = "8";
+
+        if (el.value === "") {
+            el.value = 8;
+        }
+
+        el.addEventListener("input", () => {
+            if (el.value !== "" && Number(el.value) < 8) {
+                el.value = 8;
+            }
+        });
+    }
+});
+</script>
+
+<!-- Compute experience_points buy action. -->
+<script type="module">
+document.addEventListener("DOMContentLoaded", () => {
+    const basePoints = 27;
+    const baseStat = 8;
+
+    const stats = [
+        "strength",
+        "dexterity",
+        "constitution",
+        "intelligence",
+        "wisdom",
+        "charisma",
+    ].map(name => document.getElementById(`id_${name}`))
+     .filter(Boolean);
+
+    const xpEl = document.getElementById("id_experience_points");
+
+    if (!xpEl) {
+        return;
+    }
+
+    xpEl.readOnly = true;
+
+    if (xpEl.value === "") {
+        xpEl.value = basePoints;
+    }
+
+    const calculateCost = () => {
+        let cost = 0;
+
+        for (const el of stats) {
+            const value = Number(el.value || baseStat);
+            const delta = Math.max(0, value - baseStat);
+
+            if (delta > 5) {
+                cost += 5;                // 8 -> 13 costs 5
+                cost += (delta - 5) * 2;  // 13 -> x costs 2 per point
+            } else {
+                cost += delta;
+            }
+        }
+
+        return cost;
+    };
+
+    const updateXP = () => {
+        const spent = calculateCost();
+        xpEl.value = Math.max(0, basePoints - spent);
+    };
+
+    for (const el of stats) {
+        el.addEventListener("input", updateXP);
+    }
+
+    updateXP();
+});
+</script>
+
 <script>
 const classSelect = document.getElementById("id_character_class");
 const subclassSelect = document.getElementById("id_subclass");

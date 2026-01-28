@@ -21,26 +21,23 @@ class AbilityScoreChoices(models.TextChoices):
     WISDOM = 'wisdom', 'Wisdom'
     CHARISMA = 'charisma', 'Charisma'
 
-class RaceChoices(models.TextChoices):
-    AASIMAR = 'Aasimar', 'Aasimar'
-    HUMAN = 'Human', 'Human'
-    ELF = 'Elf', 'Elf'
-    DWARF = 'Dwarf', 'Dwarf'
-    HALFLING = 'Halfling', 'Halfling'
-    GNOME = 'Gnome', 'Gnome'
-    DRAGONBORN = 'Dragonborn', 'Dragonborn'
-    TIEFLING = 'Tiefling', 'Tiefling'
-    HALF_ELF = 'Half-Elf', 'Half-Elf'
-    HALF_ORC = 'Half-Orc', 'Half-Orc'
-    ORC = 'Orc', 'Orc'
+class Race(models.Model):
+    name = models.CharField(max_length=30, unique=True)
+    speed = models.PositiveIntegerField(default=30, help_text="Base walking speed in feet")
 
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+    
 class RaceModifier(models.Model):
-    race = models.CharField(max_length=30, choices=RaceChoices.choices)
+    race = models.ForeignKey(Race, on_delete=models.CASCADE, related_name='modifiers')
     ability = models.CharField(max_length=20, choices=AbilityScoreChoices.choices)
     modifier = models.IntegerField()
 
     def __str__(self):
-        return f"{self.race}: {self.ability} {self.modifier:+d}"
+        return f"{self.race.name}: {self.ability} {self.modifier:+d}"
     
 class Language(models.Model):
     name = models.CharField(max_length=100)
@@ -145,25 +142,19 @@ class Character(models.Model):
         help_text='Subclass of the character (optional)'
     )
 
-    race = models.CharField(
-        max_length=30,
-        choices=RaceChoices.choices,
-        default=RaceChoices.HUMAN,
-    )
-    
-    level = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(20)])
-    background = models.ForeignKey(
-        Background,
+    # UPDATED: Changed from CharField to ForeignKey
+    race = models.ForeignKey(
+        Race,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name='characters',
+        related_name='characters'
     )
-    alignment = models.CharField(
-        max_length=2,
-        choices=Alignment.choices,
-        default=Alignment.TRUE_NEUTRAL,
-    )
+    
+    level = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(20)])
+    # ... (background, alignment, xp, stats fields remain the same) ...
+    background = models.ForeignKey(Background, on_delete=models.SET_NULL, null=True, blank=True, related_name='characters')
+    alignment = models.CharField(max_length=2, choices=Alignment.choices, default=Alignment.TRUE_NEUTRAL)
     experience_points = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
     strength = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(30)])
     dexterity = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(30)])
@@ -171,6 +162,8 @@ class Character(models.Model):
     intelligence = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(30)])
     wisdom = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(30)])
     charisma = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(30)])
+    
+    # Derived stats
     armor_class = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(100)], blank=True, editable=False, default=10)
     initiative = models.IntegerField()
     speed = models.IntegerField(validators=[MinValueValidator(1)])
@@ -182,43 +175,62 @@ class Character(models.Model):
     backstory = models.TextField(null=True, blank=True) 
     inspiration = models.BooleanField(default=False)
     languages = models.ManyToManyField(Language, blank=True)
-
     
     spells = models.ManyToManyField(Spell, blank=True, related_name='learned_by_characters')
 
-
     created_at = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def total_strength(self):
+        return self.strength + self.get_racial_bonus('strength')
+
+    @property
+    def total_dexterity(self):
+        return self.dexterity + self.get_racial_bonus('dexterity')
+    
+    @property
+    def total_constitution(self):
+        return self.constitution + self.get_racial_bonus('constitution')
+
+    @property
+    def total_intelligence(self):
+        return self.intelligence + self.get_racial_bonus('intelligence')
+
+    @property
+    def total_wisdom(self):
+        return self.wisdom + self.get_racial_bonus('wisdom')
+
+    @property
+    def total_charisma(self):
+        return self.charisma + self.get_racial_bonus('charisma')
 
     def save(self, *args, **kwargs):
         is_new = self.pk is None
+        
         self.armor_class = self.total_armor_class
         self.initiative = self.calculate_initiative
+        self.hit_dice = self.calculate_hit_dice
+
+        if self.speed is None:
+            raise ValueError("Internal Error: code 1")
 
         if not is_new:
             try:
-                # Fetch the version of the character currently in the database
                 old_instance = Character.objects.get(pk=self.pk)
-                # Check if the class is being changed
                 if old_instance.character_class != self.character_class:
-                    # Clear the Many-to-Many spell relationship immediately
                     self.spells.clear()
             except Character.DoesNotExist:
                 pass
 
-        self.speed = 30 # Default speed, update logic if needed
-        self.hit_dice = self.calculate_hit_dice
-        # Only recalc max HP if it's 0 or None to avoid overwriting current HP during gameplay
         if not self.hit_points: 
             self.hit_points = self.calculate_hit_points
             
-        # Ensure these default to 0 if not set
         if self.temporary_hit_points is None: self.temporary_hit_points = 0
         if self.death_saves_success is None: self.death_saves_success = 0
         if self.death_saves_failure is None: self.death_saves_failure = 0
 
         super().save(*args, **kwargs)
         
-        # Assign starting equipment only when character is first created
         if is_new:
             if self.character_class:
                 equipment_qs = StartingEquipment.objects.filter(character_class=self.character_class)
@@ -228,12 +240,15 @@ class Character(models.Model):
             if self.background:
                 bg_equipment = BackgroundStartingEquipment.objects.filter(background=self.background)
                 for eq in bg_equipment:
-                    InventoryItem.objects.create(
-                        character=self,
-                        item=eq.item,
-                        quantity=eq.quantity
-                    )
-
+                    InventoryItem.objects.create(character=self, item=eq.item, quantity=eq.quantity)
+    
+    def get_racial_bonus(self, ability_name: str) -> int:
+        """Returns the racial modifier for a given ability score."""
+        if not self.race:
+            return 0
+        modifier_obj = self.race.modifiers.filter(ability=ability_name.lower()).first()
+        return modifier_obj.modifier if modifier_obj else 0
+    
     @property
     def calculate_initiative(self):
         dex_mod = (self.dexterity - 10) // 2
@@ -279,7 +294,7 @@ class Character(models.Model):
         return 2 + (self.level - 1) // 4
     
     def get_ability_modifier(self, ability_name: str) -> int:
-        score = getattr(self, ability_name)
+        score = getattr(self, f"total_{ability_name}")
         return (score - 10) // 2
 
     def get_skill_bonus(self, skill: Skill) -> int:

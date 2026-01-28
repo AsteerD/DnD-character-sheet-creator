@@ -29,7 +29,7 @@
       <tr><th>Player</th><td>{% if character.user.username %}{{ character.user.username }}{% else %}{{ character.user }}{% endif %}</td></tr>
       <tr><th>Class</th><td>{% if character.get_character_class_display %}{{ character.get_character_class_display }}{% else %}{{ character.character_class }}{% endif %}</td></tr>
       <tr><th>Subclass</th><td>{% if character.subclass and character.subclass.name %}{{ character.subclass.name }}{% else %}{% if character.subclass %}{{ character.subclass }}{% else %}-{% endif %}{% endif %}</td></tr>
-      <tr><th>Race</th><td>{% if character.get_race_display %}{{ character.get_race_display }}{% else %}{{ character.race }}{% endif %}</td></tr>
+      <tr><th>Race</th><td>{% if character.race %}{{ character.race.name }}{% else %}-{% endif %}</td></tr>
       <tr><th>Level</th><td>{{ character.level }}</td></tr>
       <tr><th>Background</th><td>{% if character.get_background_display %}{{ character.get_background_display }}{% else %}{{ character.background }}{% endif %}</td></tr>
       <tr><th>Alignment</th><td>{% if character.get_alignment_display %}{{ character.get_alignment_display }}{% else %}{{ character.alignment }}{% endif %}</td></tr>
@@ -134,7 +134,47 @@
     {% endfor %}
     </tbody>
   </table>
-  </table>
+
+<h2 style="margin-top: 40px;">Class Features</h2>
+
+{% with features=character.get_class_features %}
+{% if features %}
+  {% for feature in features %}
+    <div style="margin-bottom: 16px;">
+      <strong>
+        {{ feature.name }}
+        <span style="color:#666;">(Level {{ feature.unlock_level }})</span>
+      </strong>
+      {% if feature.subclass %}
+        <em style="color:#888;"> – {{ feature.subclass.name }}</em>
+      {% endif %}
+      <p style="margin-top: 4px;">
+        {{ feature.description|linebreaksbr }}
+      </p>
+    </div>
+  {% endfor %}
+{% else %}
+  <p>This class has no features defined or unlocked yet.</p>
+{% endif %}
+{% endwith %}
+
+<h2 style="margin-top: 40px;">Feats</h2>
+{% if character.feats.all %}
+    <ul style="list-style-type: disc; padding-left: 20px;">
+    {% for feat in character.feats.all %}
+        <li style="margin-bottom: 10px;">
+            <strong>{{ feat.name }}</strong>
+            {% if feat.prerequisite %}
+                <span style="color: #666; font-size: 0.9em;">(Prereq: {{ feat.prerequisite }})</span>
+            {% endif %}
+            <br>
+            {{ feat.description }}
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No feats selected.</p>
+{% endif %}
 
 <h2 style="margin-top: 40px;">Spellbook</h2>
 
@@ -188,6 +228,7 @@
         <p>This character has no magical abilities.</p>
     {% endif %}
 {% endif %}
+
 {% else %}
   <p>Character not found.</p>
 {% endif %}

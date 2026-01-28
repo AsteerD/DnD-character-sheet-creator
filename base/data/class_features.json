@@ -1,0 +1,1921 @@
+{
+  "Barbarian": [
+    {
+      "name": "Rage",
+      "description": "In battle, you fight with primal ferocity. On your turn, you can enter a rage as a bonus action.",
+      "unlock_level": 1
+    },
+    {
+      "name": "Unarmored Defense",
+      "description": "While you are not wearing any armor, your Armor Class equals 10 + your Dexterity modifier + your Constitution modifier.",
+      "unlock_level": 1
+    },
+    {
+      "name": "Reckless Attack",
+      "description": "When you make your first attack on your turn, you can decide to attack recklessly, giving you advantage on melee weapon attack rolls using Strength during this turn, but attack rolls against you have advantage until your next turn.",
+      "unlock_level": 2
+    },
+    {
+      "name": "Danger Sense",
+      "description": "You have advantage on Dexterity saving throws against effects that you can see, such as traps and spells.",
+      "unlock_level": 2
+    },
+    {
+      "name": "Primal Path",
+      "description": "You choose a path that shapes the nature of your rage.",
+      "unlock_level": 3
+    },
+    {
+      "name": "Ability Score Improvement",
+      "description": "You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1.",
+      "unlock_level": 4
+    },
+    {
+      "name": "Extra Attack",
+      "description": "You can attack twice, instead of once, whenever you take the Attack action on your turn.",
+      "unlock_level": 5
+    },
+    {
+      "name": "Fast Movement",
+      "description": "Your speed increases by 10 feet while you aren't wearing heavy armor.",
+      "unlock_level": 5
+    },
+    {
+      "name": "Feral Instinct",
+      "description": "You have advantage on initiative rolls. Additionally, if you are surprised at the beginning of combat and aren't incapacitated, you can act normally on your first turn, but only if you enter your rage before doing anything else.",
+      "unlock_level": 7
+    },
+    {
+      "name": "Brutal Critical (1 die)",
+      "description": "You can roll one additional weapon damage die when determining the extra damage for a critical hit with a melee attack.",
+      "unlock_level": 9
+    },
+    {
+      "name": "Relentless Rage",
+      "description": "If you drop to 0 hit points while you're raging and don't die outright, you can make a DC 10 Constitution saving throw. If you succeed, you drop to 1 hit point instead.",
+      "unlock_level": 11
+    },
+    {
+      "name": "Brutal Critical (2 dice)",
+      "description": "You can roll two additional weapon damage dice when determining the extra damage for a critical hit with a melee attack.",
+      "unlock_level": 13
+    },
+    {
+      "name": "Persistent Rage",
+      "description": "Your rage is so fierce that it ends early only if you fall unconscious or if you choose to end it.",
+      "unlock_level": 15
+    },
+    {
+      "name": "Brutal Critical (3 dice)",
+      "description": "You can roll three additional weapon damage dice when determining the extra damage for a critical hit with a melee attack.",
+      "unlock_level": 17
+    },
+    {
+      "name": "Indomitable Might",
+      "description": "If your total for a Strength check is less than your Strength score, you can use that score in place of the total.",
+      "unlock_level": 18
+    },
+    {
+      "name": "Primal Champion",
+      "description": "Your Strength and Constitution scores increase by 4. Your maximum for those scores is now 24.",
+      "unlock_level": 20
+    },
+    {
+      "name": "Frenzy",
+      "description": "You can go into a frenzy when you rage. If you do so, for the duration of your rage you can make a single melee weapon attack as a bonus action on each of your turns after this one. When your rage ends, you suffer one level of exhaustion.",
+      "unlock_level": 3,
+      "subclass": "Path of the Berserker"
+    },
+    {
+      "name": "Mindless Rage",
+      "description": "You can't be charmed or frightened while raging. If you are charmed or frightened when you enter your rage, the effect is suspended for the duration of the rage.",
+      "unlock_level": 6,
+      "subclass": "Path of the Berserker"
+    },
+    {
+      "name": "Intimidating Presence",
+      "description": "You can use your action to frighten someone with your menacing presence.",
+      "unlock_level": 10,
+      "subclass": "Path of the Berserker"
+    },
+    {
+      "name": "Retaliation",
+      "description": "When you take damage from a creature that is within 5 feet of you, you can use your reaction to make a melee weapon attack against that creature.",
+      "unlock_level": 14,
+      "subclass": "Path of the Berserker"
+    },
+    {
+      "name": "Divine Fury",
+      "description": "While you're raging, the first creature you hit on each of your turns with a weapon attack takes extra damage equal to 1d6 + half your Barbarian level.",
+      "unlock_level": 3,
+      "subclass": "Path of the Zeolot"
+    },
+    {
+      "name": "Warrior of the Gods",
+      "description": "If a spell, such as Raise Dead, has the sole effect of restoring you to life (but not undeath), the caster doesn't need material components to cast the spell on you.",
+      "unlock_level": 3,
+      "subclass": "Path of the Zeolot"
+    },
+    {
+      "name": "Fanatical Focus",
+      "description": "If you fail a saving throw while you're raging, you can reroll it, and you must use the new roll. You can use this ability only once per rage.",
+      "unlock_level": 6,
+      "subclass": "Path of the Zeolot"
+    },
+    {
+      "name": "Zealous Presence",
+      "description": "You can use a bonus action to unleash a battle cry that inspires up to ten creatures of your choice within 60 feet, giving them advantage on attacks and saving throws until the start of your next turn.",
+      "unlock_level": 10,
+      "subclass": "Path of the Zeolot"
+    },
+    {
+      "name": "Rage beyond Death",
+      "description": "While you're raging, having 0 hit points doesn't knock you unconscious. You still must make death saving throws, and you suffer the normal effects of taking damage while at 0 hit points. However, if you would die due to failing death saving throws, you don't die until your rage ends.",
+      "unlock_level": 14,
+      "subclass": "Path of the Zeolot"
+    },
+    {
+      "name": "Spirit Seeker",
+      "description": "You gain the ability to cast the Beast Sense and Speak with Animals spells, but only as rituals.",
+      "unlock_level": 3,
+      "subclass": "Path of Totem warrior"
+    },
+    {
+      "name": "Totem Spirit",
+      "description": "You must make or acquire a physical totem object. You gain a feature based on the animal spirit you choose (Bear, Eagle, Elk, Tiger, or Wolf).",
+      "unlock_level": 3,
+      "subclass": "Path of Totem warrior"
+    },
+    {
+      "name": "Aspect of the Beast",
+      "description": "You gain a magical benefit based on the animal of your choice (Bear, Eagle, Elk, Tiger, or Wolf).",
+      "unlock_level": 6,
+      "subclass": "Path of Totem warrior"
+    },
+    {
+      "name": "Spirit Walker",
+      "description": "You can cast the Commune with Nature spell, but only as a ritual.",
+      "unlock_level": 10,
+      "subclass": "Path of Totem warrior"
+    },
+    {
+      "name": "Totemic Attunement",
+      "description": "You gain a magical benefit based on the animal of your choice (Bear, Eagle, Elk, Tiger, or Wolf).",
+      "unlock_level": 14,
+      "subclass": "Path of Totem warrior"
+    }
+  ],
+
+  "Bard": [
+    {
+      "name": "Spellcasting",
+      "description": "You have learned to untangle and reshape the fabric of reality in harmony with your wishes and music.",
+      "unlock_level": 1
+    },
+    {
+      "name": "Bardic Inspiration (d6)",
+      "description": "You can inspire others through stirring words or music. To do so, you use a bonus action on your turn to choose one creature other than yourself within 60 feet of you who can hear you. That creature gains one Bardic Inspiration die, a d6.",
+      "unlock_level": 1
+    },
+    {
+      "name": "Jack of All Trades",
+      "description": "You can add half your proficiency bonus, rounded down, to any ability check you make that doesn't already include your proficiency bonus.",
+      "unlock_level": 2
+    },
+    {
+      "name": "Song of Rest (d6)",
+      "description": "You can use soothing music or oration to help revitalize your wounded allies during a short rest. Any friendly creatures who can hear you regain an extra 1d6 hit points.",
+      "unlock_level": 2
+    },
+    {
+      "name": "Bard College",
+      "description": "You delve into the advanced techniques of a bard college of your choice.",
+      "unlock_level": 3
+    },
+    {
+      "name": "Expertise",
+      "description": "Choose two of your skill proficiencies. Your proficiency bonus is doubled for any ability check you make that uses either of the chosen proficiencies.",
+      "unlock_level": 3
+    },
+    {
+      "name": "Ability Score Improvement",
+      "description": "You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1.",
+      "unlock_level": 4
+    },
+    {
+      "name": "Bardic Inspiration (d8)",
+      "description": "Your Bardic Inspiration die changes to a d8.",
+      "unlock_level": 5
+    },
+    {
+      "name": "Font of Inspiration",
+      "description": "You regain all of your expended uses of Bardic Inspiration when you finish a short or long rest.",
+      "unlock_level": 5
+    },
+    {
+      "name": "Countercharm",
+      "description": "You can start a performance that lasts until the end of your next turn. During that time, you and any friendly creatures within 30 feet of you have advantage on saving throws against being frightened or charmed.",
+      "unlock_level": 6
+    },
+    {
+      "name": "Song of Rest (d8)",
+      "description": "The extra hit points regained from Song of Rest increases to 1d8.",
+      "unlock_level": 9
+    },
+    {
+      "name": "Bardic Inspiration (d10)",
+      "description": "Your Bardic Inspiration die changes to a d10.",
+      "unlock_level": 10
+    },
+    {
+      "name": "Expertise (Level 10)",
+      "description": "Choose two more of your skill proficiencies. Your proficiency bonus is doubled for these choices as well.",
+      "unlock_level": 10
+    },
+    {
+      "name": "Magical Secrets",
+      "description": "You have plundered magical knowledge from a wide spectrum of disciplines. You learn two spells of your choice from any class.",
+      "unlock_level": 10
+    },
+    {
+      "name": "Song of Rest (d10)",
+      "description": "The extra hit points regained from Song of Rest increases to 1d10.",
+      "unlock_level": 13
+    },
+    {
+      "name": "Magical Secrets (Level 14)",
+      "description": "You learn two additional spells of your choice from any class.",
+      "unlock_level": 14
+    },
+    {
+      "name": "Bardic Inspiration (d12)",
+      "description": "Your Bardic Inspiration die changes to a d12.",
+      "unlock_level": 15
+    },
+    {
+      "name": "Song of Rest (d12)",
+      "description": "The extra hit points regained from Song of Rest increases to 1d12.",
+      "unlock_level": 17
+    },
+    {
+      "name": "Magical Secrets (Level 18)",
+      "description": "You learn two additional spells of your choice from any class.",
+      "unlock_level": 18
+    },
+    {
+      "name": "Superior Inspiration",
+      "description": "When you roll initiative and have no uses of Bardic Inspiration left, you regain one use.",
+      "unlock_level": 20
+    },
+    {
+      "name": "Bonus Proficiencies",
+      "description": "You gain proficiency with three skills of your choice.",
+      "unlock_level": 3,
+      "subclass": "College of Lore"
+    },
+    {
+      "name": "Cutting Words",
+      "description": "When a creature that you can see within 60 feet of you makes an attack roll, an ability check, or a damage roll, you can use your reaction to expend one of your uses of Bardic Inspiration, rolling a Bardic Inspiration die and subtracting the number rolled from the creature's roll.",
+      "unlock_level": 3,
+      "subclass": "College of Lore"
+    },
+    {
+      "name": "Additional Magical Secrets",
+      "description": "You learn two spells of your choice from any class. A spell you choose must be of a level you can cast, as shown on the Bard table, or a cantrip.",
+      "unlock_level": 6,
+      "subclass": "College of Lore"
+    },
+    {
+      "name": "Peerless Skill",
+      "description": "When you make an ability check, you can expend one use of Bardic Inspiration. Roll a Bardic Inspiration die and add the number rolled to your ability check.",
+      "unlock_level": 14,
+      "subclass": "College of Lore"
+    },
+    {
+      "name": "Mantle of Inspiration",
+      "description": "As a bonus action, you can expend one use of your Bardic Inspiration to grant yourself and allied creatures 5 temporary hit points and the ability to move up to their speed as a reaction without provoking opportunity attacks.",
+      "unlock_level": 3,
+      "subclass": "College of Glamour"
+    },
+    {
+      "name": "Enthralling Performance",
+      "description": "You can charge your performance with seductive, fey magic. If you perform for at least 1 minute, you can attempt to charm up to a number of humanoids equal to your Charisma modifier.",
+      "unlock_level": 3,
+      "subclass": "College of Glamour"
+    },
+    {
+      "name": "Mantle of Majesty",
+      "description": "You can cast Command as a bonus action without expending a spell slot for 1 minute. Any creature charmed by you automatically fails its saving throw against the command.",
+      "unlock_level": 6,
+      "subclass": "College of Glamour"
+    },
+    {
+      "name": "Unbreakable Majesty",
+      "description": "For 1 minute, you assume a magically majestic presence. Creatures that attack you must make a Charisma saving throw or choose a new target (or lose the attack).",
+      "unlock_level": 14,
+      "subclass": "College of Glamour"
+    },
+    {
+      "name": "Psychic Blades",
+      "description": "When you hit a creature with a weapon attack, you can expend one use of your Bardic Inspiration to deal an extra 2d6 psychic damage to that target.",
+      "unlock_level": 3,
+      "subclass": "College of Whispers"
+    },
+    {
+      "name": "Words of Terror",
+      "description": "If you speak to a humanoid alone for at least 1 minute, you can attempt to seed paranoia in its mind. On a failed Wisdom save, it is frightened of you or another creature of your choice for 1 hour.",
+      "unlock_level": 3,
+      "subclass": "College of Whispers"
+    },
+    {
+      "name": "Mantle of Whispers",
+      "description": "When a humanoid dies within 30 feet of you, you can use your reaction to capture its shadow. You can use the shadow to disguise yourself as the dead humanoid.",
+      "unlock_level": 6,
+      "subclass": "College of Whispers"
+    },
+    {
+      "name": "Shadow Lore",
+      "description": "You can whisper a phrase that only one creature can hear. The target must make a Wisdom saving throw or be charmed by you for 8 hours. The charmed creature obeys your commands for fear that you will reveal its secret.",
+      "unlock_level": 14,
+      "subclass": "College of Whispers"
+    }
+  ],
+
+  "Cleric": [
+    {
+      "name": "Spellcasting",
+      "description": "You have learned to cast spells through meditation and prayer to the gods.",
+      "unlock_level": 1
+    },
+    {
+      "name": "Divine Domain",
+      "description": "Choose one domain related to your deity. Your choice grants you domain spells and other features.",
+      "unlock_level": 1
+    },
+    {
+      "name": "Channel Divinity (1/rest)",
+      "description": "You gain the ability to channel divine energy directly from your deity, using that energy to fuel magical effects. You start with two such effects: Turn Undead and an effect determined by your domain.",
+      "unlock_level": 2
+    },
+    {
+      "name": "Channel Divinity: Turn Undead",
+      "description": "As an action, you present your holy symbol and speak a prayer censuring the undead. Each undead that can see or hear you within 30 feet of you must make a Wisdom saving throw. If the creature fails its saving throw, it is turned for 1 minute or until it takes any damage.",
+      "unlock_level": 2
+    },
+    {
+      "name": "Ability Score Improvement",
+      "description": "You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1.",
+      "unlock_level": 4
+    },
+    {
+      "name": "Destroy Undead (CR 1/2)",
+      "description": "When an undead fails its saving throw against your Turn Undead feature, the creature is instantly destroyed if its Challenge Rating is at or below 1/2.",
+      "unlock_level": 5
+    },
+    {
+      "name": "Channel Divinity (2/rest)",
+      "description": "You can now use your Channel Divinity twice between rests.",
+      "unlock_level": 6
+    },
+    {
+      "name": "Destroy Undead (CR 1)",
+      "description": "When an undead fails its saving throw against your Turn Undead feature, the creature is instantly destroyed if its Challenge Rating is at or below 1.",
+      "unlock_level": 8
+    },
+    {
+      "name": "Divine Intervention",
+      "description": "You can call on your deity to intervene on your behalf when your need is great. Imploring your deity's aid requires you to use an action. Describe the assistance you seek, and roll percentile dice. If you roll a number equal to or lower than your cleric level, your deity intervenes.",
+      "unlock_level": 10
+    },
+    {
+      "name": "Destroy Undead (CR 2)",
+      "description": "When an undead fails its saving throw against your Turn Undead feature, the creature is instantly destroyed if its Challenge Rating is at or below 2.",
+      "unlock_level": 11
+    },
+    {
+      "name": "Destroy Undead (CR 3)",
+      "description": "When an undead fails its saving throw against your Turn Undead feature, the creature is instantly destroyed if its Challenge Rating is at or below 3.",
+      "unlock_level": 14
+    },
+    {
+      "name": "Destroy Undead (CR 4)",
+      "description": "When an undead fails its saving throw against your Turn Undead feature, the creature is instantly destroyed if its Challenge Rating is at or below 4.",
+      "unlock_level": 17
+    },
+    {
+      "name": "Channel Divinity (3/rest)",
+      "description": "You can now use your Channel Divinity three times between rests.",
+      "unlock_level": 18
+    },
+    {
+      "name": "Divine Intervention Improvement",
+      "description": "Your call for intervention succeeds automatically, no roll required.",
+      "unlock_level": 20
+    },
+    {
+      "name": "Bonus Proficiency",
+      "description": "You gain proficiency with heavy armor.",
+      "unlock_level": 1,
+      "subclass": "Life Domain"
+    },
+    {
+      "name": "Disciple of Life",
+      "description": "Whenever you use a spell of 1st level or higher to restore hit points to a creature, the creature regains additional hit points equal to 2 + the spell's level.",
+      "unlock_level": 1,
+      "subclass": "Life Domain"
+    },
+    {
+      "name": "Channel Divinity: Preserve Life",
+      "description": "As an action, you present your holy symbol and evoke healing energy that can restore a number of hit points equal to five times your cleric level. Choose any creatures within 30 feet of you, and divide those hit points among them.",
+      "unlock_level": 2,
+      "subclass": "Life Domain"
+    },
+    {
+      "name": "Blessed Healer",
+      "description": "When you cast a spell of 1st level or higher that restores hit points to a creature other than you, you regain hit points equal to 2 + the spell's level.",
+      "unlock_level": 6,
+      "subclass": "Life Domain"
+    },
+    {
+      "name": "Divine Strike",
+      "description": "Once on each of your turns when you hit a creature with a weapon attack, you can cause the attack to deal an extra 1d8 radiant damage to the target. When you reach 14th level, the extra damage increases to 2d8.",
+      "unlock_level": 8,
+      "subclass": "Life Domain"
+    },
+    {
+      "name": "Supreme Healing",
+      "description": "When you would normally roll one or more dice to restore hit points with a spell, you instead use the highest number possible for each die.",
+      "unlock_level": 17,
+      "subclass": "Life Domain"
+    },
+    {
+      "name": "Bonus Proficiencies",
+      "description": "You gain proficiency with martial weapons and heavy armor.",
+      "unlock_level": 1,
+      "subclass": "Tempest Domain"
+    },
+    {
+      "name": "Wrath of the Storm",
+      "description": "When a creature within 5 feet of you that you can see hits you with an attack, you can use your reaction to cause the creature to make a Dexterity saving throw. The creature takes 2d8 lightning or thunder damage on a failed save, and half as much damage on a successful one.",
+      "unlock_level": 1,
+      "subclass": "Tempest Domain"
+    },
+    {
+      "name": "Channel Divinity: Destructive Wrath",
+      "description": "When you roll lightning or thunder damage, you can use your Channel Divinity to deal maximum damage, instead of rolling.",
+      "unlock_level": 2,
+      "subclass": "Tempest Domain"
+    },
+    {
+      "name": "Thunderbolt Strike",
+      "description": "When you deal lightning damage to a Large or smaller creature, you can also push it up to 10 feet away from you.",
+      "unlock_level": 6,
+      "subclass": "Tempest Domain"
+    },
+    {
+      "name": "Divine Strike",
+      "description": "Once on each of your turns when you hit a creature with a weapon attack, you can cause the attack to deal an extra 1d8 thunder damage to the target. When you reach 14th level, the extra damage increases to 2d8.",
+      "unlock_level": 8,
+      "subclass": "Tempest Domain"
+    },
+    {
+      "name": "Stormborn",
+      "description": "You have a flying speed equal to your current walking speed whenever you are not underground or indoors.",
+      "unlock_level": 17,
+      "subclass": "Tempest Domain"
+    },
+    {
+      "name": "Bonus Proficiencies",
+      "description": "You gain proficiency with martial weapons and heavy armor.",
+      "unlock_level": 1,
+      "subclass": "War Domain"
+    },
+    {
+      "name": "War Priest",
+      "description": "When you use the Attack action, you can make one weapon attack as a bonus action. You can use this feature a number of times equal to your Wisdom modifier.",
+      "unlock_level": 1,
+      "subclass": "War Domain"
+    },
+    {
+      "name": "Channel Divinity: Guided Strike",
+      "description": "When you make an attack roll, you can use your Channel Divinity to gain a +10 bonus to the roll. You make this choice after you see the roll, but before the DM says whether the attack hits or misses.",
+      "unlock_level": 2,
+      "subclass": "War Domain"
+    },
+    {
+      "name": "Channel Divinity: War God's Blessing",
+      "description": "When a creature within 30 feet of you makes an attack roll, you can use your reaction to grant that creature a +10 bonus to the roll, using your Channel Divinity.",
+      "unlock_level": 6,
+      "subclass": "War Domain"
+    },
+    {
+      "name": "Divine Strike",
+      "description": "Once on each of your turns when you hit a creature with a weapon attack, you can cause the attack to deal an extra 1d8 damage of the same type dealt by the weapon to the target. When you reach 14th level, the extra damage increases to 2d8.",
+      "unlock_level": 8,
+      "subclass": "War Domain"
+    },
+    {
+      "name": "Avatar of Battle",
+      "description": "You gain resistance to bludgeoning, piercing, and slashing damage from nonmagical attacks.",
+      "unlock_level": 17,
+      "subclass": "War Domain"
+    }
+  ],
+"Druid": [
+    {
+      "name": "Druidic",
+      "description": "You know Druidic, the secret language of druids. You can speak the language and use it to leave hidden messages. You and others who know this language automatically spot such a message.",
+      "unlock_level": 1
+    },
+    {
+      "name": "Spellcasting",
+      "description": "Drawing on the divine essence of nature itself, you can cast spells to shape that essence to your will.",
+      "unlock_level": 1
+    },
+    {
+      "name": "Wild Shape",
+      "description": "You can use your action to magically assume the shape of a beast that you have seen before. You can use this feature twice. You regain expended uses when you finish a short or long rest.",
+      "unlock_level": 2
+    },
+    {
+      "name": "Druid Circle",
+      "description": "You choose to identify with a circle of druids: Circle of the Land, Circle of the Moon, etc.",
+      "unlock_level": 2
+    },
+    {
+      "name": "Ability Score Improvement",
+      "description": "You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1.",
+      "unlock_level": 4
+    },
+    {
+      "name": "Wild Shape Improvement (CR 1/2)",
+      "description": "You can transform into a beast with a challenge rating as high as 1/2 (no flying speed).",
+      "unlock_level": 4
+    },
+    {
+      "name": "Wild Shape Improvement (CR 1)",
+      "description": "You can transform into a beast with a challenge rating as high as 1 (no flying speed).",
+      "unlock_level": 8
+    },
+    {
+      "name": "Timeless Body",
+      "description": "The primal magic that you wield causes you to age more slowly. For every 10 years that pass, your body ages only 1 year.",
+      "unlock_level": 18
+    },
+    {
+      "name": "Beast Spells",
+      "description": "You can cast many of your druid spells in any shape you assume using Wild Shape. You can perform the somatic and verbal components of a druid spell while in a beast shape, but you aren't able to provide material components.",
+      "unlock_level": 18
+    },
+    {
+      "name": "Archdruid",
+      "description": "You can use your Wild Shape an unlimited number of times.",
+      "unlock_level": 20
+    },
+    {
+      "name": "Combat Wild Shape",
+      "description": "You gain the ability to use Wild Shape on your turn as a bonus action, rather than as an action. Additionally, while you are transformed by Wild Shape, you can use a bonus action to expend one spell slot to regain 1d8 hit points per level of the spell slot expended.",
+      "unlock_level": 2,
+      "subclass": "Circle of the Moon"
+    },
+    {
+      "name": "Circle Forms",
+      "description": "The rites of your circle grant you the ability to transform into more dangerous animal forms. You can transform into a beast with a challenge rating as high as 1.",
+      "unlock_level": 2,
+      "subclass": "Circle of the Moon"
+    },
+    {
+      "name": "Primal Strike",
+      "description": "Your attacks in beast form count as magical for the purpose of overcoming resistance and immunity to nonmagical attacks and damage.",
+      "unlock_level": 6,
+      "subclass": "Circle of the Moon"
+    },
+    {
+      "name": "Elemental Wild Shape",
+      "description": "You can expend two uses of Wild Shape at the same time to transform into an air elemental, an earth elemental, a fire elemental, or a water elemental.",
+      "unlock_level": 10,
+      "subclass": "Circle of the Moon"
+    },
+    {
+      "name": "Thousand Forms",
+      "description": "You have learned to use magic to alter your physical form in more subtle ways. You can cast the Alter Self spell at will.",
+      "unlock_level": 14,
+      "subclass": "Circle of the Moon"
+    },
+    {
+      "name": "Bonus Cantrip",
+      "description": "You learn one additional druid cantrip of your choice.",
+      "unlock_level": 2,
+      "subclass": "Circle of the Land"
+    },
+    {
+      "name": "Natural Recovery",
+      "description": "During a short rest, you can choose expended spell slots to recover. The spell slots can have a combined level that is equal to or less than half your druid level (rounded up), and none of the slots can be 6th level or higher.",
+      "unlock_level": 2,
+      "subclass": "Circle of the Land"
+    },
+    {
+      "name": "Land's Stride",
+      "description": "Moving through nonmagical difficult terrain costs you no extra movement. You can also pass through nonmagical plants without being slowed by them and without taking damage from them if they have thorns, spines, or a similar hazard.",
+      "unlock_level": 6,
+      "subclass": "Circle of the Land"
+    },
+    {
+      "name": "Nature's Ward",
+      "description": "You can't be charmed or frightened by elementals or fey, and you are immune to poison and disease.",
+      "unlock_level": 10,
+      "subclass": "Circle of the Land"
+    },
+    {
+      "name": "Nature's Sanctuary",
+      "description": "When a beast or plant creature attacks you, that creature must make a Wisdom saving throw. On a failed save, the creature must choose a different target, or the attack misses.",
+      "unlock_level": 14,
+      "subclass": "Circle of the Land"
+    },
+    {
+      "name": "Halo of Spores",
+      "description": "You are surrounded by invisible, necrotic spores that are harmless until you unleash them on a creature nearby. When a creature you can see moves into a space within 10 feet of you or starts its turn there, you can use your reaction to deal 1d4 necrotic damage to that creature unless it succeeds on a Constitution saving throw.",
+      "unlock_level": 2,
+      "subclass": "Circle of Spores"
+    },
+    {
+      "name": "Symbiotic Entity",
+      "description": "You can expend a use of your Wild Shape feature to awaken those spores, rather than transforming into a beast form. You gain 4 temporary hit points per level you have in this class, your Halo of Spores damage doubles, and your melee weapon attacks deal an extra 1d6 necrotic damage.",
+      "unlock_level": 2,
+      "subclass": "Circle of Spores"
+    },
+    {
+      "name": "Fungal Infestation",
+      "description": "If a beast or humanoid that is Small or Medium dies within 10 feet of you, you can use your reaction to animate it, causing it to stand up immediately with 1 hit point. The creature uses the Zombie stat block.",
+      "unlock_level": 6,
+      "subclass": "Circle of Spores"
+    },
+    {
+      "name": "Spreading Spores",
+      "description": "You can hurl spores up to 30 feet away, where they swirl in a 10-foot cube for 1 minute. The spores deal the same damage as your Halo of Spores feature.",
+      "unlock_level": 10,
+      "subclass": "Circle of Spores"
+    },
+    {
+      "name": "Fungal Body",
+      "description": "The fungal spores in your body alter you: you can't be blinded, deafened, frightened, or poisoned, and any critical hit against you counts as a normal hit unless you're incapacitated.",
+      "unlock_level": 14,
+      "subclass": "Circle of Spores"
+    }
+  ],
+  "Fighter": [
+    {
+      "name": "Fighting Style",
+      "description": "You adopt a particular style of fighting as your specialty (e.g., Archery, Defense, Dueling, Great Weapon Fighting, Protection, or Two-Weapon Fighting).",
+      "unlock_level": 1
+    },
+    {
+      "name": "Second Wind",
+      "description": "You have a limited well of stamina that you can draw on to protect yourself from harm. On your turn, you can use a bonus action to regain hit points equal to 1d10 + your fighter level.",
+      "unlock_level": 1
+    },
+    {
+      "name": "Action Surge (1 use)",
+      "description": "You can push yourself beyond your normal limits for a moment. On your turn, you can take one additional action on top of your regular action and a possible bonus action.",
+      "unlock_level": 2
+    },
+    {
+      "name": "Martial Archetype",
+      "description": "You choose an archetype that you strive to emulate in your combat styles and techniques, such as the Champion.",
+      "unlock_level": 3
+    },
+    {
+      "name": "Ability Score Improvement",
+      "description": "You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1.",
+      "unlock_level": 4
+    },
+    {
+      "name": "Extra Attack (1)",
+      "description": "You can attack twice, instead of once, whenever you take the Attack action on your turn.",
+      "unlock_level": 5
+    },
+    {
+      "name": "Ability Score Improvement",
+      "description": "You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1.",
+      "unlock_level": 6
+    },
+    {
+      "name": "Ability Score Improvement",
+      "description": "You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1.",
+      "unlock_level": 8
+    },
+    {
+      "name": "Indomitable (1 use)",
+      "description": "You can reroll a saving throw that you fail. If you do so, you must use the new roll.",
+      "unlock_level": 9
+    },
+    {
+      "name": "Extra Attack (2)",
+      "description": "You can attack three times, instead of twice, whenever you take the Attack action on your turn.",
+      "unlock_level": 11
+    },
+    {
+      "name": "Ability Score Improvement",
+      "description": "You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1.",
+      "unlock_level": 12
+    },
+    {
+      "name": "Indomitable (2 uses)",
+      "description": "You can use your Indomitable feature twice between long rests.",
+      "unlock_level": 13
+    },
+    {
+      "name": "Ability Score Improvement",
+      "description": "You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1.",
+      "unlock_level": 14
+    },
+    {
+      "name": "Ability Score Improvement",
+      "description": "You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1.",
+      "unlock_level": 16
+    },
+    {
+      "name": "Action Surge (2 uses)",
+      "description": "You can use your Action Surge feature twice between short or long rests, but only once on the same turn.",
+      "unlock_level": 17
+    },
+    {
+      "name": "Indomitable (3 uses)",
+      "description": "You can use your Indomitable feature three times between long rests.",
+      "unlock_level": 17
+    },
+    {
+      "name": "Ability Score Improvement",
+      "description": "You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1.",
+      "unlock_level": 19
+    },
+    {
+      "name": "Extra Attack (3)",
+      "description": "You can attack four times, instead of three, whenever you take the Attack action on your turn.",
+      "unlock_level": 20
+    },
+    {
+      "name": "Improved Critical",
+      "description": "Your weapon attacks score a critical hit on a roll of 19 or 20.",
+      "unlock_level": 3,
+      "subclass": "Champion"
+    },
+    {
+      "name": "Remarkable Athlete",
+      "description": "You can add half your proficiency bonus (rounded up) to any Strength, Dexterity, or Constitution check you make that doesn't already use your proficiency bonus. Additionally, your running jump distance increases by a number of feet equal to your Strength modifier.",
+      "unlock_level": 7,
+      "subclass": "Champion"
+    },
+    {
+      "name": "Additional Fighting Style",
+      "description": "You can choose a second Fighting Style from the Fighter class list.",
+      "unlock_level": 10,
+      "subclass": "Champion"
+    },
+    {
+      "name": "Superior Critical",
+      "description": "Your weapon attacks score a critical hit on a roll of 18–20.",
+      "unlock_level": 15,
+      "subclass": "Champion"
+    },
+    {
+      "name": "Survivor",
+      "description": "At the start of each of your turns, you regain hit points equal to 5 + your Constitution modifier if you have no more than half of your hit points left. You don't gain this benefit if you have 0 hit points.",
+      "unlock_level": 18,
+      "subclass": "Champion"
+    },
+    {
+      "name": "Combat Superiority",
+      "description": "You gain a set of abilities called maneuvers that are fueled by special dice called superiority dice. You have four d8 superiority dice.",
+      "unlock_level": 3,
+      "subclass": "Battle Master"
+    },
+    {
+      "name": "Student of War",
+      "description": "You gain proficiency with one type of artisan's tools of your choice.",
+      "unlock_level": 3,
+      "subclass": "Battle Master"
+    },
+    {
+      "name": "Know Your Enemy",
+      "description": "If you spend at least 1 minute observing or interacting with another creature outside combat, you can learn whether the creature is equal, superior, or inferior to you in regard to two characteristics (e.g. Strength score, Armor Class, etc.).",
+      "unlock_level": 7,
+      "subclass": "Battle Master"
+    },
+    {
+      "name": "Improved Combat Superiority (d10)",
+      "description": "Your superiority dice turn into d10s.",
+      "unlock_level": 10,
+      "subclass": "Battle Master"
+    },
+    {
+      "name": "Relentless",
+      "description": "When you roll initiative and have no superiority dice remaining, you regain one superiority die.",
+      "unlock_level": 15,
+      "subclass": "Battle Master"
+    },
+    {
+      "name": "Improved Combat Superiority (d12)",
+      "description": "Your superiority dice turn into d12s.",
+      "unlock_level": 18,
+      "subclass": "Battle Master"
+    },
+    {
+      "name": "Fighting Spirit",
+      "description": "As a bonus action on your turn, you can give yourself advantage on weapon attack rolls until the end of the current turn. When you do so, you also gain 5 temporary hit points. You can use this feature three times per long rest.",
+      "unlock_level": 3,
+      "subclass": "Samurai"
+    },
+    {
+      "name": "Elegant Courtier",
+      "description": "You gain proficiency in Wisdom saving throws. If you already have this proficiency, you instead gain proficiency in Intelligence or Charisma saving throws (your choice). You also gain a bonus to Persuasion checks equal to your Wisdom modifier.",
+      "unlock_level": 7,
+      "subclass": "Samurai"
+    },
+    {
+      "name": "Tireless Spirit",
+      "description": "When you roll initiative and have no uses of Fighting Spirit remaining, you regain one use.",
+      "unlock_level": 10,
+      "subclass": "Samurai"
+    },
+    {
+      "name": "Rapid Strike",
+      "description": "If you take the Attack action on your turn and have advantage on an attack roll against one of the targets, you can forgo the advantage for that roll to make an additional weapon attack against that target, as part of the same action.",
+      "unlock_level": 15,
+      "subclass": "Samurai"
+    },
+    {
+      "name": "Strength Before Death",
+      "description": "If you take damage that reduces you to 0 hit points and doesn't kill you outright, you can use your reaction to delay falling unconscious, and you can immediately take an extra turn. When the extra turn ends, you fall unconscious if you still have 0 hit points.",
+      "unlock_level": 18,
+      "subclass": "Samurai"
+    }
+  ],
+  "Monk": [
+    {
+      "name": "Unarmored Defense",
+      "description": "While you are not wearing any armor and not wielding a shield, your Armor Class equals 10 + your Dexterity modifier + your Wisdom modifier.",
+      "unlock_level": 1
+    },
+    {
+      "name": "Martial Arts",
+      "description": "You gain mastery of combat styles that use unarmed strikes and monk weapons. You can use Dexterity instead of Strength for attacks, and you can make an unarmed strike as a bonus action.",
+      "unlock_level": 1
+    },
+    {
+      "name": "Ki",
+      "description": "You can harness the mystic energy of ki. You have a number of ki points equal to your Monk level. You can spend these points to fuel various ki features (Flurry of Blows, Patient Defense, Step of the Wind).",
+      "unlock_level": 2
+    },
+    {
+      "name": "Unarmored Movement",
+      "description": "Your speed increases by 10 feet while you are not wearing armor or wielding a shield. This bonus increases as you gain monk levels.",
+      "unlock_level": 2
+    },
+    {
+      "name": "Monastic Tradition",
+      "description": "You commit yourself to a monastic tradition, such as the Way of the Open Hand.",
+      "unlock_level": 3
+    },
+    {
+      "name": "Deflect Missiles",
+      "description": "You can use your reaction to deflect or catch the missile when you are hit by a ranged weapon attack. When you do so, the damage you take from the attack is reduced by 1d10 + your Dexterity modifier + your monk level.",
+      "unlock_level": 3
+    },
+    {
+      "name": "Ability Score Improvement",
+      "description": "You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1.",
+      "unlock_level": 4
+    },
+    {
+      "name": "Slow Fall",
+      "description": "You can use your reaction when you fall to reduce any falling damage you take by an amount equal to five times your monk level.",
+      "unlock_level": 4
+    },
+    {
+      "name": "Extra Attack",
+      "description": "You can attack twice, instead of once, whenever you take the Attack action on your turn.",
+      "unlock_level": 5
+    },
+    {
+      "name": "Stunning Strike",
+      "description": "When you hit another creature with a melee weapon attack, you can spend 1 ki point to attempt a stunning strike. The target must succeed on a Constitution saving throw or be stunned until the end of your next turn.",
+      "unlock_level": 5
+    },
+    {
+      "name": "Ki-Empowered Strikes",
+      "description": "Your unarmed strikes count as magical for the purpose of overcoming resistance and immunity to nonmagical attacks and damage.",
+      "unlock_level": 6
+    },
+    {
+      "name": "Evasion",
+      "description": "When you are subjected to an effect that allows you to make a Dexterity saving throw to take only half damage, you instead take no damage if you succeed on the saving throw, and only half damage if you fail.",
+      "unlock_level": 7
+    },
+    {
+      "name": "Stillness of Mind",
+      "description": "You can use your action to end one effect on yourself that is causing you to be charmed or frightened.",
+      "unlock_level": 7
+    },
+    {
+      "name": "Unarmored Movement (Vertical)",
+      "description": "You gain the ability to move along vertical surfaces and across liquids on your turn without falling during the move.",
+      "unlock_level": 9
+    },
+    {
+      "name": "Purity of Body",
+      "description": "Your mastery of the ki flowing through you makes you immune to disease and poison.",
+      "unlock_level": 10
+    },
+    {
+      "name": "Tongue of the Sun and Moon",
+      "description": "You learn to touch the ki of other minds so that you understand all spoken languages. Moreover, any creature that can understand a language can understand what you say.",
+      "unlock_level": 13
+    },
+    {
+      "name": "Diamond Soul",
+      "description": "Your mastery of ki grants you proficiency in all saving throws. Additionally, whenever you make a saving throw and fail, you can spend 1 ki point to reroll it and take the second result.",
+      "unlock_level": 14
+    },
+    {
+      "name": "Timeless Body",
+      "description": "You suffer none of the frailty of old age, and you can't be aged magically. You can still die of old age, however. In addition, you no longer need food or water.",
+      "unlock_level": 15
+    },
+    {
+      "name": "Empty Body",
+      "description": "You can use your action to spend 4 ki points to become invisible for 1 minute. During that time, you also have resistance to all damage but force damage. Additionally, you can spend 8 ki points to cast the Astral Projection spell, without needing material components.",
+      "unlock_level": 18
+    },
+    {
+      "name": "Perfect Self",
+      "description": "When you roll for initiative and have no ki points remaining, you regain 4 ki points.",
+      "unlock_level": 20
+    },
+    {
+      "name": "Open Hand Technique",
+      "description": "Whenever you hit a creature with one of the attacks granted by your Flurry of Blows, you can impose one of the following effects on that target: knock it prone, push it up to 15 feet away, or prevent it from taking reactions until the end of your next turn.",
+      "unlock_level": 3,
+      "subclass": "Way of the Open Hand"
+    },
+    {
+      "name": "Wholeness of Body",
+      "description": "You gain the ability to heal yourself. As an action, you can regain hit points equal to three times your monk level. You must finish a long rest before you can use this feature again.",
+      "unlock_level": 6,
+      "subclass": "Way of the Open Hand"
+    },
+    {
+      "name": "Tranquility",
+      "description": "You can enter a special meditation that surrounds you with an aura of peace. At the end of a long rest, you gain the effect of a Sanctuary spell that lasts until the start of your next long rest (the spell can end early as normal).",
+      "unlock_level": 11,
+      "subclass": "Way of the Open Hand"
+    },
+    {
+      "name": "Quivering Palm",
+      "description": "You gain the ability to set up lethal vibrations in someone's body. When you hit a creature with an unarmed strike, you can spend 3 ki points to start these imperceptible vibrations, which last for a number of days equal to your monk level. You can use an action to end the vibrations, causing the creature to drop to 0 hit points if it fails a Constitution save, or take 10d10 necrotic damage on a success.",
+      "unlock_level": 17,
+      "subclass": "Way of the Open Hand"
+    },
+    {
+      "name": "Disciple of the Elements",
+      "description": "You learn magical disciplines that harness the power of the four elements. You know the Elemental Attunement discipline and one other elemental discipline of your choice.",
+      "unlock_level": 3,
+      "subclass": "Way of Four Elements"
+    },
+    {
+      "name": "Elemental Disciplines (Level 6)",
+      "description": "You learn one additional elemental discipline of your choice.",
+      "unlock_level": 6,
+      "subclass": "Way of Four Elements"
+    },
+    {
+      "name": "Elemental Disciplines (Level 11)",
+      "description": "You learn one additional elemental discipline of your choice.",
+      "unlock_level": 11,
+      "subclass": "Way of Four Elements"
+    },
+    {
+      "name": "Elemental Disciplines (Level 17)",
+      "description": "You learn one additional elemental discipline of your choice.",
+      "unlock_level": 17,
+      "subclass": "Way of Four Elements"
+    },
+    {
+      "name": "Shadow Arts",
+      "description": "You can use your ki to duplicate the effects of certain spells. As an action, you can spend 2 ki points to cast Darkness, Darkvision, Pass Without Trace, or Silence, without providing material components. You also gain the Minor Illusion cantrip.",
+      "unlock_level": 3,
+      "subclass": "Way of Shadow"
+    },
+    {
+      "name": "Shadow Step",
+      "description": "You gain the ability to step from one shadow into another. When you are in dim light or darkness, as a bonus action you can teleport up to 60 feet to an unoccupied space you can see that is also in dim light or darkness. You then have advantage on the first melee attack you make before the end of the turn.",
+      "unlock_level": 6,
+      "subclass": "Way of Shadow"
+    },
+    {
+      "name": "Cloak of Shadows",
+      "description": "When you are in an area of dim light or darkness, you can use your action to become invisible. You remain invisible until you make an attack, cast a spell, or are in an area of bright light.",
+      "unlock_level": 11,
+      "subclass": "Way of Shadow"
+    },
+    {
+      "name": "Opportunist",
+      "description": "You can exploit a creature's momentary distraction when it is hit by an attack. Whenever a creature within 5 feet of you is hit by an attack made by a creature other than you, you can use your reaction to make a melee attack against that creature.",
+      "unlock_level": 17,
+      "subclass": "Way of Shadow"
+    }
+  ],
+  "Paladin": [
+    {
+      "name": "Divine Sense",
+      "description": "The presence of strong evil registers on your senses like a noxious odor, and powerful good rings like heavenly music in your ears. As an action, you can open your awareness to detect such forces.",
+      "unlock_level": 1
+    },
+    {
+      "name": "Lay on Hands",
+      "description": "Your blessed touch can heal wounds. You have a pool of healing power that replenishes when you take a long rest. With that pool, you can restore a total number of hit points equal to your paladin level x 5.",
+      "unlock_level": 1
+    },
+    {
+      "name": "Fighting Style",
+      "description": "You adopt a particular style of fighting as your specialty (e.g., Defense, Dueling, Great Weapon Fighting, Protection).",
+      "unlock_level": 2
+    },
+    {
+      "name": "Spellcasting",
+      "description": "You have learned to draw on divine magic through meditation and prayer to cast spells as a cleric does.",
+      "unlock_level": 2
+    },
+    {
+      "name": "Divine Smite",
+      "description": "When you hit a creature with a melee weapon attack, you can expend one spell slot to deal radiant damage to the target, in addition to the weapon's damage.",
+      "unlock_level": 2
+    },
+    {
+      "name": "Divine Health",
+      "description": "The divine magic flowing through you makes you immune to disease.",
+      "unlock_level": 3
+    },
+    {
+      "name": "Sacred Oath",
+      "description": "You swear the oath that binds you as a paladin forever. Up to this time you have been in a preparatory stage, committed to the path but not yet sworn to it.",
+      "unlock_level": 3
+    },
+    {
+      "name": "Ability Score Improvement",
+      "description": "You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1.",
+      "unlock_level": 4
+    },
+    {
+      "name": "Extra Attack",
+      "description": "You can attack twice, instead of once, whenever you take the Attack action on your turn.",
+      "unlock_level": 5
+    },
+    {
+      "name": "Aura of Protection",
+      "description": "Whenever you or a friendly creature within 10 feet of you must make a saving throw, the creature gains a bonus to the saving throw equal to your Charisma modifier (with a minimum bonus of +1).",
+      "unlock_level": 6
+    },
+    {
+      "name": "Aura of Courage",
+      "description": "You and friendly creatures within 10 feet of you can't be frightened while you are conscious.",
+      "unlock_level": 10
+    },
+    {
+      "name": "Improved Divine Smite",
+      "description": "You are so suffused with righteous might that all your melee weapon strikes carry divine power. Whenever you hit a creature with a melee weapon, the creature takes an extra 1d8 radiant damage.",
+      "unlock_level": 11
+    },
+    {
+      "name": "Cleansing Touch",
+      "description": "You can use your action to end one spell on yourself or on one willing creature that you touch. You can use this feature a number of times equal to your Charisma modifier.",
+      "unlock_level": 14
+    },
+    {
+      "name": "Aura Improvements",
+      "description": "The range of your auras increases to 30 feet.",
+      "unlock_level": 18
+    },
+    {
+      "name": "Channel Divinity",
+      "description": "Your oath allows you to channel divine energy to fuel magical effects. Each Channel Divinity option provided by your oath explains how to use it.",
+      "unlock_level": 3,
+      "subclass": "Oath of Devotion"
+    },
+    {
+      "name": "Sacred Weapon",
+      "description": "As an action, you can imbue one weapon that you are holding with positive energy. For 1 minute, you add your Charisma modifier to attack rolls made with that weapon, and the weapon emits bright light.",
+      "unlock_level": 3,
+      "subclass": "Oath of Devotion"
+    },
+    {
+      "name": "Turn the Unholy",
+      "description": "As an action, you present your holy symbol and speak a prayer censuring fiends and undead. Each fiend or undead that can see or hear you within 30 feet of you must make a Wisdom saving throw.",
+      "unlock_level": 3,
+      "subclass": "Oath of Devotion"
+    },
+    {
+      "name": "Aura of Devotion",
+      "description": "You and friendly creatures within 10 feet of you can't be charmed while you are conscious.",
+      "unlock_level": 7,
+      "subclass": "Oath of Devotion"
+    },
+    {
+      "name": "Purity of Spirit",
+      "description": "You are always under the effects of a Protection from Evil and Good spell.",
+      "unlock_level": 15,
+      "subclass": "Oath of Devotion"
+    },
+    {
+      "name": "Holy Nimbus",
+      "description": "As an action, you can emanate an aura of sunlight. For 1 minute, bright light shines from you in a 30-foot radius. Whenever an enemy creature starts its turn in the bright light, the creature takes 10 radiant damage.",
+      "unlock_level": 20,
+      "subclass": "Oath of Devotion"
+    },
+    {
+      "name": "Channel Divinity",
+      "description": "Your oath allows you to channel divine energy to fuel magical effects.",
+      "unlock_level": 3,
+      "subclass": "Oath of Vengance"
+    },
+    {
+      "name": "Abjure Enemy",
+      "description": "As an action, you present your holy symbol and speak a prayer of denunciation. Choose one creature within 60 feet of you that you can see. That creature must make a Wisdom saving throw or be frightened and have its speed reduced to 0.",
+      "unlock_level": 3,
+      "subclass": "Oath of Vengance"
+    },
+    {
+      "name": "Vow of Enmity",
+      "description": "As a bonus action, you can utter a vow of enmity against a creature you can see within 10 feet of you. You gain advantage on attack rolls against the creature for 1 minute or until it drops to 0 hit points or falls unconscious.",
+      "unlock_level": 3,
+      "subclass": "Oath of Vengance"
+    },
+    {
+      "name": "Relentless Avenger",
+      "description": "When you hit a creature with an opportunity attack, you can move up to half your speed immediately after the attack and as part of the same reaction. This movement doesn't provoke opportunity attacks.",
+      "unlock_level": 7,
+      "subclass": "Oath of Vengance"
+    },
+    {
+      "name": "Soul of Vengeance",
+      "description": "When a creature under the effect of your Vow of Enmity makes an attack, you can use your reaction to make a melee weapon attack against that creature if it is within range.",
+      "unlock_level": 15,
+      "subclass": "Oath of Vengance"
+    },
+    {
+      "name": "Avenging Angel",
+      "description": "You can use your action to transform. For 1 hour, you gain a flying speed of 60 feet and emanate an aura of menace that can frighten enemies.",
+      "unlock_level": 20,
+      "subclass": "Oath of Vengance"
+    },
+    {
+      "name": "Channel Divinity",
+      "description": "Your oath allows you to channel divine energy to fuel magical effects.",
+      "unlock_level": 3,
+      "subclass": "Oath of the Acients"
+    },
+    {
+      "name": "Nature's Wrath",
+      "description": "You can use your Channel Divinity to invoke primeval forces to ensnare a foe. As an action, you can cause spectral vines to spring up and reach for a creature within 10 feet of you that you can see.",
+      "unlock_level": 3,
+      "subclass": "Oath of the Acients"
+    },
+    {
+      "name": "Turn the Faithless",
+      "description": "You can use your Channel Divinity to utter ancient words that are painful for fey and fiends to hear. Each fey or fiend within 30 feet of you must make a Wisdom saving throw.",
+      "unlock_level": 3,
+      "subclass": "Oath of the Acients"
+    },
+    {
+      "name": "Aura of Warding",
+      "description": "You and friendly creatures within 10 feet of you have resistance to damage from spells.",
+      "unlock_level": 7,
+      "subclass": "Oath of the Acients"
+    },
+    {
+      "name": "Undying Sentinel",
+      "description": "When you are reduced to 0 hit points and are not killed outright, you can choose to drop to 1 hit point instead. Additionally, you suffer none of the drawbacks of old age.",
+      "unlock_level": 15,
+      "subclass": "Oath of the Acients"
+    },
+    {
+      "name": "Elder Champion",
+      "description": "You can assume the form of an ancient force of nature, taking on an appearance you choose. For 1 minute, you regenerate 10 hit points at the start of your turn and your paladin spells have a casting time of 1 action cast as a bonus action.",
+      "unlock_level": 20,
+      "subclass": "Oath of the Acients"
+    }
+  ],
+  "Ranger": [
+    {
+      "name": "Favored Enemy",
+      "description": "Beginning at 1st level, you have significant experience studying, tracking, hunting, and even talking to a certain type of enemy. You gain advantage on Wisdom (Survival) checks to track your favored enemies, as well as on Intelligence checks to recall information about them.",
+      "unlock_level": 1
+    },
+    {
+      "name": "Natural Explorer",
+      "description": "You are particularly familiar with one type of natural environment and are adept at traveling and surviving in such regions.",
+      "unlock_level": 1
+    },
+    {
+      "name": "Fighting Style",
+      "description": "You adopt a particular style of fighting as your specialty (e.g., Archery, Defense, Dueling, Two-Weapon Fighting).",
+      "unlock_level": 2
+    },
+    {
+      "name": "Spellcasting",
+      "description": "You have learned to use the magical essence of nature to cast spells, much as a druid does.",
+      "unlock_level": 2
+    },
+    {
+      "name": "Primeval Awareness",
+      "description": "You can use your action and expend one ranger spell slot to focus your awareness on the region around you. For 1 minute per level of the spell slot you expend, you can sense whether the following types of creatures are present within 1 mile of you: aberrations, celestials, dragons, elementals, fey, fiends, and undead.",
+      "unlock_level": 3
+    },
+    {
+      "name": "Ranger Archetype",
+      "description": "You choose an archetype that you strive to emulate: Hunter, Beast Master, etc.",
+      "unlock_level": 3
+    },
+    {
+      "name": "Ability Score Improvement",
+      "description": "You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1.",
+      "unlock_level": 4
+    },
+    {
+      "name": "Extra Attack",
+      "description": "You can attack twice, instead of once, whenever you take the Attack action on your turn.",
+      "unlock_level": 5
+    },
+    {
+      "name": "Land's Stride",
+      "description": "Moving through nonmagical difficult terrain costs you no extra movement. You can also pass through nonmagical plants without being slowed by them and without taking damage from them if they have thorns, spines, or a similar hazard.",
+      "unlock_level": 8
+    },
+    {
+      "name": "Hide in Plain Sight",
+      "description": "You can spend 1 minute creating camouflage for yourself. You must have access to fresh mud, dirt, plants, soot, and other naturally occurring materials with which to create your camouflage.",
+      "unlock_level": 10
+    },
+    {
+      "name": "Vanish",
+      "description": "You can use the Hide action as a bonus action on your turn. Also, you can't be tracked by nonmagical means, unless you choose to leave a trail.",
+      "unlock_level": 14
+    },
+    {
+      "name": "Feral Senses",
+      "description": "You gain preternatural senses that help you fight creatures you can't see. When you attack a creature you can't see, your inability to see it doesn't impose disadvantage on your attack rolls against it.",
+      "unlock_level": 18
+    },
+    {
+      "name": "Foe Slayer",
+      "description": "You become an unparalleled hunter of your enemies. Once on each of your turns, you can add your Wisdom modifier to the attack roll or the damage roll of an attack you make against one of your favored enemies.",
+      "unlock_level": 20
+    },
+    {
+      "name": "Hunter's Prey",
+      "description": "You gain one of the following features of your choice: Colossus Slayer, Giant Killer, or Horde Breaker.",
+      "unlock_level": 3,
+      "subclass": "Hunter"
+    },
+    {
+      "name": "Defensive Tactics",
+      "description": "You gain one of the following features of your choice: Escape the Horde, Multiattack Defense, or Steel Will.",
+      "unlock_level": 7,
+      "subclass": "Hunter"
+    },
+    {
+      "name": "Multiattack",
+      "description": "You gain one of the following features of your choice: Volley or Whirlwind Attack.",
+      "unlock_level": 11,
+      "subclass": "Hunter"
+    },
+    {
+      "name": "Superior Hunter's Defense",
+      "description": "You gain one of the following features of your choice: Evasion, Stand Against the Tide, or Uncanny Dodge.",
+      "unlock_level": 15,
+      "subclass": "Hunter"
+    },
+    {
+      "name": "Ranger's Companion",
+      "description": "You gain a beast companion that accompanies you on your adventures and is trained to fight alongside you. Choose a beast that is no larger than Medium and that has a challenge rating of 1/4 or lower.",
+      "unlock_level": 3,
+      "subclass": "Beast master"
+    },
+    {
+      "name": "Exceptional Training",
+      "description": "On any of your turns when your beast companion doesn't attack, you can use a bonus action to command the beast to take the Dash, Disengage, or Help action on its turn.",
+      "unlock_level": 7,
+      "subclass": "Beast master"
+    },
+    {
+      "name": "Bestial Fury",
+      "description": "Your beast companion can make two attacks when you command it to use the Attack action.",
+      "unlock_level": 11,
+      "subclass": "Beast master"
+    },
+    {
+      "name": "Share Spells",
+      "description": "When you cast a spell targeting yourself, you can also affect your beast companion with the spell if the beast is within 30 feet of you.",
+      "unlock_level": 15,
+      "subclass": "Beast master"
+    },
+      {
+      "name": "Dread Ambusher",
+      "description": "You can give yourself a bonus to your initiative rolls equal to your Wisdom modifier. At the start of your first turn of each combat, your walking speed increases by 10 feet, which lasts until the end of that turn. If you take the Attack action on that turn, you can make one additional weapon attack as part of that action.",
+      "unlock_level": 3,
+      "subclass": "Gloom Stalker"
+    },
+    {
+      "name": "Umbral Sight",
+      "description": "You gain darkvision out to a range of 60 feet. If you already have darkvision from your race, its range increases by 30 feet. You are also invisible to any creature that relies on darkvision to see you in that darkness.",
+      "unlock_level": 3,
+      "subclass": "Gloom Stalker"
+    },
+    {
+      "name": "Iron Mind",
+      "description": "You gain proficiency in Wisdom saving throws. If you already have this proficiency, you instead gain proficiency in Intelligence or Charisma saving throws (your choice).",
+      "unlock_level": 7,
+      "subclass": "Gloom Stalker"
+    },
+    {
+      "name": "Stalker's Flurry",
+      "description": "Once on each of your turns when you miss with a weapon attack, you can make another weapon attack as part of the same action.",
+      "unlock_level": 11,
+      "subclass": "Gloom Stalker"
+    },
+    {
+      "name": "Shadowy Dodge",
+      "description": "Whenever a creature makes an attack roll against you and doesn't have advantage on the roll, you can use your reaction to impose disadvantage on it. You must use this feature before you know the outcome of the attack roll.",
+      "unlock_level": 15,
+      "subclass": "Gloom Stalker"
+    }
+  ],
+  "Rogue": [
+    {
+      "name": "Expertise",
+      "description": "Choose two of your skill proficiencies, or one of your skill proficiencies and your proficiency with thieves' tools. Your proficiency bonus is doubled for any ability check you make that uses either of the chosen proficiencies.",
+      "unlock_level": 1
+    },
+    {
+      "name": "Sneak Attack",
+      "description": "Once per turn, you can deal an extra 1d6 damage to one creature you hit with an attack if you have advantage on the attack roll. The attack must use a finesse or a ranged weapon. The amount of the extra damage increases as you gain levels in this class.",
+      "unlock_level": 1
+    },
+    {
+      "name": "Thieves' Cant",
+      "description": "During your rogue training you learned thieves' cant, a secret mix of dialect, jargon, and code that allows you to hide messages in seemingly normal conversation.",
+      "unlock_level": 1
+    },
+    {
+      "name": "Cunning Action",
+      "description": "Your quick thinking and agility allow you to move and act quickly. You can take a bonus action on each of your turns in combat. This action can be used only to take the Dash, Disengage, or Hide action.",
+      "unlock_level": 2
+    },
+    {
+      "name": "Roguish Archetype",
+      "description": "You choose an archetype that you emulate in the exercise of your rogue abilities, such as the Thief.",
+      "unlock_level": 3
+    },
+    {
+      "name": "Ability Score Improvement",
+      "description": "You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1.",
+      "unlock_level": 4
+    },
+    {
+      "name": "Uncanny Dodge",
+      "description": "When an attacker that you can see hits you with an attack, you can use your reaction to halve the attack's damage against you.",
+      "unlock_level": 5
+    },
+    {
+      "name": "Expertise (Level 6)",
+      "description": "Choose two more of your skill proficiencies, or one more of your skill proficiencies and your proficiency with thieves' tools. Your proficiency bonus is doubled for these choices.",
+      "unlock_level": 6
+    },
+    {
+      "name": "Evasion",
+      "description": "When you are subjected to an effect that allows you to make a Dexterity saving throw to take only half damage, you instead take no damage if you succeed on the saving throw, and only half damage if you fail.",
+      "unlock_level": 7
+    },
+    {
+      "name": "Reliable Talent",
+      "description": "Whenever you make an ability check that lets you add your proficiency bonus, you can treat a d20 roll of 9 or lower as a 10.",
+      "unlock_level": 11
+    },
+    {
+      "name": "Blindsense",
+      "description": "If you are able to hear, you are aware of the location of any hidden or invisible creature within 10 feet of you.",
+      "unlock_level": 14
+    },
+    {
+      "name": "Slippery Mind",
+      "description": "You have acquired greater mental strength. You gain proficiency in Wisdom saving throws.",
+      "unlock_level": 15
+    },
+    {
+      "name": "Elusive",
+      "description": "You are so evasive that attackers rarely gain the upper hand against you. No attack roll has advantage against you while you aren't incapacitated.",
+      "unlock_level": 18
+    },
+    {
+      "name": "Stroke of Luck",
+      "description": "If your attack misses a target within range, you can turn the miss into a hit. Alternatively, if you fail an ability check, you can treat the d20 roll as a 20. Once you use this feature, you can't use it again until you finish a short or long rest.",
+      "unlock_level": 20
+    },
+    {
+      "name": "Fast Hands",
+      "description": "You can use the bonus action granted by your Cunning Action to make a Dexterity (Sleight of Hand) check, use your thieves' tools to disarm a trap or open a lock, or take the Use an Object action.",
+      "unlock_level": 3,
+      "subclass": "Thief"
+    },
+    {
+      "name": "Second-Story Work",
+      "description": "Climbing no longer costs you extra movement. In addition, when you make a running jump, the distance you cover increases by a number of feet equal to your Dexterity modifier.",
+      "unlock_level": 3,
+      "subclass": "Thief"
+    },
+    {
+      "name": "Supreme Sneak",
+      "description": "You have advantage on a Dexterity (Stealth) check if you move no more than half your speed on the same turn.",
+      "unlock_level": 9,
+      "subclass": "Thief"
+    },
+    {
+      "name": "Use Magic Device",
+      "description": "You have learned enough about the workings of magic that you can improvise the use of items even when they are not intended for you. You ignore all class, race, and level requirements on the use of magic items.",
+      "unlock_level": 13,
+      "subclass": "Thief"
+    },
+    {
+      "name": "Thief's Reflexes",
+      "description": "You can take two turns during the first round of any combat. You take your first turn at your normal initiative and your second turn at your initiative minus 10.",
+      "unlock_level": 17,
+      "subclass": "Thief"
+    },
+    {
+      "name": "Bonus Proficiencies",
+      "description": "You gain proficiency with the disguise kit and the poisoner's kit.",
+      "unlock_level": 3,
+      "subclass": "Assasin"
+    },
+    {
+      "name": "Assassinate",
+      "description": "You have advantage on attack rolls against any creature that hasn't taken a turn in the combat yet. In addition, any hit you score against a creature that is surprised is a critical hit.",
+      "unlock_level": 3,
+      "subclass": "Assasin"
+    },
+    {
+      "name": "Infiltration Expertise",
+      "description": "You can unfailingly create false identities for yourself. You must spend seven days and 25 gp to establish the history, profession, and affiliations for an identity.",
+      "unlock_level": 9,
+      "subclass": "Assasin"
+    },
+    {
+      "name": "Impostor",
+      "description": "You can mimic another person's speech, writing, and behavior. You must spend at least three hours studying these three components of the person's behavior.",
+      "unlock_level": 13,
+      "subclass": "Assasin"
+    },
+    {
+      "name": "Death Strike",
+      "description": "When you attack and hit a creature that is surprised, it must make a Constitution saving throw (DC 8 + your Dex modifier + your proficiency bonus). On a failed save, double the damage of your attack against the creature.",
+      "unlock_level": 17,
+      "subclass": "Assasin"
+    },
+    {
+      "name": "Ear for Deceit",
+      "description": "Whenever you make a Wisdom (Insight) check to determine whether a creature is lying, treat a roll of 7 or lower on the d20 as an 8.",
+      "unlock_level": 3,
+      "subclass": "Inquisitive"
+    },
+    {
+      "name": "Eye for Detail",
+      "description": "You can use a bonus action to make a Wisdom (Perception) check to spot a hidden creature or object or to make an Intelligence (Investigation) check to uncover or decipher clues.",
+      "unlock_level": 3,
+      "subclass": "Inquisitive"
+    },
+    {
+      "name": "Insightful Fighting",
+      "description": "As a bonus action, you make a Wisdom (Insight) check against a creature you can see that isn't incapacitated, contested by the target's Charisma (Deception) check. If you succeed, you can use your Sneak Attack against that target even if you don't have advantage on the attack roll.",
+      "unlock_level": 3,
+      "subclass": "Inquisitive"
+    },
+    {
+      "name": "Steady Eye",
+      "description": "You have advantage on any Wisdom (Perception) or Intelligence (Investigation) check if you move no more than half your speed on the same turn.",
+      "unlock_level": 9,
+      "subclass": "Inquisitive"
+    },
+    {
+      "name": "Unerring Eye",
+      "description": "As an action, you sense the presence of illusions, shapechangers not in their original form, and other magic designed to deceive the senses within 30 feet of you.",
+      "unlock_level": 13,
+      "subclass": "Inquisitive"
+    },
+    {
+      "name": "Eye for Weakness",
+      "description": "While your Insightful Fighting feature applies to a creature, your Sneak Attack damage against that creature increases by 3d6.",
+      "unlock_level": 17,
+      "subclass": "Inquisitive"
+    }
+  ],
+  "Sorcerer": [
+    {
+      "name": "Spellcasting",
+      "description": "You have learned to untangle and reshape the fabric of reality in harmony with your wishes and intuition.",
+      "unlock_level": 1
+    },
+    {
+      "name": "Sorcerous Origin",
+      "description": "Choose a sorcerous origin, which describes the source of your innate magical power, such as Draconic Bloodline.",
+      "unlock_level": 1
+    },
+    {
+      "name": "Font of Magic",
+      "description": "You tap into a deep wellspring of magic within yourself. This wellspring is represented by sorcery points, which allow you to create a variety of magical effects.",
+      "unlock_level": 2
+    },
+    {
+      "name": "Flexible Casting",
+      "description": "You can use your sorcery points to gain additional spell slots, or sacrifice spell slots to gain additional sorcery points.",
+      "unlock_level": 2
+    },
+    {
+      "name": "Metamagic",
+      "description": "You gain the ability to twist your spells to suit your needs. You gain two Metamagic options of your choice.",
+      "unlock_level": 3
+    },
+    {
+      "name": "Ability Score Improvement",
+      "description": "You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1.",
+      "unlock_level": 4
+    },
+    {
+      "name": "Metamagic (3rd Option)",
+      "description": "You gain another Metamagic option of your choice.",
+      "unlock_level": 10
+    },
+    {
+      "name": "Metamagic (4th Option)",
+      "description": "You gain another Metamagic option of your choice.",
+      "unlock_level": 17
+    },
+    {
+      "name": "Sorcerous Restoration",
+      "description": "You regain 4 expended sorcery points whenever you finish a short rest.",
+      "unlock_level": 20
+    },
+    {
+      "name": "Dragon Ancestor",
+      "description": "You choose one type of dragon as your ancestor. The damage type associated with each dragon is used by features you gain later.",
+      "unlock_level": 1,
+      "subclass": "Draconic Bloodline"
+    },
+    {
+      "name": "Draconic Resilience",
+      "description": "Your hit point maximum increases by 1 and increases by 1 again whenever you gain a level in this class. Additionally, when you aren't wearing armor, your AC equals 13 + your Dexterity modifier.",
+      "unlock_level": 1,
+      "subclass": "Draconic Bloodline"
+    },
+    {
+      "name": "Elemental Affinity",
+      "description": "When you cast a spell that deals damage of the type associated with your draconic ancestry, you can add your Charisma modifier to one damage roll of that spell. At the same time, you can spend 1 sorcery point to gain resistance to that damage type for 1 hour.",
+      "unlock_level": 6,
+      "subclass": "Draconic Bloodline"
+    },
+    {
+      "name": "Dragon Wings",
+      "description": "You gain the ability to sprout a pair of dragon wings from your back, gaining a flying speed equal to your current speed. You can create these wings as a bonus action on your turn.",
+      "unlock_level": 14,
+      "subclass": "Draconic Bloodline"
+    },
+    {
+      "name": "Draconic Presence",
+      "description": "You can channel the dread presence of your dragon ancestor, causing those around you to become awestruck or frightened.",
+      "unlock_level": 18,
+      "subclass": "Draconic Bloodline"
+    },
+    {
+      "name": "Wild Magic Surge",
+      "description": "Your spellcasting can unleash surges of untamed magic. Once per turn, the DM can have you roll a d20 immediately after you cast a sorcerer spell of 1st level or higher. If you roll a 1, roll on the Wild Magic Surge table to create a magical effect.",
+      "unlock_level": 1,
+      "subclass": "Wild Magic"
+    },
+    {
+      "name": "Tides of Chaos",
+      "description": "You can manipulate the forces of chance and chaos to gain advantage on one attack roll, ability check, or saving throw. You must finish a long rest before you can use this feature again.",
+      "unlock_level": 1,
+      "subclass": "Wild Magic"
+    },
+    {
+      "name": "Bend Luck",
+      "description": "You have the ability to twist fate using your wild magic. When another creature you can see makes an attack roll, an ability check, or a saving throw, you can use your reaction and spend 2 sorcery points to roll 1d4 and apply the number rolled as a bonus or penalty.",
+      "unlock_level": 6,
+      "subclass": "Wild Magic"
+    },
+    {
+      "name": "Controlled Chaos",
+      "description": "Whenever you roll on the Wild Magic Surge table, you can roll twice and use either number.",
+      "unlock_level": 14,
+      "subclass": "Wild Magic"
+    },
+    {
+      "name": "Spell Bombardment",
+      "description": "When you roll damage for a spell and roll the highest number possible on any of the dice, you can choose one of those dice, roll it again and add that roll to the damage.",
+      "unlock_level": 18,
+      "subclass": "Wild Magic"
+    },
+    {
+      "name": "Divine Magic",
+      "description": "Your link to the divine allows you to learn spells from the cleric class. When your Spellcasting feature lets you learn or replace a sorcerer cantrip or a sorcerer spell of 1st level or higher, you can choose the new spell from the cleric spell list or the sorcerer spell list.",
+      "unlock_level": 1,
+      "subclass": "Divine Soul"
+    },
+    {
+      "name": "Favored by the Gods",
+      "description": "If you fail a saving throw or miss with an attack roll, you can roll 2d4 and add it to the total, possibly changing the outcome. You can't use this feature again until you finish a short or long rest.",
+      "unlock_level": 1,
+      "subclass": "Divine Soul"
+    },
+    {
+      "name": "Empowered Healing",
+      "description": "Whenever you or an ally within 5 feet of you rolls dice to determine the number of hit points a spell restores, you can spend 1 sorcery point to reroll any number of those dice once.",
+      "unlock_level": 6,
+      "subclass": "Divine Soul"
+    },
+    {
+      "name": "Otherworldly Wings",
+      "description": "You can use a bonus action to manifest a pair of spectral wings from your back. You gain a flying speed of 30 feet.",
+      "unlock_level": 14,
+      "subclass": "Divine Soul"
+    },
+    {
+      "name": "Unearthly Recovery",
+      "description": "As a bonus action when you have fewer than half of your hit points remaining, you can regain a number of hit points equal to half your hit point maximum.",
+      "unlock_level": 18,
+      "subclass": "Divine Soul"
+    }
+  ],
+  "Warlock": [
+    {
+      "name": "Otherworldly Patron",
+      "description": "At 1st level, you have struck a bargain with an otherworldly being of your choice: The Fiend, The Hexblade, etc. Your choice grants you features at 1st level and again at 6th, 10th, and 14th level.",
+      "unlock_level": 1
+    },
+    {
+      "name": "Pact Magic",
+      "description": "Your arcane research and the magic bestowed on you by your patron have given you facility with spells.",
+      "unlock_level": 1
+    },
+    {
+      "name": "Eldritch Invocations",
+      "description": "In your study of occult lore, you have unearthed eldritch invocations, fragments of forbidden knowledge that imbue you with an abiding magical ability. You gain two invocations of your choice.",
+      "unlock_level": 2
+    },
+    {
+      "name": "Pact Boon",
+      "description": "Your otherworldly patron bestows a gift upon you for your loyal service. You gain one of the following features of your choice: Pact of the Chain, Pact of the Blade, or Pact of the Tome.",
+      "unlock_level": 3
+    },
+    {
+      "name": "Ability Score Improvement",
+      "description": "You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1.",
+      "unlock_level": 4
+    },
+    {
+      "name": "Mystic Arcanum (6th level)",
+      "description": "Your patron bestows upon you a magical secret called an arcanum. Choose one 6th-level spell from the warlock spell list as this arcanum. You can cast your arcanum spell once without expending a spell slot. You must finish a long rest before you can do so again.",
+      "unlock_level": 11
+    },
+    {
+      "name": "Mystic Arcanum (7th level)",
+      "description": "You gain a 7th-level warlock spell of your choice that can be cast as an arcanum.",
+      "unlock_level": 13
+    },
+    {
+      "name": "Mystic Arcanum (8th level)",
+      "description": "You gain an 8th-level warlock spell of your choice that can be cast as an arcanum.",
+      "unlock_level": 15
+    },
+    {
+      "name": "Mystic Arcanum (9th level)",
+      "description": "You gain a 9th-level warlock spell of your choice that can be cast as an arcanum.",
+      "unlock_level": 17
+    },
+    {
+      "name": "Eldritch Master",
+      "description": "You can spend 1 minute entreating your patron for aid to regain all your expended spell slots from your Pact Magic feature.",
+      "unlock_level": 20
+    },
+    {
+      "name": "Dark One's Blessing",
+      "description": "When you reduce a hostile creature to 0 hit points, you gain temporary hit points equal to your Charisma modifier + your warlock level (minimum of 1).",
+      "unlock_level": 1,
+      "subclass": "The Fiend"
+    },
+    {
+      "name": "Dark One's Own Luck",
+      "description": "You can call on your patron to alter fate in your favor. When you make an ability check or a saving throw, you can use this feature to add a d10 to your roll. You can do so after seeing the initial roll but before any of the roll's effects occur.",
+      "unlock_level": 6,
+      "subclass": "The Fiend"
+    },
+    {
+      "name": "Fiendish Resilience",
+      "description": "You can choose one damage type when you finish a short or long rest. You gain resistance to that damage type until you choose a different one with this feature.",
+      "unlock_level": 10,
+      "subclass": "The Fiend"
+    },
+    {
+      "name": "Hurl Through Hell",
+      "description": "When you hit a creature with an attack, you can use this feature to instantly transport the target through the lower planes. The creature disappears and hurtles through a nightmare landscape. At the end of your next turn, the target returns and takes 10d10 psychic damage.",
+      "unlock_level": 14,
+      "subclass": "The Fiend"
+    },
+    {
+      "name": "Hexblade's Curse",
+      "description": "As a bonus action, choose one creature you can see within 30 feet of you. The target is cursed for 1 minute. You gain a bonus to damage rolls against the cursed target, your attacks against it crit on 19 or 20, and you regain hit points if it dies.",
+      "unlock_level": 1,
+      "subclass": "The Hexblade"
+    },
+    {
+      "name": "Hex Warrior",
+      "description": "You gain proficiency with medium armor, shields, and martial weapons. Whenever you finish a long rest, you can touch one weapon that you are proficient with and that lacks the two-handed property. When you attack with that weapon, you can use your Charisma modifier for the attack and damage rolls.",
+      "unlock_level": 1,
+      "subclass": "The Hexblade"
+    },
+    {
+      "name": "Accursed Specter",
+      "description": "You can curse the soul of a person you slay, temporarily binding it to your service. When you slay a humanoid, you can cause its spirit to rise from its corpse as a specter.",
+      "unlock_level": 6,
+      "subclass": "The Hexblade"
+    },
+    {
+      "name": "Armor of Hexes",
+      "description": "If the target cursed by your Hexblade's Curse hits you with an attack roll, you can use your reaction to roll a d6. On a 4 or higher, the attack instead misses you, regardless of its roll.",
+      "unlock_level": 10,
+      "subclass": "The Hexblade"
+    },
+    {
+      "name": "Master of Hexes",
+      "description": "You can spread your Hexblade's Curse from a slain creature to another creature. When the creature cursed by your Hexblade's Curse dies, you can apply the curse to a different creature you can see within 30 feet of you.",
+      "unlock_level": 14,
+      "subclass": "The Hexblade"
+    },
+    {
+      "name": "Awakened Mind",
+      "description": "Your alien knowledge gives you the ability to touch the minds of other creatures. You can communicate telepathically with any creature you can see within 30 feet of you.",
+      "unlock_level": 1,
+      "subclass": "The Great Old One"
+    },
+    {
+      "name": "Entropic Ward",
+      "description": "When a creature makes an attack roll against you, you can use your reaction to impose disadvantage on that roll. If the attack misses you, your next attack roll against the creature has advantage if you make it before the end of your next turn.",
+      "unlock_level": 6,
+      "subclass": "The Great Old One"
+    },
+    {
+      "name": "Thought Shield",
+      "description": "Your thoughts cannot be read by telepathy or other means unless you allow it. You also have resistance to psychic damage, and whenever a creature deals psychic damage to you, that creature takes the same amount of damage that you do.",
+      "unlock_level": 10,
+      "subclass": "The Great Old One"
+    },
+    {
+      "name": "Create Thrall",
+      "description": "You can use your action to touch an incapacitated humanoid. That creature is then charmed by you until a Remove Curse spell is cast on it, the charmed condition is removed from it, or you use this feature again.",
+      "unlock_level": 14,
+      "subclass": "The Great Old One"
+    }
+  ],
+  "Wizard": [
+    {
+      "name": "Spellcasting",
+      "description": "As a student of arcane magic, you have a spellbook containing spells that show the first glimmerings of your true power.",
+      "unlock_level": 1
+    },
+    {
+      "name": "Arcane Recovery",
+      "description": "You have learned to regain some of your magical energy by studying your spellbook. Once per day when you finish a short rest, you can choose expended spell slots to recover. The spell slots can have a combined level that is equal to or less than half your wizard level (rounded up), and none of the slots can be 6th level or higher.",
+      "unlock_level": 1
+    },
+    {
+      "name": "Arcane Tradition",
+      "description": "You choose an arcane tradition, shaping your practice of magic through one of eight schools, such as Evocation.",
+      "unlock_level": 2
+    },
+    {
+      "name": "Ability Score Improvement",
+      "description": "You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1.",
+      "unlock_level": 4
+    },
+    {
+      "name": "Spell Mastery",
+      "description": "You have achieved such mastery over certain spells that you can cast them at will. Choose a 1st-level wizard spell and a 2nd-level wizard spell that are in your spellbook. You can cast those spells at their lowest level without expending a spell slot when you have them prepared.",
+      "unlock_level": 18
+    },
+    {
+      "name": "Signature Spells",
+      "description": "You gain mastery over two powerful spells. Choose two 3rd-level wizard spells in your spellbook as your signature spells. You always have these spells prepared, they don't count against the number of spells you have prepared, and you can cast each of them once at 3rd level without expending a spell slot.",
+      "unlock_level": 20
+    },
+    {
+      "name": "Evocation Savant",
+      "description": "The gold and time you must spend to copy an evocation spell into your spellbook is halved.",
+      "unlock_level": 2,
+      "subclass": "School of Evocation"
+    },
+    {
+      "name": "Sculpt Spells",
+      "description": "When you cast an evocation spell that affects other creatures that you can see, you can choose a number of them equal to 1 + the spell's level. The chosen creatures automatically succeed on their saving throws against the spell, and they take no damage if they would normally take half damage on a successful save.",
+      "unlock_level": 2,
+      "subclass": "School of Evocation"
+    },
+    {
+      "name": "Potent Cantrip",
+      "description": "When a creature succeeds on a saving throw against your cantrip, the creature takes half the cantrip's damage (if any) but suffers no additional effect from the cantrip.",
+      "unlock_level": 6,
+      "subclass": "School of Evocation"
+    },
+    {
+      "name": "Empowered Evocation",
+      "description": "You can add your Intelligence modifier to one damage roll of any wizard evocation spell you cast.",
+      "unlock_level": 10,
+      "subclass": "School of Evocation"
+    },
+    {
+      "name": "Overchannel",
+      "description": "When you cast a wizard spell of 1st through 5th level that deals damage, you can deal maximum damage with that spell. The first time you do so, you suffer no adverse effect. If you use this feature again before you finish a long rest, you take 2d12 necrotic damage for each level of the spell.",
+      "unlock_level": 14,
+      "subclass": "School of Evocation"
+    },
+    {
+      "name": "Necromancy Savant",
+      "description": "The gold and time you must spend to copy a necromancy spell into your spellbook is halved.",
+      "unlock_level": 2,
+      "subclass": "Necromancy"
+    },
+    {
+      "name": "Grim Harvest",
+      "description": "Once per turn when you kill one or more creatures with a spell of 1st level or higher, you regain hit points equal to twice the spell's level, or three times its level if the spell belongs to the School of Necromancy.",
+      "unlock_level": 2,
+      "subclass": "Necromancy"
+    },
+    {
+      "name": "Undead Thralls",
+      "description": "You add the Animate Dead spell to your spellbook if it is not there already. When you cast Animate Dead, you can target one additional corpse or pile of bones, creating another zombie or skeleton, as appropriate. Your undead also have increased hit points and damage.",
+      "unlock_level": 6,
+      "subclass": "Necromancy"
+    },
+    {
+      "name": "Inured to Undeath",
+      "description": "You have resistance to necrotic damage, and your hit point maximum can't be reduced.",
+      "unlock_level": 10,
+      "subclass": "Necromancy"
+    },
+    {
+      "name": "Command Undead",
+      "description": "As an action, you can choose one undead that you can see within 60 feet of you. That creature must make a Charisma saving throw against your wizard spell save DC. If it succeeds, you can't use this feature on it again. If it fails, it becomes friendly to you and obeys your commands.",
+      "unlock_level": 14,
+      "subclass": "Necromancy"
+    },
+    {
+      "name": "Divination Savant",
+      "description": "The gold and time you must spend to copy a divination spell into your spellbook is halved.",
+      "unlock_level": 2,
+      "subclass": "Divination"
+    },
+    {
+      "name": "Portent",
+      "description": "When you finish a long rest, roll two d20s and record the numbers rolled. You can replace any attack roll, saving throw, or ability check made by you or a creature that you can see with one of these foretelling rolls. You must choose to do so before the roll, and you can replace a roll in this way only once per turn.",
+      "unlock_level": 2,
+      "subclass": "Divination"
+    },
+    {
+      "name": "Expert Divination",
+      "description": "When you cast a divination spell of 2nd level or higher using a spell slot, you regain one expended spell slot. The slot you regain must be of a level lower than the spell you cast and can't be higher than 5th level.",
+      "unlock_level": 6,
+      "subclass": "Divination"
+    },
+    {
+      "name": "The Third Eye",
+      "description": "You can use your action to increase your powers of perception. You gain one of the following benefits: Darkvision (60 ft), Ethereal Sight (60 ft into Ethereal Plane), Greater Comprehension (read any language), or See Invisibility.",
+      "unlock_level": 10,
+      "subclass": "Divination"
+    },
+    {
+      "name": "Greater Portent",
+      "description": "You roll three d20s for your Portent feature, rather than two.",
+      "unlock_level": 14,
+      "subclass": "Divination"
+    }
+  ]
+}
+
+
+
+
+
+
+
+
+
+
+  

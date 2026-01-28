@@ -4,6 +4,44 @@ import django.core.validators
 import django.db.models.deletion
 from django.db import migrations, models
 
+def populate_races_and_modifiers(apps, schema_editor):
+    Race = apps.get_model("base", "Race")
+    RaceModifier = apps.get_model("base", "RaceModifier")
+
+
+    races_data = [
+        ("Dragonborn", 30, [("strength", 2), ("charisma", 1)]),
+        ("Dwarf", 25, [("constitution", 2)]),
+        ("Elf", 30, [("dexterity", 2)]),
+        ("Gnome", 25, [("intelligence", 2)]),
+        ("Half-Elf", 30, [("charisma", 2)]),
+        ("Half-Orc", 30, [("strength", 2), ("constitution", 1)]),
+        ("Halfling", 25, [("dexterity", 2)]),
+        ("Human", 30, [
+            ("strength", 1), ("dexterity", 1), ("constitution", 1),
+            ("intelligence", 1), ("wisdom", 1), ("charisma", 1)
+        ]),
+        ("Tiefling", 30, [("charisma", 2), ("intelligence", 1)]),
+        ("Aasimar", 30, [("charisma", 2)]),
+        ("Orc", 30, [("strength", 2), ("constitution", 1)]),
+    ]
+
+    for name, speed, modifiers in races_data:
+        race_obj, created = Race.objects.get_or_create(
+            name=name,
+            defaults={'speed': speed}
+        )
+        if not created and race_obj.speed != speed:
+            race_obj.speed = speed
+            race_obj.save()
+
+        for ability, val in modifiers:
+            RaceModifier.objects.get_or_create(
+                race=race_obj,
+                ability=ability,
+                defaults={'modifier': val}
+            )
+
 
 class Migration(migrations.Migration):
 
@@ -13,7 +51,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="RaceModifier",
+            name="Race",
             fields=[
                 (
                     "id",
@@ -24,23 +62,26 @@ class Migration(migrations.Migration):
                         verbose_name="ID",
                     ),
                 ),
+                ("name", models.CharField(max_length=30, unique=True)),
                 (
-                    "race",
-                    models.CharField(
-                        choices=[
-                            ("Aasimar", "Aasimar"),
-                            ("Human", "Human"),
-                            ("Elf", "Elf"),
-                            ("Dwarf", "Dwarf"),
-                            ("Halfling", "Halfling"),
-                            ("Gnome", "Gnome"),
-                            ("Dragonborn", "Dragonborn"),
-                            ("Tiefling", "Tiefling"),
-                            ("Half-Elf", "Half-Elf"),
-                            ("Half-Orc", "Half-Orc"),
-                            ("Orc", "Orc"),
-                        ],
-                        max_length=30,
+                    "speed",
+                    models.PositiveIntegerField(
+                        default=30, help_text="Base walking speed in feet"
+                    ),
+                ),
+            ],
+        ),
+
+        migrations.CreateModel(
+            name="RaceModifier",
+            fields=[
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
                     ),
                 ),
                 (
@@ -58,8 +99,34 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 ("modifier", models.IntegerField()),
+                (
+                    "race",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="modifiers",
+                        to="base.race",
+                    ),
+                ),
             ],
         ),
+
+        migrations.RemoveField(
+            model_name="character",
+            name="race",
+        ),
+
+        migrations.AddField(
+            model_name="character",
+            name="race",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="characters",
+                to="base.race",
+            ),
+        ),
+
         migrations.AlterField(
             model_name="character",
             name="armor_class",
@@ -85,4 +152,6 @@ class Migration(migrations.Migration):
                 to="base.subclass",
             ),
         ),
+
+        migrations.RunPython(populate_races_and_modifiers),
     ]

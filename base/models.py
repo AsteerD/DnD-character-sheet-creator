@@ -14,19 +14,6 @@ class AbilityScoreChoices(models.TextChoices):
     WISDOM = 'wisdom', 'Wisdom'
     CHARISMA = 'charisma', 'Charisma'
 
-class RaceChoices(models.TextChoices):
-    AASIMAR = 'Aasimar', 'Aasimar'
-    HUMAN = 'Human', 'Human'
-    ELF = 'Elf', 'Elf'
-    DWARF = 'Dwarf', 'Dwarf'
-    HALFLING = 'Halfling', 'Halfling'
-    GNOME = 'Gnome', 'Gnome'
-    DRAGONBORN = 'Dragonborn', 'Dragonborn'
-    TIEFLING = 'Tiefling', 'Tiefling'
-    HALF_ELF = 'Half-Elf', 'Half-Elf'
-    HALF_ORC = 'Half-Orc', 'Half-Orc'
-    ORC = 'Orc', 'Orc'
-
 class Alignment(models.TextChoices):
     LAWFUL_GOOD = 'LG', 'Lawful Good'
     NEUTRAL_GOOD = 'NG', 'Neutral Good'
@@ -40,9 +27,24 @@ class Alignment(models.TextChoices):
 
 # --- CONFIGURATION MODELS ---
 
+class Race(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    speed = models.PositiveIntegerField(default=30, help_text="Base walking speed in feet")
+
+    def __str__(self):
+        return self.name
+
+class RaceModifier(models.Model):
+    race = models.ForeignKey(Race, on_delete=models.CASCADE, related_name='modifiers')
+    ability = models.CharField(max_length=20, choices=AbilityScoreChoices.choices)
+    modifier = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.race.name}: {self.ability} {self.modifier:+d}"
+
 class CharacterClass(models.Model):
     name = models.CharField(max_length=100, unique=True)
-    # OUR CHANGES: Class configuration fields
+    # Class configuration fields
     hit_die = models.IntegerField(help_text="Hit die value, e.g., 8 for d8, 12 for d12", default=8)
     skill_choices_count = models.IntegerField(default=2)
     
@@ -84,7 +86,6 @@ class Subclass(models.Model):
     def __str__(self):
         return f"{self.character_class.name}: {self.name}"
 
-# OUR CHANGES: Feat Model
 class Feat(models.Model):
     name = models.CharField(max_length=100, unique=True)
     description = models.TextField()
@@ -93,7 +94,6 @@ class Feat(models.Model):
     def __str__(self):
         return self.name
 
-# MAIN CHANGES (Kept): ClassFeature with unlock_level
 class ClassFeature(models.Model):
     character_class = models.ForeignKey(
         CharacterClass,
@@ -127,7 +127,6 @@ class ClassFeature(models.Model):
             return f"{self.character_class}/{self.subclass} – {self.name} (lvl {self.unlock_level})"
         return f"{self.character_class} – {self.name} (lvl {self.unlock_level})"
 
-# OUR CHANGES: Spell Progression Model (instead of dictionaries)
 class ClassSpellProgression(models.Model):
     """
     Data-driven table for spell slots and known spells/cantrips per level.
@@ -167,14 +166,6 @@ class Background(models.Model):
     def __str__(self):
         return self.name
 
-class RaceModifier(models.Model):
-    race = models.CharField(max_length=30, choices=RaceChoices.choices)
-    ability = models.CharField(max_length=20, choices=AbilityScoreChoices.choices)
-    modifier = models.IntegerField()
-
-    def __str__(self):
-        return f"{self.race}: {self.ability} {self.modifier:+d}"
-    
 class Language(models.Model):
     name = models.CharField(max_length=100)
 
@@ -227,7 +218,7 @@ class Spell(models.Model):
     school = models.CharField(max_length=100)
 
     dnd_classes = models.ManyToManyField(
-        CharacterClass,
+        'CharacterClass',
         through='ClassSpell',
         related_name='spells'
     )
@@ -262,14 +253,6 @@ class ClassSpell(models.Model):
         if self.subclass:
             return f"{self.character_class}/{self.subclass} -> {self.spell} (lvl {self.unlock_level})"
         return f"{self.character_class} -> {self.spell} (lvl {self.unlock_level})"
-
-# OUR CHANGES: Race Model (instead of Enum in Character)
-class Race(models.Model):
-    name = models.CharField(max_length=50, unique=True)
-    speed = models.IntegerField(default=30)
-
-    def __str__(self):
-        return self.name
 
 class Tool(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -337,8 +320,7 @@ class Character(models.Model):
         help_text='Subclass of the character (optional)'
     )
 
-    # OUR CHANGES: ForeignKey to Race
-    race = models.ForeignKey(Race, on_delete=models.PROTECT)
+    race = models.ForeignKey(Race, on_delete=models.PROTECT, null=True, blank=True)
     
     level = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(20)])
     background = models.ForeignKey(
@@ -354,7 +336,7 @@ class Character(models.Model):
         default=Alignment.TRUE_NEUTRAL,
     )
     experience_points = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
-    # OUR CHANGES: Feats
+    
     feats = models.ManyToManyField(Feat, blank=True, related_name='characters')
 
     # Abilities
@@ -383,12 +365,36 @@ class Character(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
 
+    @property
+    def total_strength(self):
+        return self.strength + self.get_racial_bonus('strength')
+
+    @property
+    def total_dexterity(self):
+        return self.dexterity + self.get_racial_bonus('dexterity')
+    
+    @property
+    def total_constitution(self):
+        return self.constitution + self.get_racial_bonus('constitution')
+
+    @property
+    def total_intelligence(self):
+        return self.intelligence + self.get_racial_bonus('intelligence')
+
+    @property
+    def total_wisdom(self):
+        return self.wisdom + self.get_racial_bonus('wisdom')
+
+    @property
+    def total_charisma(self):
+        return self.charisma + self.get_racial_bonus('charisma')
+
     def save(self, *args, **kwargs):
         is_new = self.pk is None
         self.armor_class = self.total_armor_class
         self.initiative = self.calculate_initiative
 
-        # OUR CHANGES: Speed from database
+        # Speed from database
         if self.race:
             self.speed = self.race.speed
 
@@ -400,7 +406,7 @@ class Character(models.Model):
             except Character.DoesNotExist:
                 pass
 
-        # OUR CHANGES: Hit Dice from database
+        # Hit Dice from database
         self.hit_dice = self.calculate_hit_dice
         
         if not self.hit_points: 
@@ -428,12 +434,18 @@ class Character(models.Model):
                         quantity=eq.quantity
                     )
 
+    def get_racial_bonus(self, ability_name: str) -> int:
+        """Returns the racial modifier for a given ability score."""
+        if not self.race:
+            return 0
+        modifier_obj = self.race.modifiers.filter(ability=ability_name.lower()).first()
+        return modifier_obj.modifier if modifier_obj else 0
+
     @property
     def calculate_initiative(self):
         dex_mod = (self.dexterity - 10) // 2
         return dex_mod
     
-    # OUR CHANGES: Data-driven Hit Dice
     @property
     def calculate_hit_dice(self):
         if self.character_class:
@@ -453,14 +465,13 @@ class Character(models.Model):
         con_mod = (self.constitution - 10) // 2
         char_class_name = self.character_class.name.lower() if self.character_class else ""
         
-        # Improved AC logic
         ac = 10 + dex_mod
         if self.character_class and self.character_class.unarmored_bonus_ability:
              bonus_stat = self.character_class.unarmored_bonus_ability
              ac += self.get_ability_modifier(bonus_stat)
-        elif char_class_name == "monk": # Fallback for legacy code
+        elif char_class_name == "monk": # Fallback
              ac += wis_mod
-        elif char_class_name == "barbarian": # Fallback for legacy code
+        elif char_class_name == "barbarian": # Fallback
              ac += con_mod
         return ac
 
@@ -490,7 +501,6 @@ class Character(models.Model):
             return Skill.objects.none()
         return Skill.objects.filter(backgroundskillproficiency__background=self.background)
     
-    # Helper method from main (kept as it is useful)
     def get_class_features(self):
         if not self.character_class:
             return ClassFeature.objects.none()
@@ -503,7 +513,7 @@ class Character(models.Model):
             Q(subclass=self.subclass)
         ).order_by('unlock_level')
 
-    # --- SPELL LOGIC (DATA DRIVEN - OURS) ---
+    # --- SPELL LOGIC (DATA DRIVEN) ---
 
     @property
     def max_cantrips_known(self):
@@ -567,7 +577,6 @@ class Character(models.Model):
     def __str__(self):
         return f"{self.character_name} ({self.character_class} Lvl {self.level})"
     
-    # MAIN CHANGES: Kept constraints
     class Meta:
         ordering = ['created_at']
         constraints = [

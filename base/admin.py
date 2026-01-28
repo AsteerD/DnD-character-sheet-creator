@@ -4,7 +4,7 @@ from .models import (
     ClassSpell, Item, InventoryItem, Background, BackgroundStartingEquipment, 
     Skill, Tool, BackgroundSkillProficiency, BackgroundToolProficiency, 
     CharacterSkillProficiency, ClassSkillChoice, ClassFeature, Feat,
-    Race, ClassSpellProgression  
+    Race, ClassSpellProgression, RaceModifier
 )
 
 # Register your models here.
@@ -28,4 +28,5 @@ admin.site.register(ClassSkillChoice)
 admin.site.register(ClassFeature)
 admin.site.register(Feat)
 admin.site.register(Race)                  
-admin.site.register(ClassSpellProgression) 
+admin.site.register(ClassSpellProgression)
+admin.site.register(RaceModifier)

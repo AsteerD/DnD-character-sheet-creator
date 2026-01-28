@@ -34,12 +34,12 @@
       <tr><th>Background</th><td>{% if character.get_background_display %}{{ character.get_background_display }}{% else %}{{ character.background }}{% endif %}</td></tr>
       <tr><th>Alignment</th><td>{% if character.get_alignment_display %}{{ character.get_alignment_display }}{% else %}{{ character.alignment }}{% endif %}</td></tr>
       <tr><th>Experience points</th><td>{{ character.experience_points|default:'-' }}</td></tr>
-      <tr><th>Strength</th><td>{{ character.strength }}</td></tr>
-      <tr><th>Dexterity</th><td>{{ character.dexterity }}</td></tr>
-      <tr><th>Constitution</th><td>{{ character.constitution }}</td></tr>
-      <tr><th>Intelligence</th><td>{{ character.intelligence }}</td></tr>
-      <tr><th>Wisdom</th><td>{{ character.wisdom }}</td></tr>
-      <tr><th>Charisma</th><td>{{ character.charisma }}</td></tr>
+      <tr><th>Strength</th><td>{{ character.total_strength }}</td></tr>
+      <tr><th>Dexterity</th><td>{{ character.total_dexterity }}</td></tr>
+      <tr><th>Constitution</th><td>{{ character.total_constitution }}</td></tr>
+      <tr><th>Intelligence</th><td>{{ character.total_intelligence }}</td></tr>
+      <tr><th>Wisdom</th><td>{{ character.total_wisdom }}</td></tr>
+      <tr><th>Charisma</th><td>{{ character.total_charisma }}</td></tr>
       <tr><th>Armor Class</th><td>{{ character.armor_class }}</td></tr>
       <tr><th>Initiative</th><td>{{ character.initiative }}</td></tr>
       <tr><th>Speed</th><td>{{ character.speed }}</td></tr>

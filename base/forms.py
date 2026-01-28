@@ -43,11 +43,7 @@ class CharacterForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        if self.instance.pk and self.instance.character_class:
-            self.fields['subclass'].queryset = Subclass.objects.filter(
-                character_class=self.instance.character_class
-            )
-        elif 'character_class' in self.data:
+        if 'character_class' in self.data:
             try:
                 class_id = int(self.data.get('character_class'))
                 self.fields['subclass'].queryset = Subclass.objects.filter(
@@ -55,18 +51,23 @@ class CharacterForm(forms.ModelForm):
                 )
             except (ValueError, TypeError):
                 self.fields['subclass'].queryset = Subclass.objects.none()
+        elif self.instance.pk and self.instance.character_class:
+            self.fields['subclass'].queryset = Subclass.objects.filter(
+                character_class=self.instance.character_class
+            )
         else:
             self.fields['subclass'].queryset = Subclass.objects.all()
 
         char_class = None
-        if self.instance.pk and self.instance.character_class:
-            char_class = self.instance.character_class
-        elif 'character_class' in self.data:
+
+        if 'character_class' in self.data:
             try:
                 class_id = int(self.data.get('character_class'))
                 char_class = CharacterClass.objects.get(pk=class_id)
             except (ValueError, TypeError, CharacterClass.DoesNotExist):
                 char_class = None
+        elif self.instance.pk and self.instance.character_class:
+            char_class = self.instance.character_class
         else:
             char_class = CharacterClass.objects.first()
 
@@ -74,7 +75,7 @@ class CharacterForm(forms.ModelForm):
             self.fields['skills'].queryset = Skill.objects.filter(
                 classskillchoice__character_class=char_class
             )
-            if self.instance.pk:
+            if self.instance.pk and 'character_class' not in self.data:
                 self.fields['skills'].initial = (
                     self.instance.characterskillproficiency_set.values_list('skill_id', flat=True)
                 )

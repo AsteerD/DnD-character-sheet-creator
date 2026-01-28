@@ -1,6 +1,6 @@
 from django.urls import path
-from django.contrib.auth.views import LogoutView
 from . import views
+from django.contrib.auth.views import LogoutView
 
 urlpatterns = [
     path('login/', views.CustomLoginView.as_view(), name='login'),
@@ -15,6 +15,7 @@ urlpatterns = [
     
     path('character/<int:pk>/spells/', views.character_spells, name='character_spells'),
     
+    # AJAX Paths
     path('ajax/subclasses/', views.subclasses_for_class, name='subclasses_for_class'),
     path('skills-for-class/', views.skills_for_class, name='skills_for_class'),
 ]

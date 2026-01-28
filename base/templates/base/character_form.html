@@ -1,10 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+
 <h1>
   {% if form.instance.pk %}Edit Character{% else %}Create Character{% endif %}
 </h1>
 
 <form method="POST" action="">
   {% csrf_token %}
-  
+
   <button type="submit">
     {% if form.instance.pk %}Save{% else %}Create{% endif %}
   </button>
@@ -81,3 +85,5 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+
+{% endblock %}

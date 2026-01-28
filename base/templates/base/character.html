@@ -1,9 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+
 <h1>Character detail: {{ character.character_name }}</h1>
 
 {% if character %}
 <div class="mb-3">
     <a href="{% url 'character-update' character.pk %}" class="btn btn-sm btn-outline-primary">Edit</a>
-    
+
     <a href="{% url 'character-delete' character.pk %}" class="btn btn-sm btn-outline-danger">Delete</a>
 
     {% if character.character_class.spells.exists %}
@@ -160,15 +164,15 @@
 <h2 style="margin-top: 40px;">Spellbook</h2>
 
 {% if character.spells.exists %}
-    
+
     {% regroup character.spells.all|dictsort:"level" by level as spell_levels %}
 
     {% for level_group in spell_levels %}
         <h4 style="margin-top: 20px; color: #444;">
-            {% if level_group.grouper == 0 %} 
+            {% if level_group.grouper == 0 %}
                 🔮 Cantrips (0 Level)
-            {% else %} 
-                ⚡ Level {{ level_group.grouper }} 
+            {% else %}
+                ⚡ Level {{ level_group.grouper }}
             {% endif %}
         </h4>
 
@@ -202,7 +206,7 @@
 
 {% else %}
     {% if character.character_class.spells.exists %}
-        <p>This character knows magic but hasn't prepared any spells yet. 
+        <p>This character knows magic but hasn't prepared any spells yet.
            <a href="{% url 'character_spells' character.pk %}">Click here to manage spells.</a>
         </p>
     {% else %}
@@ -212,3 +216,5 @@
 {% else %}
   <p>Character not found.</p>
 {% endif %}
+
+{% endblock %}

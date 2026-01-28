@@ -156,7 +156,23 @@
 {% else %}
   <p>This class has no features defined.</p>
 {% endif %}
-
+<h2 style="margin-top: 40px;">Feats</h2>
+{% if character.feats.all %}
+    <ul style="list-style-type: disc; padding-left: 20px;">
+    {% for feat in character.feats.all %}
+        <li style="margin-bottom: 10px;">
+            <strong>{{ feat.name }}</strong>
+            {% if feat.prerequisite %}
+                <span style="color: #666; font-size: 0.9em;">(Prereq: {{ feat.prerequisite }})</span>
+            {% endif %}
+            <br>
+            {{ feat.description }}
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No feats selected.</p>
+{% endif %}
 <h2 style="margin-top: 40px;">Spellbook</h2>
 
 {% if character.spells.exists %}

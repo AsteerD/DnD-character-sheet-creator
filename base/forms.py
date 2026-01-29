@@ -1,6 +1,6 @@
 # base/forms.py
 from django import forms
-from .models import Character, Skill, Subclass, CharacterClass, Spell
+from .models import Character, Skill, Subclass, CharacterClass, Spell, Feat
 from django.core.exceptions import ValidationError
 
 class CharacterForm(forms.ModelForm):
@@ -9,6 +9,12 @@ class CharacterForm(forms.ModelForm):
         required=False,
         widget=forms.CheckboxSelectMultiple,
         label="Class Skill Proficiencies"
+    )
+    feats = forms.ModelMultipleChoiceField(
+        queryset=Feat.objects.all(),
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+        label="Feats"
     )
 
     class Meta:
@@ -32,6 +38,30 @@ class CharacterForm(forms.ModelForm):
             'inspiration',
             'languages',
         ]
+        
+    def clean_feats(self):
+        feats = self.cleaned_data.get('feats')
+        # Pobieramy level z formularza, a jeśli go nie ma (bo błąd), bierzemy z instancji lub 1
+        level = self.cleaned_data.get('level')
+        
+        if not level:
+            level = self.instance.level if self.instance.pk else 1
+            
+        try:
+            level = int(level)
+        except (ValueError, TypeError):
+            level = 1
+
+        # Logika: 1 feat co 4 levele
+        max_feats = level // 4
+        selected_count = len(feats) if feats else 0
+
+        if selected_count > max_feats:
+            raise ValidationError(
+                f"Za dużo atutów (Feats)! Na poziomie {level} możesz mieć maksymalnie {max_feats}, a wybrano {selected_count}."
+            )
+        
+        return feats
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

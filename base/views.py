@@ -101,21 +101,22 @@ class CharacterCreate(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.user = self.request.user
         response = super().form_valid(form)
-        self._save_skills(form)
+        # Wywołujemy nową metodę zapisującą i skille i featy
+        self._save_m2m(form)
         return response
 
-    def _save_skills(self, form):
+    def _save_m2m(self, form):
         from .models import CharacterSkillProficiency
-
-        CharacterSkillProficiency.objects.filter(
-            character=self.object
-        ).delete()
-
+        CharacterSkillProficiency.objects.filter(character=self.object).delete()
+        
         for skill in form.cleaned_data.get("skills", []):
             CharacterSkillProficiency.objects.create(
                 character=self.object,
                 skill=skill
             )
+
+        self.object.feats.set(form.cleaned_data.get("feats", []))
+
 
 class CharacterUpdate(LoginRequiredMixin, UpdateView):
     model = Character
@@ -125,21 +126,22 @@ class CharacterUpdate(LoginRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        self._save_skills(form)
+        self._save_m2m(form)
         return response
 
-    def _save_skills(self, form):
+    def _save_m2m(self, form):
         from .models import CharacterSkillProficiency
-
-        CharacterSkillProficiency.objects.filter(
-            character=self.object
-        ).delete()
-
+        
+        # Skills
+        CharacterSkillProficiency.objects.filter(character=self.object).delete()
         for skill in form.cleaned_data.get("skills", []):
             CharacterSkillProficiency.objects.create(
                 character=self.object,
                 skill=skill
             )
+            
+        # Feats
+        self.object.feats.set(form.cleaned_data.get("feats", []))
 
 class CharacterDelete(LoginRequiredMixin, DeleteView):
     model = Character

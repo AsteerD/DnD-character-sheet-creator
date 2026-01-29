@@ -38,7 +38,13 @@ class RaceModifier(models.Model):
 
     def __str__(self):
         return f"{self.race.name}: {self.ability} {self.modifier:+d}"
+
+class Feat(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField()
     
+    def __str__(self):
+        return self.name
 class Language(models.Model):
     name = models.CharField(max_length=100)
 
@@ -180,7 +186,7 @@ class Character(models.Model):
     languages = models.ManyToManyField(Language, blank=True)
     
     spells = models.ManyToManyField(Spell, blank=True, related_name='learned_by_characters')
-
+    feats = models.ManyToManyField(Feat, blank=True, related_name='characters')
     created_at = models.DateTimeField(auto_now_add=True)
 
     @property
@@ -310,6 +316,10 @@ class Character(models.Model):
         if self.character_class and self.character_class.name in class_hit_dice:
             return class_hit_dice[self.character_class.name]
         return 8
+    
+    @property
+    def max_feats_known(self):
+        return self.level // 4
     
     @property
     def calculate_hit_points(self):

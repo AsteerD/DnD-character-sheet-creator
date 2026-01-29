@@ -13,7 +13,7 @@ class CharacterForm(forms.ModelForm):
     feats = forms.ModelMultipleChoiceField(
         queryset=Feat.objects.all(),
         required=False,
-        widget=forms.CheckboxSelectMultiple,  # <--- TO MUSI TU BYĆ
+        widget=forms.CheckboxSelectMultiple,
         label="Feats"
     )
 
@@ -38,6 +38,30 @@ class CharacterForm(forms.ModelForm):
             'inspiration',
             'languages',
         ]
+        
+    def clean_feats(self):
+        feats = self.cleaned_data.get('feats')
+        # Pobieramy level z formularza, a jeśli go nie ma (bo błąd), bierzemy z instancji lub 1
+        level = self.cleaned_data.get('level')
+        
+        if not level:
+            level = self.instance.level if self.instance.pk else 1
+            
+        try:
+            level = int(level)
+        except (ValueError, TypeError):
+            level = 1
+
+        # Logika: 1 feat co 4 levele
+        max_feats = level // 4
+        selected_count = len(feats) if feats else 0
+
+        if selected_count > max_feats:
+            raise ValidationError(
+                f"Za dużo atutów (Feats)! Na poziomie {level} możesz mieć maksymalnie {max_feats}, a wybrano {selected_count}."
+            )
+        
+        return feats
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -130,29 +154,36 @@ class SpellSelectionForm(forms.ModelForm):
             self.fields['spells'].label = ""
 
     def clean(self):
-        super().clean()
-        self.validate_feats()
-
-    def validate_feats(self):
-
-        feats = self.cleaned_data.get('feats')
-        level = self.cleaned_data.get('level')
+        cleaned_data = super().clean()
+        spells = cleaned_data.get('spells')
+        character = self.instance
         
-        if level is None:
-            if self.instance and self.instance.pk:
-                level = self.instance.level
-            else:
-                level = 1 
+        if not spells or not character:
+            return cleaned_data
+
+        # Split selection into Cantrips and Spells
+        cantrips_selected = [s for s in spells if s.level == 0]
+        leveled_spells_selected = [s for s in spells if s.level > 0]
         
-        try:
-            level = int(level)
-        except (ValueError, TypeError):
-            level = 1
+        c_count = len(cantrips_selected)
+        s_count = len(leveled_spells_selected)
 
-        max_feats = level // 4
-        selected_count = len(feats) if feats else 0
+        # --- 1. VALIDATE CANTRIPS ---
+        # Call the model property instead of using a local table
+        max_cantrips = character.max_cantrips_known 
 
-        print(f"DEBUG: Checking Feats. Level: {level}, Max: {max_feats}, Selected: {selected_count}")
+        if max_cantrips > 0 and c_count > max_cantrips:
+            self.add_error('spells', f"Too many Cantrips selected! You can have max {max_cantrips}, but you selected {c_count}.")
 
-        if feats and selected_count > max_feats:
-            self.add_error('feats', f"Too many Feats! At level {level}, you can have max {max_feats} feats.")
+        # --- 2. VALIDATE LEVELED SPELLS ---
+        # Call the model property instead of calculating it here
+        max_spells, limit_type = character.max_spells_known
+
+        if max_spells > 0 and s_count > max_spells:
+            self.add_error(
+                'spells', 
+                f"Too many Spells selected! As a lvl {character.level} {character.character_class.name}, "
+                f"you can have max {max_spells} Spells {limit_type}. You selected {s_count}."
+            )
+            
+        return cleaned_data

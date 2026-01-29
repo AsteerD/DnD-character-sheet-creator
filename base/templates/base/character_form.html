@@ -9,29 +9,7 @@
     {% if form.instance.pk %}Save{% else %}Create{% endif %}
   </button>
 
-  {% for field in form %}
-    {% if field.name != 'feats' and field.name != 'skills' %}
-      <p>
-        {{ field.label_tag }} {{ field }}
-        {{ field.errors }}
-      </p>
-    {% endif %}
-  {% endfor %}
-
-  <p>
-    <label><strong>Feats:</strong></label>
-    <div style="max-height: 200px; overflow-y: scroll; border: 1px solid #ccc; padding: 5px;">
-      {{ form.feats }}
-    </div>
-    <small>You gain 1 feat for every 4 character levels.</small>
-  </p>
-
-  <p>
-    <label><strong>Class Skill Proficiencies:</strong></label>
-    <div id="id_skills">
-      {{ form.skills }}
-    </div>
-  </p>
+  {{ form.as_p }}
 
   <button type="submit">
     {% if form.instance.pk %}Save{% else %}Create{% endif %}

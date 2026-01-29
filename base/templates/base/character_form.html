@@ -116,27 +116,33 @@ document.addEventListener("DOMContentLoaded", () => {
 const classSelect = document.getElementById("id_character_class");
 const subclassSelect = document.getElementById("id_subclass");
 
-classSelect.addEventListener("change", function () {
-    const classId = this.value;
+// Obsługa Podklas
+if (classSelect) {
+    classSelect.addEventListener("change", function () {
+        const classId = this.value;
 
-    subclassSelect.innerHTML = "<option value=''>---------</option>";
+        if (subclassSelect) {
+            subclassSelect.innerHTML = "<option value=''>---------</option>";
 
-    if (!classId) return;
+            if (!classId) return;
 
-    fetch(`/ajax/subclasses/?class_id=${classId}`)
-        .then(res => res.json())
-        .then(data => {
-            data.forEach(subclass => {
-                const opt = document.createElement("option");
-                opt.value = subclass.id;
-                opt.textContent = subclass.name;
-                subclassSelect.appendChild(opt);
-            });
-        });
-});
+            fetch(`/ajax/subclasses/?class_id=${classId}`)
+                .then(res => res.json())
+                .then(data => {
+                    data.forEach(subclass => {
+                        const opt = document.createElement("option");
+                        opt.value = subclass.id;
+                        opt.textContent = subclass.name;
+                        subclassSelect.appendChild(opt);
+                    });
+                });
+        }
+    });
+}
 </script>
 
 <script>
+// Obsługa Skilli
 document.addEventListener('DOMContentLoaded', function() {
     const classSelect = document.getElementById('id_character_class');
     const skillsContainer = document.querySelector('#id_skills');
@@ -162,16 +168,18 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-    classSelect.addEventListener('change', function() {
-        const selectedClass = this.value;
-        if (selectedClass) {
-            updateSkills(selectedClass);
-        }
-    });
+    if (classSelect) {
+        classSelect.addEventListener('change', function() {
+            const selectedClass = this.value;
+            if (selectedClass) {
+                updateSkills(selectedClass);
+            }
+        });
 
-    // Optional: trigger update on page load if class already selected
-    if (classSelect.value) {
-        updateSkills(classSelect.value);
+        // Trigger update on page load if class already selected
+        if (classSelect.value) {
+            updateSkills(classSelect.value);
+        }
     }
 });
 </script>

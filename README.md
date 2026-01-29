@@ -36,6 +36,7 @@ Open http://127.0.0.1:8000/ to view the app and http://127.0.0.1:8000/admin/ for
 - Open shell: `python manage.py shell`
 - Collect static (production): `python manage.py collectstatic`
 - Run tests: `python manage.py test`
+- Generate ERD diagram: `./manage.py graph_models -a -g -o docs/ERD.png`
 
 ## Configuration notes
 

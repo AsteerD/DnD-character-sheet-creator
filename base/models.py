@@ -173,9 +173,7 @@ class Character(models.Model):
     charisma = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(30)])
     
     # Derived stats
-    armor_class = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(100)], blank=True, editable=False, default=10)
     initiative = models.IntegerField()
-    speed = models.IntegerField(validators=[MinValueValidator(1)])
     hit_points = models.IntegerField(validators=[MinValueValidator(1)])
     temporary_hit_points = models.IntegerField(validators=[MinValueValidator(0)])
     hit_dice = models.IntegerField(validators=[MinValueValidator(1)])
@@ -215,14 +213,9 @@ class Character(models.Model):
 
     def save(self, *args, **kwargs):
         is_new = self.pk is None
-        if self.speed is None and self.race:
-            self.speed = self.race.speed
-        self.armor_class = self.total_armor_class
         self.initiative = self.calculate_initiative
         self.hit_dice = self.calculate_hit_dice
 
-        if self.speed is None:
-            raise ValueError("Internal Error: code 1")
 
         if not is_new:
             try:
@@ -326,25 +319,108 @@ class Character(models.Model):
         con_mod = (self.constitution - 10) // 2
         hit_die = self.calculate_hit_dice
         return hit_die + con_mod + ( (self.level - 1) * ( (hit_die // 2) + 1 + con_mod ) )
-
+    
     @property
-    def total_armor_class(self):
-        dex_mod = (self.dexterity - 10) // 2
-        wis_mod = (self.wisdom - 10) // 2
-        con_mod = (self.constitution - 10) // 2
-        char_class = self.character_class.name.lower() if self.character_class else ""
-        if char_class == "monk":
-            return 10 + dex_mod + wis_mod
-        elif char_class == "barbarian":
-            return 10 + dex_mod + con_mod
-        return 10 + dex_mod
+    def armor_class(self):
         """
-        Calculates total Armor Class (AC) based on character class and features.
-        Default: 10 + DEX mod
-        Monk: 10 + DEX mod + WIS mod (if not wearing armor)
-        Barbarian: 10 + DEX mod + CON mod (if not wearing armor)
-        Extend as needed for other classes/features.
-        """       
+        Best AC from:
+        - Armor + Shield
+        - Class/Subclass formulas (no shield)
+        - Flat bonuses
+        """
+
+        dex_mod = self.get_ability_modifier("dexterity")
+        wis_mod = self.get_ability_modifier("wisdom")
+        con_mod = self.get_ability_modifier("constitution")
+        int_mod = self.get_ability_modifier("intelligence")
+
+        possible_acs = []
+
+        # -----------------------------
+        # 1) Default unarmored
+        # -----------------------------
+        possible_acs.append((10 + dex_mod, None))
+
+        # -----------------------------
+        # 2) Detect shield
+        # -----------------------------
+        shield_bonus = 0
+        for inv in self.inventory.select_related("item__shield"):
+            shield = getattr(inv.item, "shield", None)
+            if shield:
+                shield_bonus = max(shield_bonus, shield.ac_bonus)
+
+        # -----------------------------
+        # 3) Armor AC (shield allowed)
+        # -----------------------------
+        for inv in self.inventory.select_related("item__armor"):
+            armor = getattr(inv.item, "armor", None)
+            if not armor:
+                continue
+
+            ac = armor.base_ac
+
+            if armor.adds_dex:
+                if armor.max_dex_bonus is not None:
+                    ac += min(dex_mod, armor.max_dex_bonus)
+                else:
+                    ac += dex_mod
+
+            ac += shield_bonus
+            possible_acs.append((ac, armor))
+
+        # -----------------------------
+        # 4) Class / Subclass formulas
+        # -----------------------------
+        if self.character_class:
+            formulas = ArmorClassFormula.objects.filter(
+                character_class=self.character_class,
+                min_level__lte=self.level
+            )
+
+            for f in formulas:
+                # Skip subclass-specific rows that don't match
+                if f.subclass and f.subclass != self.subclass:
+                    continue
+
+                ac = f.base
+                if f.use_dex:
+                    ac += dex_mod
+                if f.use_wis:
+                    ac += wis_mod
+                if f.use_con:
+                    ac += con_mod
+                if f.use_int:
+                    ac += int_mod
+
+                possible_acs.append((ac, None))
+
+        # -----------------------------
+        # 5) Flat bonuses
+        # -----------------------------
+        flat_bonus = 0
+
+        if self.character_class:
+            bonuses = ArmorClassBonus.objects.filter(
+                character_class=self.character_class,
+                min_level__lte=self.level
+            )
+
+            for b in bonuses:
+                if b.subclass and b.subclass != self.subclass:
+                    continue
+                flat_bonus += b.flat_bonus
+
+        possible_acs = [(ac + flat_bonus, src) for ac, src in possible_acs]
+
+        # -----------------------------
+        best_ac, source = max(possible_acs, key=lambda x: x[0])
+
+        # store source for other methods
+        self._ac_source_armor = source
+
+        return best_ac
+
     @property
     def proficiency_bonus(self):
         return 2 + (self.level - 1) // 4
@@ -383,6 +459,22 @@ class Character(models.Model):
             Q(subclass__isnull=True) |
             Q(subclass=self.subclass)
         ).order_by('unlock_level')
+    
+    @property
+    def speed(self):
+        # Ensure AC source is known
+        if not hasattr(self, "_ac_source_armor"):
+            _ = self.armor_class
+
+        base = self.race.speed if self.race else 0
+        armor = self._ac_source_armor
+
+        # Heavy armor STR requirement rule
+        if armor and armor.str_requirement:
+            if self.total_strength < armor.str_requirement:
+                return max(0, base - 10)
+
+        return base
 
 # --- SPELL LOGIC START ---
 
@@ -479,8 +571,6 @@ class Character(models.Model):
             models.CheckConstraint(condition=models.Q(intelligence__gte=1) & models.Q(intelligence__lte=30), name='intelligence_range'),
             models.CheckConstraint(condition=models.Q(wisdom__gte=1) & models.Q(wisdom__lte=30), name='wisdom_range'),
             models.CheckConstraint(condition=models.Q(charisma__gte=1) & models.Q(charisma__lte=30), name='charisma_range'),
-            models.CheckConstraint(condition=models.Q(armor_class__gte=1) & models.Q(armor_class__lte=100), name='armor_class_range'),
-            models.CheckConstraint(condition=models.Q(speed__gte=1), name='speed_minimum'),
             models.CheckConstraint(condition=models.Q(hit_points__gte=1), name='hit_points_minimum'),
             models.CheckConstraint(condition=models.Q(temporary_hit_points__gte=0), name='temporary_hit_points_minimum'),
             models.CheckConstraint(condition=models.Q(hit_dice__gte=1), name='hit_dice_minimum'),
@@ -505,6 +595,37 @@ class Subclass(models.Model):
 
     def __str__(self):
         return f"{self.character_class}: {self.name}"
+    
+class ArmorClassFormula(models.Model):
+    character_class = models.ForeignKey(
+        CharacterClass, null=True, blank=True, on_delete=models.CASCADE
+    )
+    subclass = models.ForeignKey(
+        Subclass, null=True, blank=True, on_delete=models.CASCADE
+    )
+
+    min_level = models.IntegerField(default=1)
+
+    base = models.IntegerField(default=10)
+
+    use_dex = models.BooleanField(default=True)
+    use_wis = models.BooleanField(default=False)
+    use_con = models.BooleanField(default=False)
+    use_int = models.BooleanField(default=False)
+
+
+class ArmorClassBonus(models.Model):
+    character_class = models.ForeignKey(
+        CharacterClass, null=True, blank=True, on_delete=models.CASCADE
+    )
+    subclass = models.ForeignKey(
+        Subclass, null=True, blank=True, on_delete=models.CASCADE
+    )
+
+    min_level = models.IntegerField(default=1)
+
+    flat_bonus = models.IntegerField()
+
     
 class ClassFeature(models.Model):
     character_class = models.ForeignKey(
@@ -583,6 +704,41 @@ class InventoryItem(models.Model):
 
     def __str__(self):
         return f"{self.item.name} (x{self.quantity})"
+    
+class Armor(models.Model):
+    item = models.OneToOneField(
+        Item,
+        on_delete=models.CASCADE,
+        related_name="armor"
+    )
+
+    LIGHT = "light"
+    MEDIUM = "medium"
+    HEAVY = "heavy"
+
+    ARMOR_TYPE_CHOICES = [
+        (LIGHT, "Light"),
+        (MEDIUM, "Medium"),
+        (HEAVY, "Heavy"),
+    ]
+
+    armor_type = models.CharField(max_length=10, choices=ARMOR_TYPE_CHOICES)
+
+    base_ac = models.IntegerField()
+    adds_dex = models.BooleanField(default=True)
+    max_dex_bonus = models.IntegerField(null=True, blank=True)
+
+    str_requirement = models.IntegerField(null=True, blank=True)
+
+
+class Shield(models.Model):
+    item = models.OneToOneField(
+        Item,
+        on_delete=models.CASCADE,
+        related_name="shield"
+    )
+
+    ac_bonus = models.IntegerField(default=2)
     
 class BackgroundStartingEquipment(models.Model):
     background = models.ForeignKey(Background, on_delete=models.CASCADE, related_name='starting_equipment')

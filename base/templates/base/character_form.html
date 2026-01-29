@@ -9,7 +9,29 @@
     {% if form.instance.pk %}Save{% else %}Create{% endif %}
   </button>
 
-  {{ form.as_p }}
+  {% for field in form %}
+    {% if field.name != 'feats' and field.name != 'skills' %}
+      <p>
+        {{ field.label_tag }} {{ field }}
+        {{ field.errors }}
+      </p>
+    {% endif %}
+  {% endfor %}
+
+  <p>
+    <label><strong>Feats:</strong></label>
+    <div style="max-height: 200px; overflow-y: scroll; border: 1px solid #ccc; padding: 5px;">
+      {{ form.feats }}
+    </div>
+    <small>You gain 1 feat for every 4 character levels.</small>
+  </p>
+
+  <p>
+    <label><strong>Class Skill Proficiencies:</strong></label>
+    <div id="id_skills">
+      {{ form.skills }}
+    </div>
+  </p>
 
   <button type="submit">
     {% if form.instance.pk %}Save{% else %}Create{% endif %}
@@ -22,27 +44,33 @@
 const classSelect = document.getElementById("id_character_class");
 const subclassSelect = document.getElementById("id_subclass");
 
-classSelect.addEventListener("change", function () {
-    const classId = this.value;
+// Obsługa Podklas
+if (classSelect) {
+    classSelect.addEventListener("change", function () {
+        const classId = this.value;
 
-    subclassSelect.innerHTML = "<option value=''>---------</option>";
+        if (subclassSelect) {
+            subclassSelect.innerHTML = "<option value=''>---------</option>";
 
-    if (!classId) return;
+            if (!classId) return;
 
-    fetch(`/ajax/subclasses/?class_id=${classId}`)
-        .then(res => res.json())
-        .then(data => {
-            data.forEach(subclass => {
-                const opt = document.createElement("option");
-                opt.value = subclass.id;
-                opt.textContent = subclass.name;
-                subclassSelect.appendChild(opt);
-            });
-        });
-});
+            fetch(`/ajax/subclasses/?class_id=${classId}`)
+                .then(res => res.json())
+                .then(data => {
+                    data.forEach(subclass => {
+                        const opt = document.createElement("option");
+                        opt.value = subclass.id;
+                        opt.textContent = subclass.name;
+                        subclassSelect.appendChild(opt);
+                    });
+                });
+        }
+    });
+}
 </script>
 
 <script>
+// Obsługa Skilli
 document.addEventListener('DOMContentLoaded', function() {
     const classSelect = document.getElementById('id_character_class');
     const skillsContainer = document.querySelector('#id_skills');
@@ -68,16 +96,18 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-    classSelect.addEventListener('change', function() {
-        const selectedClass = this.value;
-        if (selectedClass) {
-            updateSkills(selectedClass);
-        }
-    });
+    if (classSelect) {
+        classSelect.addEventListener('change', function() {
+            const selectedClass = this.value;
+            if (selectedClass) {
+                updateSkills(selectedClass);
+            }
+        });
 
-    // Optional: trigger update on page load if class already selected
-    if (classSelect.value) {
-        updateSkills(classSelect.value);
+        // Trigger update on page load if class already selected
+        if (classSelect.value) {
+            updateSkills(classSelect.value);
+        }
     }
 });
 </script>

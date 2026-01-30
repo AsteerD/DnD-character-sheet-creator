@@ -29,7 +29,6 @@
 
 <p><a href="{% url 'characters' %}">Back to list</a></p>
 
-<!-- Set initial skill numeric values to 8. -->
 <script type="module">
 document.addEventListener("DOMContentLoaded", () => {
     const basePoints = 27;
@@ -37,13 +36,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const maxScore = 15;
     const counterEl = document.getElementById("point-buy-counter");
     
-    // Pobieramy pola
     const stats = [
         "strength", "dexterity", "constitution", 
         "intelligence", "wisdom", "charisma"
     ].map(name => document.getElementById(`id_${name}`)).filter(Boolean);
 
-    // Koszty
     const getCost = (score) => {
         if (score <= 8) return 0;
         if (score === 9) return 1;
@@ -61,7 +58,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         stats.forEach(el => {
             let val = parseInt(el.value) || 0;
-            // Wizualne ograniczenia (backend i tak to sprawdzi)
             if (val < minScore) val = minScore; 
             
             if (val > maxScore) {
@@ -87,7 +83,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
-    // Podpięcie zdarzeń
     stats.forEach(el => {
         el.type = "number";
         el.min = minScore;
@@ -100,16 +95,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const container = document.getElementById("point-buy-container");
     const strengthInput = document.getElementById("id_strength");
     
-    // Szukamy inputa Strength, a potem jego rodzica (tag <p> generowany przez as_p)
     if (container && strengthInput) {
         const strengthParagraph = strengthInput.closest("p");
         if (strengthParagraph) {
-            // Wstawiamy kontener PRZED paragrafem z siłą
+
             strengthParagraph.parentNode.insertBefore(container, strengthParagraph);
         }
     }
 
-    // Pierwsze przeliczenie
     updatePointBuy();
 });
 </script>

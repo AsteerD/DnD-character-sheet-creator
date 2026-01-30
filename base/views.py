@@ -65,7 +65,7 @@ class CharacterDetail(LoginRequiredMixin, DetailView):
         # Inventory
         inventory = character.inventory.all()
         context['inventory'] = inventory
-        context['current_ac'] = character.total_armor_class
+        context['current_ac'] = character.armor_class
         context['total_weight'] = sum(
             item.item.weight * item.quantity for item in inventory
         )

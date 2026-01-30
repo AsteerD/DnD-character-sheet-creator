@@ -18,4 +18,5 @@ urlpatterns = [
     path('character-delete/<int:pk>/', CharacterDelete.as_view(), name='character-delete'),
     path("ajax/subclasses/", views.subclasses_for_class, name="subclasses_for_class"),
     path('character/<int:pk>/spells/', character_spells, name='character_spells'),
+    path('api/skills-for-class/', views.skills_for_class, name='skills_for_class'),
 ]

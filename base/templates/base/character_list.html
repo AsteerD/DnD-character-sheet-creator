@@ -1,45 +1,87 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block content %}
+
 {% if request.user.is_authenticated %}
-	<p>{{ request.user}}</p> 
-	<form method="post" action="{% url 'logout' %}">
-  		{% csrf_token %}
-  		<button type="submit">Logout</button>
-	</form>
+    <p>{{ request.user}}</p>
+
+    <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit">Logout</button>
+    </form>
 {% else %}
-	<a href="{% url 'login' %}">Login</a>
+    <a href="{% url 'login' %}">Login</a>
 {% endif %}
+
 <hr>
+
 <h1>My Characters</h1>
-<a href="{% url 'character-create' %}">Create New Character</a>
+
+<button onclick="window.location.href='/character-create'">Create Character</button>
 
 <form method="GET">
-	<input type="text" name="search" placeholder="Search characters..." value="{{search_input}}">
-	<button type="submit">Search</button>
+  <input type="text" name="search" placeholder="Search characters..." value="{{search_input}}">
+  <button type="submit">Search</button>
 </form>
 
 {% if characters %}
-	<table>
-		<thead>
-			<tr>
-				<th>Name</th>
-				<th>Class</th>
-				<th>Level</th>
-				<th></th>
-			</tr>
-		</thead>
-		<tbody>
-			{% for c in characters %}
-				<tr>
-					
-					<td><a href="{% url 'character' c.pk %}">{{ c.character_name }}</a></td>
-					<td>{% if c.get_character_class_display %}{{ c.get_character_class_display }}{% else %}{{ c.character_class }}{% endif %}</td>				
-					<td> &nbsp; {{ c.level }}</td>
-					<td><a href="{% url 'character-update' c.pk %}">Edit</a> | <a href="{% url 'character-delete' c.pk %}">Delete</a></td>
-				</tr>
-				
-			{% endfor %}
-		</tbody>
-	</table>
-	
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Race & Class</th>
+                <th>Level</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in characters %}
+                <tr>
+                    <td rowspan="2">{{ c.character_name }}</td>
+
+                    <!-- Race & Class -->
+                    <td>
+                      <table>
+                        <tbody>
+                          <tr>
+                            <td>
+                              <img class="character-list-table-image-small"
+                                   src="{% static 'pictures/races/' %}{{ c.race | lower }}.jpg"
+                                   alt="" />
+                            </td>
+                            <td>
+                              <img class="character-list-table-image-small"
+                                   src="{% static 'pictures/classes/' %}{{ c.character_class | lower }}.jpg"
+                                   alt="" />
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>{{ c.race }}</td>
+                            <td>{{ c.character_class }}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </td>
+
+                    <td> &nbsp; {{ c.level }}</td>
+                </tr>
+
+                <!-- Links -->
+                <tr>
+                    <td colspan="2">
+                      <a href="{% url 'character' c.pk %}">Details</a>
+                      |
+                      <a href="{% url 'character-update' c.pk %}">Edit</a>
+                      |
+                      <a href="{% url 'character-delete' c.pk %}">Delete</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% else %}
-	<p>No characters found.</p>
+    <p>No characters found.</p>
 {% endif %}
+
+{% endblock %}

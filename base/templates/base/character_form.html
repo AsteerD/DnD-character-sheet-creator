@@ -1,13 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+
 <h1>
   {% if form.instance.pk %}Edit Character{% else %}Create Character{% endif %}
 </h1>
 
 <form method="POST" action="">
   {% csrf_token %}
-  
+
   <button type="submit">
     {% if form.instance.pk %}Save{% else %}Create{% endif %}
   </button>
+
+
+<div id="point-buy-container" style="background: #e0d0b0; padding: 10px; border: 1px solid #8b6a3e; margin-bottom: 20px; text-align: center; border-radius: 4px;">
+    <strong>Point Buy Budget:</strong> 
+    <span id="point-buy-counter" style="font-weight: bold; font-size: 1.2em;">27</span> / 27
+    <br>
+</div>
 
   {{ form.as_p }}
 
@@ -17,6 +28,141 @@
 </form>
 
 <p><a href="{% url 'characters' %}">Back to list</a></p>
+
+<script type="module">
+document.addEventListener("DOMContentLoaded", () => {
+    const basePoints = 27;
+    const minScore = 8;
+    const maxScore = 15;
+    const counterEl = document.getElementById("point-buy-counter");
+    
+    const stats = [
+        "strength", "dexterity", "constitution", 
+        "intelligence", "wisdom", "charisma"
+    ].map(name => document.getElementById(`id_${name}`)).filter(Boolean);
+
+    const getCost = (score) => {
+        if (score <= 8) return 0;
+        if (score === 9) return 1;
+        if (score === 10) return 2;
+        if (score === 11) return 3;
+        if (score === 12) return 4;
+        if (score === 13) return 5;
+        if (score === 14) return 7;
+        if (score >= 15) return 9;
+        return 0;
+    };
+
+    const updatePointBuy = () => {
+        let totalSpent = 0;
+
+        stats.forEach(el => {
+            let val = parseInt(el.value) || 0;
+            if (val < minScore) val = minScore; 
+            
+            if (val > maxScore) {
+                el.style.borderColor = "red";
+                el.style.backgroundColor = "#ffdddd";
+            } else {
+                el.style.borderColor = "#9a7b4f";
+                el.style.backgroundColor = "#fff6dc";
+            }
+            totalSpent += getCost(val);
+        });
+
+        const remaining = basePoints - totalSpent;
+        
+        if (counterEl) {
+            counterEl.textContent = remaining;
+            if (remaining < 0) {
+                counterEl.style.color = "red";
+                counterEl.innerHTML = remaining + " <br>(Over budget!)";
+            } else {
+                counterEl.style.color = "green";
+            }
+        }
+    };
+
+    stats.forEach(el => {
+        el.type = "number";
+        el.min = minScore;
+        el.max = maxScore;
+        if (!el.value) el.value = 8;
+        el.addEventListener("input", updatePointBuy);
+    });
+
+    // --- MOVEMENT LOGIC (Przenoszenie nad Strength) ---
+    const container = document.getElementById("point-buy-container");
+    const strengthInput = document.getElementById("id_strength");
+    
+    if (container && strengthInput) {
+        const strengthParagraph = strengthInput.closest("p");
+        if (strengthParagraph) {
+
+            strengthParagraph.parentNode.insertBefore(container, strengthParagraph);
+        }
+    }
+
+    updatePointBuy();
+});
+</script>
+
+<!-- Compute experience_points buy action. -->
+<script type="module">
+document.addEventListener("DOMContentLoaded", () => {
+    const basePoints = 27;
+    const baseStat = 8;
+
+    const stats = [
+        "strength",
+        "dexterity",
+        "constitution",
+        "intelligence",
+        "wisdom",
+        "charisma",
+    ].map(name => document.getElementById(`id_${name}`))
+     .filter(Boolean);
+
+    if (!xpEl) {
+        return;
+    }
+
+    xpEl.readOnly = true;
+
+    if (xpEl.value === "") {
+        xpEl.value = basePoints;
+    }
+
+    const calculateCost = () => {
+        let cost = 0;
+
+        for (const el of stats) {
+            const value = Number(el.value || baseStat);
+            const delta = Math.max(0, value - baseStat);
+
+            if (delta > 5) {
+                cost += 5;                // 8 -> 13 costs 5
+                cost += (delta - 5) * 2;  // 13 -> x costs 2 per point
+            } else {
+                cost += delta;
+            }
+        }
+
+        return cost;
+    };
+
+    const updateXP = () => {
+        const spent = calculateCost();
+        xpEl.value = Math.max(0, basePoints - spent);
+    };
+
+    for (const el of stats) {
+        el.addEventListener("input", updateXP);
+    }
+
+    updateXP();
+});
+</script>
 
 <script>
 const classSelect = document.getElementById("id_character_class");
@@ -54,7 +200,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const skillsContainer = document.querySelector('#id_skills');
 
     function updateSkills(classId) {
-        fetch(`/skills-for-class/?class_id=${classId}`)
+        fetch(`/api/skills-for-class/?class_id=${classId}`)
             .then(response => response.json())
             .then(data => {
                 // Clear existing checkboxes
@@ -89,3 +235,5 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+
+{% endblock %}

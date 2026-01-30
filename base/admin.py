@@ -1,5 +1,5 @@
 from django.contrib import admin # type: ignore
-from .models import Character, Language, Subclass, CharacterClass, StartingEquipment, ClassSpell, Item, InventoryItem, Background, BackgroundStartingEquipment, Skill, Tool, BackgroundSkillProficiency, BackgroundToolProficiency, CharacterSkillProficiency, ClassSkillChoice, ClassFeature, Race, Feat
+from .models import Character, Language, Subclass, CharacterClass, StartingEquipment, ClassSpell, Item, InventoryItem, Background, BackgroundStartingEquipment, Skill, Tool, BackgroundSkillProficiency, BackgroundToolProficiency, CharacterSkillProficiency, ClassSkillChoice, ClassFeature, Race, Feat, Armor, ArmorClassBonus, ArmorClassFormula, Shield
  
 admin.site.register(Character)
 # Register your models here.
@@ -22,3 +22,7 @@ admin.site.register(ClassSkillChoice)
 admin.site.register(ClassFeature)
 admin.site.register(Race)
 admin.site.register(Feat)
+admin.site.register(Armor)
+admin.site.register(ArmorClassBonus)
+admin.site.register(ArmorClassFormula)
+admin.site.register(Shield)
